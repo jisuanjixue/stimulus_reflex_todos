@@ -1,0 +1,23 @@
+<%= component_controller do %>
+<div class="hero min-h-screen bg-base-200">
+  <div class="hero-content text-center">
+    <div class="max-w-md">
+      <h1 class="text-5xl font-bold"><%= @title %></h1>
+    </div>
+  </div>
+</div>
+
+<%= content %>
+
+<div class="tabs tabs-boxed">
+  <ul>
+    <% @components.each do |component| %>
+    <%= reflex_tag :select_component, :li, nil, class: component_class(component), data: { component: component } do %>
+    <a>
+      <%= component.humanize %>
+    </a>
+    <% end %>
+    <% end %>
+  </ul>
+</div>
+<% end %>
