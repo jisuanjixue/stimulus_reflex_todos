@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ExpoPageComponent < ViewComponentReflex::Component
+  with_content_areas :subtitle
+  
   def initialize(title:, component:)
     @title = title
     @components = if component.is_a? Array
