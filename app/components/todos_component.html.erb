@@ -1,1 +1,36 @@
-<div>Add Todos template here</div>
+<%= component_controller do %>
+<%= render(CreateTodoComponent.new) %>
+<div class="card w-96 bg-base-100 shadow-xl todo-list">
+    <div class="card-body">
+        <% if filter_todos.empty? %>
+        <div class="flex flex-row">
+            <div class="basis-1/2">
+                <%= no_todos_text %>
+            </div>
+        </div>
+        <% end %>
+        <%= render(TodoComponent.with_collection(filter_todos)) %>
+        <div class="flex todo-info">
+            <div class="flex-none w-14 h-14">
+                <p>
+                    <%= pluralize(active_todos.count, 'item') %> left
+                </p>
+            </div>
+            <div class="grow h-14">
+                <%= tags %>
+            </div>
+            <div class="flex-none w-14 h-14">
+                <%= reflex_tag(
+                    :clear,
+                    :button,
+                    'Clear completed',
+                    class: "btn btn-square",
+                    type: "button",
+                    disabled: completed_todos.empty?
+                )
+                %>
+            </div>
+        </div>
+    </div>
+</div>
+<% end %>

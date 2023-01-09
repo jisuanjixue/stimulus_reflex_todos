@@ -51,6 +51,17 @@ gem "bootsnap", require: false
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
+
+  # Automatic Ruby code style checking tool. (https://github.com/rubocop/rubocop)
+  gem 'rubocop', require: false
+
+    # Automatic performance checking tool for Ruby code. (https://github.com/rubocop/rubocop-performance)
+  gem 'rubocop-performance', require: false
+
+  # Automatic Rails code style checking tool. (https://github.com/rubocop/rubocop-rails)
+  gem 'rubocop-rails', require: false
+
+  gem 'erb_lint', require: false
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end

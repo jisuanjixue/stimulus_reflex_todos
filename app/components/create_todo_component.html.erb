@@ -1,0 +1,23 @@
+<%= component_controller class: "card" do %>
+<form data-action="submit->create-todo#add" data-key="<%= key %>">
+    <div class="form-control">
+        <%= reflex_tag(
+                "input->handle_name_change",
+                :input,
+                nil,
+                class: "input input-bordered",
+                placeholder: "What needs to be done?",
+                name: "name",
+                value: @todo.name
+            ) %>
+    </div>
+    <div class="form-control">
+        <%= tag.button(
+                'Add',
+                type: "submit",
+                class: "btn btn-info",
+                disabled: @todo.name.empty?
+            ) %>
+    </div>
+</form>
+<% end %>
