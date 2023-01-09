@@ -20,7 +20,10 @@ gem "jsbundling-rails"
 
 # A framework for building reusable, testable & encapsulated view components in Ruby on Rails. (https://viewcomponent.org)
 gem 'view_component'
+
+# ViewComponentReflex allows you to write reflexes right in your view component code.
 gem "view_component_reflex", "3.2.0"
+# A new way to craft modern, reactive web interfaces with Ruby on Rails.
 gem "stimulus_reflex", "~> 3.5.pre9"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
@@ -58,9 +61,13 @@ group :development, :test do
     # Automatic performance checking tool for Ruby code. (https://github.com/rubocop/rubocop-performance)
   gem 'rubocop-performance', require: false
 
+  # Code style checking for RSpec files (https://github.com/rubocop/rubocop-rspec)
+  gem 'rubocop-rspec', require: false
+
   # Automatic Rails code style checking tool. (https://github.com/rubocop/rubocop-rails)
   gem 'rubocop-rails', require: false
 
+# lint erb file
   gem 'erb_lint', require: false
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

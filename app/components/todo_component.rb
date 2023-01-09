@@ -12,7 +12,7 @@ class TodoComponent < ViewComponentReflex::Component
 
   def toggle_completed
     @todo.completed = !@todo.completed
-    @todo.save
+    @todo.save!
     refresh! ".todo-list"
   end
 
@@ -30,20 +30,20 @@ class TodoComponent < ViewComponentReflex::Component
   end
 
   def commit_edit
-    @todo.save
+    @todo.save!
     end_edit
   end
 
   def todo_name(todo)
     classes = %w[w-5]
     classes.push "completed" if todo.completed
-    tag.p(class: classes.join("")) do
+    tag.p(class: classes.join(" ")) do
       todo.name
     end
   end
 
   def delete
-    @todo.destroy
+    @todo.destroy!
     refresh! ".todo-list"
   end
 end

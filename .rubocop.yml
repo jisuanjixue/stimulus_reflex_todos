@@ -10,6 +10,7 @@ AllCops:
   TargetRubyVersion: 3.2.0
   Exclude:
     - app/javascript/**/*
+    - app/components/**/*
     - bin/**/*
     - coverage/**/*
     - db/schema.rb

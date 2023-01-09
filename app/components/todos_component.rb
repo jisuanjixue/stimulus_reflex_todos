@@ -29,7 +29,7 @@ class TodosComponent < ViewComponentReflex::Component
   end
 
   def filter_class(filter)
-    if @filter = filter
+    if @filter == filter
       "btn-primary"
     else
       "btn-secondary"
@@ -42,9 +42,10 @@ class TodosComponent < ViewComponentReflex::Component
       buttons.each do |button|
         opts = {
           id: "#{button}-tag",
-          class: "text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-blue-200 text-blue-700 rounded-full #{filter_class(button)}",
+          class: "text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-blue-200 
+                  text-blue-700 rounded-full #{filter_class(button)}",
           data: {
-            reflex: "click->TodosComponentReflex#filter", filter: button, key: key,
+            reflex: "click->TodosComponentReflex#filter", filter: button, key:,
           },
         }
         concat tag.a(button, **opts)

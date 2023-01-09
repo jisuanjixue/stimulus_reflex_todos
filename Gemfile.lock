@@ -206,6 +206,8 @@ GEM
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)
+    rubocop-rspec (2.16.0)
+      rubocop (~> 1.33)
     ruby-progressbar (1.11.0)
     smart_properties (1.17.0)
     stimulus_reflex (3.5.0.pre9)
@@ -259,6 +261,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   rubocop-rails
+  rubocop-rspec
   stimulus_reflex (~> 3.5.pre9)
   tzinfo-data
   view_component

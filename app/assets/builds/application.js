@@ -1,4 +1,6 @@
- (() => new EventSource("http://localhost:8082").onmessage = () => location.reload())();
+(() =>
+  (new EventSource('http://localhost:8082').onmessage = () =>
+    location.reload()))();
 (() => {
   var __defProp = Object.defineProperty;
   var __export = (target, all) => {
@@ -15,10 +17,18 @@
       this.unorderedBindings = /* @__PURE__ */ new Set();
     }
     connect() {
-      this.eventTarget.addEventListener(this.eventName, this, this.eventOptions);
+      this.eventTarget.addEventListener(
+        this.eventName,
+        this,
+        this.eventOptions,
+      );
     }
     disconnect() {
-      this.eventTarget.removeEventListener(this.eventName, this, this.eventOptions);
+      this.eventTarget.removeEventListener(
+        this.eventName,
+        this,
+        this.eventOptions,
+      );
     }
     bindingConnected(binding) {
       this.unorderedBindings.add(binding);
@@ -41,13 +51,14 @@
     }
     get bindings() {
       return Array.from(this.unorderedBindings).sort((left, right) => {
-        const leftIndex = left.index, rightIndex = right.index;
+        const leftIndex = left.index,
+          rightIndex = right.index;
         return leftIndex < rightIndex ? -1 : leftIndex > rightIndex ? 1 : 0;
       });
     }
   };
   function extendEvent(event) {
-    if ("immediatePropagationStopped" in event) {
+    if ('immediatePropagationStopped' in event) {
       return event;
     } else {
       const { stopImmediatePropagation } = event;
@@ -56,7 +67,7 @@
         stopImmediatePropagation() {
           this.immediatePropagationStopped = true;
           stopImmediatePropagation.call(this);
-        }
+        },
       });
     }
   }
@@ -75,19 +86,23 @@
     stop() {
       if (this.started) {
         this.started = false;
-        this.eventListeners.forEach((eventListener) => eventListener.disconnect());
+        this.eventListeners.forEach((eventListener) =>
+          eventListener.disconnect(),
+        );
       }
     }
     get eventListeners() {
-      return Array.from(this.eventListenerMaps.values()).reduce((listeners, map) => listeners.concat(Array.from(map.values())), []);
+      return Array.from(this.eventListenerMaps.values()).reduce(
+        (listeners, map) => listeners.concat(Array.from(map.values())),
+        [],
+      );
     }
     bindingConnected(binding) {
       this.fetchEventListenerForBinding(binding).bindingConnected(binding);
     }
     bindingDisconnected(binding, clearEventListeners = false) {
       this.fetchEventListenerForBinding(binding).bindingDisconnected(binding);
-      if (clearEventListeners)
-        this.clearEventListenersForBinding(binding);
+      if (clearEventListeners) this.clearEventListenersForBinding(binding);
     }
     handleError(error2, message, detail = {}) {
       this.application.handleError(error2, `Error ${message}`, detail);
@@ -101,7 +116,8 @@
     }
     removeMappedEventListenerFor(binding) {
       const { eventTarget, eventName, eventOptions } = binding;
-      const eventListenerMap = this.fetchEventListenerMapForEventTarget(eventTarget);
+      const eventListenerMap =
+        this.fetchEventListenerMapForEventTarget(eventTarget);
       const cacheKey = this.cacheKey(eventName, eventOptions);
       eventListenerMap.delete(cacheKey);
       if (eventListenerMap.size == 0)
@@ -112,17 +128,26 @@
       return this.fetchEventListener(eventTarget, eventName, eventOptions);
     }
     fetchEventListener(eventTarget, eventName, eventOptions) {
-      const eventListenerMap = this.fetchEventListenerMapForEventTarget(eventTarget);
+      const eventListenerMap =
+        this.fetchEventListenerMapForEventTarget(eventTarget);
       const cacheKey = this.cacheKey(eventName, eventOptions);
       let eventListener = eventListenerMap.get(cacheKey);
       if (!eventListener) {
-        eventListener = this.createEventListener(eventTarget, eventName, eventOptions);
+        eventListener = this.createEventListener(
+          eventTarget,
+          eventName,
+          eventOptions,
+        );
         eventListenerMap.set(cacheKey, eventListener);
       }
       return eventListener;
     }
     createEventListener(eventTarget, eventName, eventOptions) {
-      const eventListener = new EventListener(eventTarget, eventName, eventOptions);
+      const eventListener = new EventListener(
+        eventTarget,
+        eventName,
+        eventOptions,
+      );
       if (this.started) {
         eventListener.connect();
       }
@@ -138,21 +163,21 @@
     }
     cacheKey(eventName, eventOptions) {
       const parts = [eventName];
-      Object.keys(eventOptions).sort().forEach((key) => {
-        parts.push(`${eventOptions[key] ? "" : "!"}${key}`);
-      });
-      return parts.join(":");
+      Object.keys(eventOptions)
+        .sort()
+        .forEach((key) => {
+          parts.push(`${eventOptions[key] ? '' : '!'}${key}`);
+        });
+      return parts.join(':');
     }
   };
   var defaultActionDescriptorFilters = {
     stop({ event, value }) {
-      if (value)
-        event.stopPropagation();
+      if (value) event.stopPropagation();
       return true;
     },
     prevent({ event, value }) {
-      if (value)
-        event.preventDefault();
+      if (value) event.preventDefault();
       return true;
     },
     self({ event, value, element }) {
@@ -161,17 +186,18 @@
       } else {
         return true;
       }
-    }
+    },
   };
-  var descriptorPattern = /^(?:(.+?)(?:\.(.+?))?(?:@(window|document))?->)?(.+?)(?:#([^:]+?))(?::(.+))?$/;
+  var descriptorPattern =
+    /^(?:(.+?)(?:\.(.+?))?(?:@(window|document))?->)?(.+?)(?:#([^:]+?))(?::(.+))?$/;
   function parseActionDescriptorString(descriptorString) {
     const source = descriptorString.trim();
     const matches = source.match(descriptorPattern) || [];
     let eventName = matches[1];
     let keyFilter = matches[2];
-    if (keyFilter && !["keydown", "keyup", "keypress"].includes(eventName)) {
+    if (keyFilter && !['keydown', 'keyup', 'keypress'].includes(eventName)) {
       eventName += `.${keyFilter}`;
-      keyFilter = "";
+      keyFilter = '';
     }
     return {
       eventTarget: parseEventTarget(matches[3]),
@@ -179,31 +205,39 @@
       eventOptions: matches[6] ? parseEventOptions(matches[6]) : {},
       identifier: matches[4],
       methodName: matches[5],
-      keyFilter
+      keyFilter,
     };
   }
   function parseEventTarget(eventTargetName) {
-    if (eventTargetName == "window") {
+    if (eventTargetName == 'window') {
       return window;
-    } else if (eventTargetName == "document") {
+    } else if (eventTargetName == 'document') {
       return document;
     }
   }
   function parseEventOptions(eventOptions) {
-    return eventOptions.split(":").reduce((options, token) => Object.assign(options, { [token.replace(/^!/, "")]: !/^!/.test(token) }), {});
+    return eventOptions.split(':').reduce(
+      (options, token) =>
+        Object.assign(options, {
+          [token.replace(/^!/, '')]: !/^!/.test(token),
+        }),
+      {},
+    );
   }
   function stringifyEventTarget(eventTarget) {
     if (eventTarget == window) {
-      return "window";
+      return 'window';
     } else if (eventTarget == document) {
-      return "document";
+      return 'document';
     }
   }
   function camelize(value) {
-    return value.replace(/(?:[_-])([a-z0-9])/g, (_3, char) => char.toUpperCase());
+    return value.replace(/(?:[_-])([a-z0-9])/g, (_3, char) =>
+      char.toUpperCase(),
+    );
   }
   function namespaceCamelize(value) {
-    return camelize(value.replace(/--/g, "-").replace(/__/g, "_"));
+    return camelize(value.replace(/--/g, '-').replace(/__/g, '_'));
   }
   function capitalize(value) {
     return value.charAt(0).toUpperCase() + value.slice(1);
@@ -219,43 +253,67 @@
       this.element = element;
       this.index = index;
       this.eventTarget = descriptor.eventTarget || element;
-      this.eventName = descriptor.eventName || getDefaultEventNameForElement(element) || error("missing event name");
+      this.eventName =
+        descriptor.eventName ||
+        getDefaultEventNameForElement(element) ||
+        error('missing event name');
       this.eventOptions = descriptor.eventOptions || {};
-      this.identifier = descriptor.identifier || error("missing identifier");
-      this.methodName = descriptor.methodName || error("missing method name");
-      this.keyFilter = descriptor.keyFilter || "";
+      this.identifier = descriptor.identifier || error('missing identifier');
+      this.methodName = descriptor.methodName || error('missing method name');
+      this.keyFilter = descriptor.keyFilter || '';
       this.schema = schema;
     }
     static forToken(token, schema) {
-      return new this(token.element, token.index, parseActionDescriptorString(token.content), schema);
+      return new this(
+        token.element,
+        token.index,
+        parseActionDescriptorString(token.content),
+        schema,
+      );
     }
     toString() {
-      const eventFilter = this.keyFilter ? `.${this.keyFilter}` : "";
-      const eventTarget = this.eventTargetName ? `@${this.eventTargetName}` : "";
+      const eventFilter = this.keyFilter ? `.${this.keyFilter}` : '';
+      const eventTarget = this.eventTargetName
+        ? `@${this.eventTargetName}`
+        : '';
       return `${this.eventName}${eventFilter}${eventTarget}->${this.identifier}#${this.methodName}`;
     }
     isFilterTarget(event) {
       if (!this.keyFilter) {
         return false;
       }
-      const filteres = this.keyFilter.split("+");
-      const modifiers = ["meta", "ctrl", "alt", "shift"];
-      const [meta, ctrl, alt, shift] = modifiers.map((modifier) => filteres.includes(modifier));
-      if (event.metaKey !== meta || event.ctrlKey !== ctrl || event.altKey !== alt || event.shiftKey !== shift) {
+      const filteres = this.keyFilter.split('+');
+      const modifiers = ['meta', 'ctrl', 'alt', 'shift'];
+      const [meta, ctrl, alt, shift] = modifiers.map((modifier) =>
+        filteres.includes(modifier),
+      );
+      if (
+        event.metaKey !== meta ||
+        event.ctrlKey !== ctrl ||
+        event.altKey !== alt ||
+        event.shiftKey !== shift
+      ) {
         return true;
       }
-      const standardFilter = filteres.filter((key) => !modifiers.includes(key))[0];
+      const standardFilter = filteres.filter(
+        (key) => !modifiers.includes(key),
+      )[0];
       if (!standardFilter) {
         return false;
       }
-      if (!Object.prototype.hasOwnProperty.call(this.keyMappings, standardFilter)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(this.keyMappings, standardFilter)
+      ) {
         error(`contains unknown key filter: ${this.keyFilter}`);
       }
-      return this.keyMappings[standardFilter].toLowerCase() !== event.key.toLowerCase();
+      return (
+        this.keyMappings[standardFilter].toLowerCase() !==
+        event.key.toLowerCase()
+      );
     }
     get params() {
       const params = {};
-      const pattern = new RegExp(`^data-${this.identifier}-(.+)-param$`, "i");
+      const pattern = new RegExp(`^data-${this.identifier}-(.+)-param$`, 'i');
       for (const { name, value } of Array.from(this.element.attributes)) {
         const match = name.match(pattern);
         const key = match && match[1];
@@ -273,13 +331,13 @@
     }
   };
   var defaultEventNames = {
-    a: () => "click",
-    button: () => "click",
-    form: () => "submit",
-    details: () => "toggle",
-    input: (e) => e.getAttribute("type") == "submit" ? "click" : "input",
-    select: () => "change",
-    textarea: () => "input"
+    a: () => 'click',
+    button: () => 'click',
+    form: () => 'submit',
+    details: () => 'toggle',
+    input: (e) => (e.getAttribute('type') == 'submit' ? 'click' : 'input'),
+    select: () => 'change',
+    textarea: () => 'input',
   };
   function getDefaultEventNameForElement(element) {
     const tagName = element.tagName.toLowerCase();
@@ -324,10 +382,12 @@
     }
     get method() {
       const method = this.controller[this.methodName];
-      if (typeof method == "function") {
+      if (typeof method == 'function') {
         return method;
       }
-      throw new Error(`Action "${this.action}" references undefined method "${this.methodName}"`);
+      throw new Error(
+        `Action "${this.action}" references undefined method "${this.methodName}"`,
+      );
     }
     applyEventModifiers(event) {
       const { element } = this.action;
@@ -349,11 +409,20 @@
         const { params } = this.action;
         const actionEvent = Object.assign(event, { params });
         this.method.call(this.controller, actionEvent);
-        this.context.logDebugActivity(this.methodName, { event, target, currentTarget, action: this.methodName });
+        this.context.logDebugActivity(this.methodName, {
+          event,
+          target,
+          currentTarget,
+          action: this.methodName,
+        });
       } catch (error2) {
         const { identifier, controller, element, index } = this;
         const detail = { identifier, controller, element, index, event };
-        this.context.handleError(error2, `invoking action "${this.action}"`, detail);
+        this.context.handleError(
+          error2,
+          `invoking action "${this.action}"`,
+          detail,
+        );
       }
     }
     willBeInvokedByEvent(event) {
@@ -363,7 +432,10 @@
       }
       if (this.element === eventTarget) {
         return true;
-      } else if (eventTarget instanceof Element && this.element.contains(eventTarget)) {
+      } else if (
+        eventTarget instanceof Element &&
+        this.element.contains(eventTarget)
+      ) {
         return this.scope.containsElement(eventTarget);
       } else {
         return this.scope.containsElement(this.action.element);
@@ -384,12 +456,18 @@
   };
   var ElementObserver = class {
     constructor(element, delegate) {
-      this.mutationObserverInit = { attributes: true, childList: true, subtree: true };
+      this.mutationObserverInit = {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      };
       this.element = element;
       this.started = false;
       this.delegate = delegate;
       this.elements = /* @__PURE__ */ new Set();
-      this.mutationObserver = new MutationObserver((mutations) => this.processMutations(mutations));
+      this.mutationObserver = new MutationObserver((mutations) =>
+        this.processMutations(mutations),
+      );
     }
     start() {
       if (!this.started) {
@@ -437,9 +515,9 @@
       }
     }
     processMutation(mutation) {
-      if (mutation.type == "attributes") {
+      if (mutation.type == 'attributes') {
         this.processAttributeChange(mutation.target, mutation.attributeName);
-      } else if (mutation.type == "childList") {
+      } else if (mutation.type == 'childList') {
         this.processRemovedNodes(mutation.removedNodes);
         this.processAddedNodes(mutation.addedNodes);
       }
@@ -447,7 +525,10 @@
     processAttributeChange(node, attributeName) {
       const element = node;
       if (this.elements.has(element)) {
-        if (this.delegate.elementAttributeChanged && this.matchElement(element)) {
+        if (
+          this.delegate.elementAttributeChanged &&
+          this.matchElement(element)
+        ) {
           this.delegate.elementAttributeChanged(element, attributeName);
         } else {
           this.removeElement(element);
@@ -560,7 +641,10 @@
       }
     }
     elementAttributeChanged(element, attributeName) {
-      if (this.delegate.elementAttributeValueChanged && this.attributeName == attributeName) {
+      if (
+        this.delegate.elementAttributeValueChanged &&
+        this.attributeName == attributeName
+      ) {
         this.delegate.elementAttributeValueChanged(element, attributeName);
       }
     }
@@ -623,7 +707,9 @@
       return values ? Array.from(values) : [];
     }
     getKeysForValue(value) {
-      return Array.from(this.valuesByKey).filter(([_key, values]) => values.has(value)).map(([key, _values]) => key);
+      return Array.from(this.valuesByKey)
+        .filter(([_key, values]) => values.has(value))
+        .map(([key, _values]) => key);
     }
   };
   var SelectorObserver = class {
@@ -655,13 +741,17 @@
     matchElement(element) {
       const matches = element.matches(this.selector);
       if (this.delegate.selectorMatchElement) {
-        return matches && this.delegate.selectorMatchElement(element, this.details);
+        return (
+          matches && this.delegate.selectorMatchElement(element, this.details)
+        );
       }
       return matches;
     }
     matchElementsInTree(tree) {
       const match = this.matchElement(tree) ? [tree] : [];
-      const matches = Array.from(tree.querySelectorAll(this.selector)).filter((match2) => this.matchElement(match2));
+      const matches = Array.from(tree.querySelectorAll(this.selector)).filter(
+        (match2) => this.matchElement(match2),
+      );
       return match.concat(matches);
     }
     elementMatched(element) {
@@ -694,12 +784,17 @@
       this.delegate = delegate;
       this.started = false;
       this.stringMap = /* @__PURE__ */ new Map();
-      this.mutationObserver = new MutationObserver((mutations) => this.processMutations(mutations));
+      this.mutationObserver = new MutationObserver((mutations) =>
+        this.processMutations(mutations),
+      );
     }
     start() {
       if (!this.started) {
         this.started = true;
-        this.mutationObserver.observe(this.element, { attributes: true, attributeOldValue: true });
+        this.mutationObserver.observe(this.element, {
+          attributes: true,
+          attributeOldValue: true,
+        });
         this.refresh();
       }
     }
@@ -766,10 +861,14 @@
       }
     }
     get knownAttributeNames() {
-      return Array.from(new Set(this.currentAttributeNames.concat(this.recordedAttributeNames)));
+      return Array.from(
+        new Set(this.currentAttributeNames.concat(this.recordedAttributeNames)),
+      );
     }
     get currentAttributeNames() {
-      return Array.from(this.element.attributes).map((attribute) => attribute.name);
+      return Array.from(this.element.attributes).map(
+        (attribute) => attribute.name,
+      );
     }
     get recordedAttributeNames() {
       return Array.from(this.stringMap.keys());
@@ -777,7 +876,11 @@
   };
   var TokenListObserver = class {
     constructor(element, attributeName, delegate) {
-      this.attributeObserver = new AttributeObserver(element, attributeName, this);
+      this.attributeObserver = new AttributeObserver(
+        element,
+        attributeName,
+        this,
+      );
       this.delegate = delegate;
       this.tokensByElement = new Multimap();
     }
@@ -806,7 +909,8 @@
       this.tokensMatched(this.readTokensForElement(element));
     }
     elementAttributeValueChanged(element) {
-      const [unmatchedTokens, matchedTokens] = this.refreshTokensForElement(element);
+      const [unmatchedTokens, matchedTokens] =
+        this.refreshTokensForElement(element);
       this.tokensUnmatched(unmatchedTokens);
       this.tokensMatched(matchedTokens);
     }
@@ -830,32 +934,51 @@
     refreshTokensForElement(element) {
       const previousTokens = this.tokensByElement.getValuesForKey(element);
       const currentTokens = this.readTokensForElement(element);
-      const firstDifferingIndex = zip(previousTokens, currentTokens).findIndex(([previousToken, currentToken]) => !tokensAreEqual(previousToken, currentToken));
+      const firstDifferingIndex = zip(previousTokens, currentTokens).findIndex(
+        ([previousToken, currentToken]) =>
+          !tokensAreEqual(previousToken, currentToken),
+      );
       if (firstDifferingIndex == -1) {
         return [[], []];
       } else {
-        return [previousTokens.slice(firstDifferingIndex), currentTokens.slice(firstDifferingIndex)];
+        return [
+          previousTokens.slice(firstDifferingIndex),
+          currentTokens.slice(firstDifferingIndex),
+        ];
       }
     }
     readTokensForElement(element) {
       const attributeName = this.attributeName;
-      const tokenString = element.getAttribute(attributeName) || "";
+      const tokenString = element.getAttribute(attributeName) || '';
       return parseTokenString(tokenString, element, attributeName);
     }
   };
   function parseTokenString(tokenString, element, attributeName) {
-    return tokenString.trim().split(/\s+/).filter((content) => content.length).map((content, index) => ({ element, attributeName, content, index }));
+    return tokenString
+      .trim()
+      .split(/\s+/)
+      .filter((content) => content.length)
+      .map((content, index) => ({ element, attributeName, content, index }));
   }
   function zip(left, right) {
     const length = Math.max(left.length, right.length);
     return Array.from({ length }, (_3, index) => [left[index], right[index]]);
   }
   function tokensAreEqual(left, right) {
-    return left && right && left.index == right.index && left.content == right.content;
+    return (
+      left &&
+      right &&
+      left.index == right.index &&
+      left.content == right.content
+    );
   }
   var ValueListObserver = class {
     constructor(element, attributeName, delegate) {
-      this.tokenListObserver = new TokenListObserver(element, attributeName, this);
+      this.tokenListObserver = new TokenListObserver(
+        element,
+        attributeName,
+        this,
+      );
       this.delegate = delegate;
       this.parseResultsByToken = /* @__PURE__ */ new WeakMap();
       this.valuesByTokenByElement = /* @__PURE__ */ new WeakMap();
@@ -927,7 +1050,11 @@
     }
     start() {
       if (!this.valueListObserver) {
-        this.valueListObserver = new ValueListObserver(this.element, this.actionAttribute, this);
+        this.valueListObserver = new ValueListObserver(
+          this.element,
+          this.actionAttribute,
+          this,
+        );
         this.valueListObserver.start();
       }
     }
@@ -966,7 +1093,9 @@
       }
     }
     disconnectAllActions() {
-      this.bindings.forEach((binding) => this.delegate.bindingDisconnected(binding, true));
+      this.bindings.forEach((binding) =>
+        this.delegate.bindingDisconnected(binding, true),
+      );
       this.bindingsByAction.clear();
     }
     parseValueForToken(token) {
@@ -1010,13 +1139,16 @@
     stringMapKeyAdded(key, attributeName) {
       const descriptor = this.valueDescriptorMap[attributeName];
       if (!this.hasValue(key)) {
-        this.invokeChangedCallback(key, descriptor.writer(this.receiver[key]), descriptor.writer(descriptor.defaultValue));
+        this.invokeChangedCallback(
+          key,
+          descriptor.writer(this.receiver[key]),
+          descriptor.writer(descriptor.defaultValue),
+        );
       }
     }
     stringMapValueChanged(value, name, oldValue) {
       const descriptor = this.valueDescriptorNameMap[name];
-      if (value === null)
-        return;
+      if (value === null) return;
       if (oldValue === null) {
         oldValue = descriptor.writer(descriptor.defaultValue);
       }
@@ -1025,9 +1157,17 @@
     stringMapKeyRemoved(key, attributeName, oldValue) {
       const descriptor = this.valueDescriptorNameMap[key];
       if (this.hasValue(key)) {
-        this.invokeChangedCallback(key, descriptor.writer(this.receiver[key]), oldValue);
+        this.invokeChangedCallback(
+          key,
+          descriptor.writer(this.receiver[key]),
+          oldValue,
+        );
       } else {
-        this.invokeChangedCallback(key, descriptor.writer(descriptor.defaultValue), oldValue);
+        this.invokeChangedCallback(
+          key,
+          descriptor.writer(descriptor.defaultValue),
+          oldValue,
+        );
       }
     }
     invokeChangedCallbacksForDefaultValues() {
@@ -1040,7 +1180,7 @@
     invokeChangedCallback(name, rawValue, rawOldValue) {
       const changedMethodName = `${name}Changed`;
       const changedMethod = this.receiver[changedMethodName];
-      if (typeof changedMethod == "function") {
+      if (typeof changedMethod == 'function') {
         const descriptor = this.valueDescriptorNameMap[name];
         try {
           const value = descriptor.reader(rawValue);
@@ -1059,7 +1199,9 @@
     }
     get valueDescriptors() {
       const { valueDescriptorMap } = this;
-      return Object.keys(valueDescriptorMap).map((key) => valueDescriptorMap[key]);
+      return Object.keys(valueDescriptorMap).map(
+        (key) => valueDescriptorMap[key],
+      );
     }
     get valueDescriptorNameMap() {
       const descriptors = {};
@@ -1083,7 +1225,11 @@
     }
     start() {
       if (!this.tokenListObserver) {
-        this.tokenListObserver = new TokenListObserver(this.element, this.attributeName, this);
+        this.tokenListObserver = new TokenListObserver(
+          this.element,
+          this.attributeName,
+          this,
+        );
         this.tokenListObserver.start();
       }
     }
@@ -1106,14 +1252,18 @@
       var _a;
       if (!this.targetsByName.has(name, element)) {
         this.targetsByName.add(name, element);
-        (_a = this.tokenListObserver) === null || _a === void 0 ? void 0 : _a.pause(() => this.delegate.targetConnected(element, name));
+        (_a = this.tokenListObserver) === null || _a === void 0
+          ? void 0
+          : _a.pause(() => this.delegate.targetConnected(element, name));
       }
     }
     disconnectTarget(element, name) {
       var _a;
       if (this.targetsByName.has(name, element)) {
         this.targetsByName.delete(name, element);
-        (_a = this.tokenListObserver) === null || _a === void 0 ? void 0 : _a.pause(() => this.delegate.targetDisconnected(element, name));
+        (_a = this.tokenListObserver) === null || _a === void 0
+          ? void 0
+          : _a.pause(() => this.delegate.targetDisconnected(element, name));
       }
     }
     disconnectAllTargets() {
@@ -1135,10 +1285,14 @@
   };
   function readInheritableStaticArrayValues(constructor, propertyName) {
     const ancestors = getAncestorsForConstructor(constructor);
-    return Array.from(ancestors.reduce((values, constructor2) => {
-      getOwnStaticArrayValues(constructor2, propertyName).forEach((name) => values.add(name));
-      return values;
-    }, /* @__PURE__ */ new Set()));
+    return Array.from(
+      ancestors.reduce((values, constructor2) => {
+        getOwnStaticArrayValues(constructor2, propertyName).forEach((name) =>
+          values.add(name),
+        );
+        return values;
+      }, /* @__PURE__ */ new Set()),
+    );
   }
   function readInheritableStaticObjectPairs(constructor, propertyName) {
     const ancestors = getAncestorsForConstructor(constructor);
@@ -1161,7 +1315,9 @@
   }
   function getOwnStaticObjectPairs(constructor, propertyName) {
     const definition = constructor[propertyName];
-    return definition ? Object.keys(definition).map((key) => [key, definition[key]]) : [];
+    return definition
+      ? Object.keys(definition).map((key) => [key, definition[key]])
+      : [];
   }
   var OutletObserver = class {
     constructor(context, delegate) {
@@ -1177,7 +1333,10 @@
           const selector = this.selector(outletName);
           const details = { outletName };
           if (selector) {
-            this.selectorObserverMap.set(outletName, new SelectorObserver(document.body, selector, this, details));
+            this.selectorObserverMap.set(
+              outletName,
+              new SelectorObserver(document.body, selector, this, details),
+            );
           }
         });
         this.selectorObserverMap.forEach((observer) => observer.start());
@@ -1207,14 +1366,24 @@
       }
     }
     selectorMatchElement(element, { outletName }) {
-      return this.hasOutlet(element, outletName) && element.matches(`[${this.context.application.schema.controllerAttribute}~=${outletName}]`);
+      return (
+        this.hasOutlet(element, outletName) &&
+        element.matches(
+          `[${this.context.application.schema.controllerAttribute}~=${outletName}]`,
+        )
+      );
     }
     connectOutlet(outlet, element, outletName) {
       var _a;
       if (!this.outletElementsByName.has(outletName, element)) {
         this.outletsByName.add(outletName, outlet);
         this.outletElementsByName.add(outletName, element);
-        (_a = this.selectorObserverMap.get(outletName)) === null || _a === void 0 ? void 0 : _a.pause(() => this.delegate.outletConnected(outlet, element, outletName));
+        (_a = this.selectorObserverMap.get(outletName)) === null ||
+        _a === void 0
+          ? void 0
+          : _a.pause(() =>
+              this.delegate.outletConnected(outlet, element, outletName),
+            );
       }
     }
     disconnectOutlet(outlet, element, outletName) {
@@ -1222,12 +1391,19 @@
       if (this.outletElementsByName.has(outletName, element)) {
         this.outletsByName.delete(outletName, outlet);
         this.outletElementsByName.delete(outletName, element);
-        (_a = this.selectorObserverMap.get(outletName)) === null || _a === void 0 ? void 0 : _a.pause(() => this.delegate.outletDisconnected(outlet, element, outletName));
+        (_a = this.selectorObserverMap.get(outletName)) === null ||
+        _a === void 0
+          ? void 0
+          : _a.pause(() =>
+              this.delegate.outletDisconnected(outlet, element, outletName),
+            );
       }
     }
     disconnectAllOutlets() {
       for (const outletName of this.outletElementsByName.keys) {
-        for (const element of this.outletElementsByName.getValuesForKey(outletName)) {
+        for (const element of this.outletElementsByName.getValuesForKey(
+          outletName,
+        )) {
           for (const outlet of this.outletsByName.getValuesForKey(outletName)) {
             this.disconnectOutlet(outlet, element, outletName);
           }
@@ -1241,8 +1417,13 @@
       const dependencies = new Multimap();
       this.router.modules.forEach((module) => {
         const constructor = module.definition.controllerConstructor;
-        const outlets = readInheritableStaticArrayValues(constructor, "outlets");
-        outlets.forEach((outlet) => dependencies.add(outlet, module.identifier));
+        const outlets = readInheritableStaticArrayValues(
+          constructor,
+          'outlets',
+        );
+        outlets.forEach((outlet) =>
+          dependencies.add(outlet, module.identifier),
+        );
       });
       return dependencies;
     }
@@ -1254,16 +1435,26 @@
     }
     get dependentContexts() {
       const identifiers = this.dependentControllerIdentifiers;
-      return this.router.contexts.filter((context) => identifiers.includes(context.identifier));
+      return this.router.contexts.filter((context) =>
+        identifiers.includes(context.identifier),
+      );
     }
     hasOutlet(element, outletName) {
-      return !!this.getOutlet(element, outletName) || !!this.getOutletFromMap(element, outletName);
+      return (
+        !!this.getOutlet(element, outletName) ||
+        !!this.getOutletFromMap(element, outletName)
+      );
     }
     getOutlet(element, outletName) {
-      return this.application.getControllerForElementAndIdentifier(element, outletName);
+      return this.application.getControllerForElementAndIdentifier(
+        element,
+        outletName,
+      );
     }
     getOutletFromMap(element, outletName) {
-      return this.outletsByName.getValuesForKey(outletName).find((outlet) => outlet.element === element);
+      return this.outletsByName
+        .getValuesForKey(outletName)
+        .find((outlet) => outlet.element === element);
     }
     get scope() {
       return this.context.scope;
@@ -1283,7 +1474,11 @@
       this.logDebugActivity = (functionName, detail = {}) => {
         const { identifier, controller, element } = this;
         detail = Object.assign({ identifier, controller, element }, detail);
-        this.application.logDebugActivity(this.identifier, functionName, detail);
+        this.application.logDebugActivity(
+          this.identifier,
+          functionName,
+          detail,
+        );
       };
       this.module = module;
       this.scope = scope;
@@ -1294,9 +1489,9 @@
       this.outletObserver = new OutletObserver(this, this);
       try {
         this.controller.initialize();
-        this.logDebugActivity("initialize");
+        this.logDebugActivity('initialize');
       } catch (error2) {
-        this.handleError(error2, "initializing controller");
+        this.handleError(error2, 'initializing controller');
       }
     }
     connect() {
@@ -1306,9 +1501,9 @@
       this.outletObserver.start();
       try {
         this.controller.connect();
-        this.logDebugActivity("connect");
+        this.logDebugActivity('connect');
       } catch (error2) {
-        this.handleError(error2, "connecting controller");
+        this.handleError(error2, 'connecting controller');
       }
     }
     refresh() {
@@ -1317,9 +1512,9 @@
     disconnect() {
       try {
         this.controller.disconnect();
-        this.logDebugActivity("disconnect");
+        this.logDebugActivity('disconnect');
       } catch (error2) {
-        this.handleError(error2, "disconnecting controller");
+        this.handleError(error2, 'disconnecting controller');
       }
       this.outletObserver.stop();
       this.targetObserver.stop();
@@ -1356,14 +1551,22 @@
       this.invokeControllerMethod(`${name}TargetDisconnected`, element);
     }
     outletConnected(outlet, element, name) {
-      this.invokeControllerMethod(`${namespaceCamelize(name)}OutletConnected`, outlet, element);
+      this.invokeControllerMethod(
+        `${namespaceCamelize(name)}OutletConnected`,
+        outlet,
+        element,
+      );
     }
     outletDisconnected(outlet, element, name) {
-      this.invokeControllerMethod(`${namespaceCamelize(name)}OutletDisconnected`, outlet, element);
+      this.invokeControllerMethod(
+        `${namespaceCamelize(name)}OutletDisconnected`,
+        outlet,
+        element,
+      );
     }
     invokeControllerMethod(methodName, ...args) {
       const controller = this.controller;
-      if (typeof controller[methodName] == "function") {
+      if (typeof controller[methodName] == 'function') {
         controller[methodName](...args);
       }
     }
@@ -1373,12 +1576,18 @@
   }
   function shadow(constructor, properties) {
     const shadowConstructor = extend(constructor);
-    const shadowProperties = getShadowProperties(constructor.prototype, properties);
+    const shadowProperties = getShadowProperties(
+      constructor.prototype,
+      properties,
+    );
     Object.defineProperties(shadowConstructor.prototype, shadowProperties);
     return shadowConstructor;
   }
   function getBlessedProperties(constructor) {
-    const blessings = readInheritableStaticArrayValues(constructor, "blessings");
+    const blessings = readInheritableStaticArrayValues(
+      constructor,
+      'blessings',
+    );
     return blessings.reduce((blessedProperties, blessing) => {
       const properties = blessing(constructor);
       for (const key in properties) {
@@ -1399,7 +1608,8 @@
   }
   function getShadowedDescriptor(prototype, properties, key) {
     const shadowingDescriptor = Object.getOwnPropertyDescriptor(prototype, key);
-    const shadowedByValue = shadowingDescriptor && "value" in shadowingDescriptor;
+    const shadowedByValue =
+      shadowingDescriptor && 'value' in shadowingDescriptor;
     if (!shadowedByValue) {
       const descriptor = Object.getOwnPropertyDescriptor(properties, key).value;
       if (shadowingDescriptor) {
@@ -1410,8 +1620,11 @@
     }
   }
   var getOwnKeys = (() => {
-    if (typeof Object.getOwnPropertySymbols == "function") {
-      return (object) => [...Object.getOwnPropertyNames(object), ...Object.getOwnPropertySymbols(object)];
+    if (typeof Object.getOwnPropertySymbols == 'function') {
+      return (object) => [
+        ...Object.getOwnPropertyNames(object),
+        ...Object.getOwnPropertySymbols(object),
+      ];
     } else {
       return Object.getOwnPropertyNames;
     }
@@ -1422,32 +1635,30 @@
         return Reflect.construct(constructor, arguments, new.target);
       }
       extended.prototype = Object.create(constructor.prototype, {
-        constructor: { value: extended }
+        constructor: { value: extended },
       });
       Reflect.setPrototypeOf(extended, constructor);
       return extended;
     }
     function testReflectExtension() {
-      const a3 = function() {
+      const a3 = function () {
         this.a.call(this);
       };
       const b3 = extendWithReflect(a3);
-      b3.prototype.a = function() {
-      };
+      b3.prototype.a = function () {};
       return new b3();
     }
     try {
       testReflectExtension();
       return extendWithReflect;
     } catch (error2) {
-      return (constructor) => class extended extends constructor {
-      };
+      return (constructor) => class extended extends constructor {};
     }
   })();
   function blessDefinition(definition) {
     return {
       identifier: definition.identifier,
-      controllerConstructor: bless(definition.controllerConstructor)
+      controllerConstructor: bless(definition.controllerConstructor),
     };
   }
   var Module = class {
@@ -1498,7 +1709,7 @@
       return this.getAll(name)[0];
     }
     getAll(name) {
-      const tokenString = this.data.get(this.getDataKey(name)) || "";
+      const tokenString = this.data.get(this.getDataKey(name)) || '';
       return tokenize(tokenString);
     }
     getAttributeName(name) {
@@ -1584,14 +1795,23 @@
       return this.find(targetName) != null;
     }
     find(...targetNames) {
-      return targetNames.reduce((target, targetName) => target || this.findTarget(targetName) || this.findLegacyTarget(targetName), void 0);
+      return targetNames.reduce(
+        (target, targetName) =>
+          target ||
+          this.findTarget(targetName) ||
+          this.findLegacyTarget(targetName),
+        void 0,
+      );
     }
     findAll(...targetNames) {
-      return targetNames.reduce((targets, targetName) => [
-        ...targets,
-        ...this.findAllTargets(targetName),
-        ...this.findAllLegacyTargets(targetName)
-      ], []);
+      return targetNames.reduce(
+        (targets, targetName) => [
+          ...targets,
+          ...this.findAllTargets(targetName),
+          ...this.findAllLegacyTargets(targetName),
+        ],
+        [],
+      );
     }
     findTarget(targetName) {
       const selector = this.getSelectorForTargetName(targetName);
@@ -1602,7 +1822,9 @@
       return this.scope.findAllElements(selector);
     }
     getSelectorForTargetName(targetName) {
-      const attributeName = this.schema.targetAttributeForScope(this.identifier);
+      const attributeName = this.schema.targetAttributeForScope(
+        this.identifier,
+      );
       return attributeValueContainsToken(attributeName, targetName);
     }
     findLegacyTarget(targetName) {
@@ -1611,18 +1833,28 @@
     }
     findAllLegacyTargets(targetName) {
       const selector = this.getLegacySelectorForTargetName(targetName);
-      return this.scope.findAllElements(selector).map((element) => this.deprecate(element, targetName));
+      return this.scope
+        .findAllElements(selector)
+        .map((element) => this.deprecate(element, targetName));
     }
     getLegacySelectorForTargetName(targetName) {
       const targetDescriptor = `${this.identifier}.${targetName}`;
-      return attributeValueContainsToken(this.schema.targetAttribute, targetDescriptor);
+      return attributeValueContainsToken(
+        this.schema.targetAttribute,
+        targetDescriptor,
+      );
     }
     deprecate(element, targetName) {
       if (element) {
         const { identifier } = this;
         const attributeName = this.schema.targetAttribute;
-        const revisedAttributeName = this.schema.targetAttributeForScope(identifier);
-        this.guide.warn(element, `target:${targetName}`, `Please replace ${attributeName}="${identifier}.${targetName}" with ${revisedAttributeName}="${targetName}". The ${attributeName} attribute is deprecated and will be removed in a future version of Stimulus.`);
+        const revisedAttributeName =
+          this.schema.targetAttributeForScope(identifier);
+        this.guide.warn(
+          element,
+          `target:${targetName}`,
+          `Please replace ${attributeName}="${identifier}.${targetName}" with ${revisedAttributeName}="${targetName}". The ${attributeName} attribute is deprecated and will be removed in a future version of Stimulus.`,
+        );
       }
       return element;
     }
@@ -1648,19 +1880,30 @@
       return this.find(outletName) != null;
     }
     find(...outletNames) {
-      return outletNames.reduce((outlet, outletName) => outlet || this.findOutlet(outletName), void 0);
+      return outletNames.reduce(
+        (outlet, outletName) => outlet || this.findOutlet(outletName),
+        void 0,
+      );
     }
     findAll(...outletNames) {
-      return outletNames.reduce((outlets, outletName) => [...outlets, ...this.findAllOutlets(outletName)], []);
+      return outletNames.reduce(
+        (outlets, outletName) => [
+          ...outlets,
+          ...this.findAllOutlets(outletName),
+        ],
+        [],
+      );
     }
     getSelectorForOutletName(outletName) {
-      const attributeName = this.schema.outletAttributeForScope(this.identifier, outletName);
+      const attributeName = this.schema.outletAttributeForScope(
+        this.identifier,
+        outletName,
+      );
       return this.controllerElement.getAttribute(attributeName);
     }
     findOutlet(outletName) {
       const selector = this.getSelectorForOutletName(outletName);
-      if (selector)
-        return this.findElement(selector, outletName);
+      if (selector) return this.findElement(selector, outletName);
     }
     findAllOutlets(outletName) {
       const selector = this.getSelectorForOutletName(outletName);
@@ -1668,15 +1911,23 @@
     }
     findElement(selector, outletName) {
       const elements = this.scope.queryElements(selector);
-      return elements.filter((element) => this.matchesElement(element, selector, outletName))[0];
+      return elements.filter((element) =>
+        this.matchesElement(element, selector, outletName),
+      )[0];
     }
     findAllElements(selector, outletName) {
       const elements = this.scope.queryElements(selector);
-      return elements.filter((element) => this.matchesElement(element, selector, outletName));
+      return elements.filter((element) =>
+        this.matchesElement(element, selector, outletName),
+      );
     }
     matchesElement(element, selector, outletName) {
-      const controllerAttribute = element.getAttribute(this.scope.schema.controllerAttribute) || "";
-      return element.matches(selector) && controllerAttribute.split(" ").includes(outletName);
+      const controllerAttribute =
+        element.getAttribute(this.scope.schema.controllerAttribute) || '';
+      return (
+        element.matches(selector) &&
+        controllerAttribute.split(' ').includes(outletName)
+      );
     }
   };
   var Scope = class {
@@ -1694,25 +1945,37 @@
       this.outlets = new OutletSet(this.documentScope, element);
     }
     findElement(selector) {
-      return this.element.matches(selector) ? this.element : this.queryElements(selector).find(this.containsElement);
+      return this.element.matches(selector)
+        ? this.element
+        : this.queryElements(selector).find(this.containsElement);
     }
     findAllElements(selector) {
       return [
-        ...this.element.matches(selector) ? [this.element] : [],
-        ...this.queryElements(selector).filter(this.containsElement)
+        ...(this.element.matches(selector) ? [this.element] : []),
+        ...this.queryElements(selector).filter(this.containsElement),
       ];
     }
     queryElements(selector) {
       return Array.from(this.element.querySelectorAll(selector));
     }
     get controllerSelector() {
-      return attributeValueContainsToken(this.schema.controllerAttribute, this.identifier);
+      return attributeValueContainsToken(
+        this.schema.controllerAttribute,
+        this.identifier,
+      );
     }
     get isDocumentScope() {
       return this.element === document.documentElement;
     }
     get documentScope() {
-      return this.isDocumentScope ? this : new Scope(this.schema, document.documentElement, this.identifier, this.guide.logger);
+      return this.isDocumentScope
+        ? this
+        : new Scope(
+            this.schema,
+            document.documentElement,
+            this.identifier,
+            this.guide.logger,
+          );
     }
   };
   var ScopeObserver = class {
@@ -1720,7 +1983,11 @@
       this.element = element;
       this.schema = schema;
       this.delegate = delegate;
-      this.valueListObserver = new ValueListObserver(this.element, this.controllerAttribute, this);
+      this.valueListObserver = new ValueListObserver(
+        this.element,
+        this.controllerAttribute,
+        this,
+      );
       this.scopesByIdentifierByElement = /* @__PURE__ */ new WeakMap();
       this.scopeReferenceCounts = /* @__PURE__ */ new WeakMap();
     }
@@ -1735,10 +2002,14 @@
     }
     parseValueForToken(token) {
       const { element, content: identifier } = token;
-      const scopesByIdentifier = this.fetchScopesByIdentifierForElement(element);
+      const scopesByIdentifier =
+        this.fetchScopesByIdentifierForElement(element);
       let scope = scopesByIdentifier.get(identifier);
       if (!scope) {
-        scope = this.delegate.createScopeForElementAndIdentifier(element, identifier);
+        scope = this.delegate.createScopeForElementAndIdentifier(
+          element,
+          identifier,
+        );
         scopesByIdentifier.set(identifier, scope);
       }
       return scope;
@@ -1791,7 +2062,10 @@
       return Array.from(this.modulesByIdentifier.values());
     }
     get contexts() {
-      return this.modules.reduce((contexts, module) => contexts.concat(module.contexts), []);
+      return this.modules.reduce(
+        (contexts, module) => contexts.concat(module.contexts),
+        [],
+      );
     }
     start() {
       this.scopeObserver.start();
@@ -1852,15 +2126,38 @@
     }
   };
   var defaultSchema = {
-    controllerAttribute: "data-controller",
-    actionAttribute: "data-action",
-    targetAttribute: "data-target",
+    controllerAttribute: 'data-controller',
+    actionAttribute: 'data-action',
+    targetAttribute: 'data-target',
     targetAttributeForScope: (identifier) => `data-${identifier}-target`,
-    outletAttributeForScope: (identifier, outlet) => `data-${identifier}-${outlet}-outlet`,
-    keyMappings: Object.assign(Object.assign({ enter: "Enter", tab: "Tab", esc: "Escape", space: " ", up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight", home: "Home", end: "End" }, objectFromEntries("abcdefghijklmnopqrstuvwxyz".split("").map((c3) => [c3, c3]))), objectFromEntries("0123456789".split("").map((n3) => [n3, n3])))
+    outletAttributeForScope: (identifier, outlet) =>
+      `data-${identifier}-${outlet}-outlet`,
+    keyMappings: Object.assign(
+      Object.assign(
+        {
+          enter: 'Enter',
+          tab: 'Tab',
+          esc: 'Escape',
+          space: ' ',
+          up: 'ArrowUp',
+          down: 'ArrowDown',
+          left: 'ArrowLeft',
+          right: 'ArrowRight',
+          home: 'Home',
+          end: 'End',
+        },
+        objectFromEntries(
+          'abcdefghijklmnopqrstuvwxyz'.split('').map((c3) => [c3, c3]),
+        ),
+      ),
+      objectFromEntries('0123456789'.split('').map((n3) => [n3, n3])),
+    ),
   };
   function objectFromEntries(array) {
-    return array.reduce((memo, [k3, v3]) => Object.assign(Object.assign({}, memo), { [k3]: v3 }), {});
+    return array.reduce(
+      (memo, [k3, v3]) => Object.assign(Object.assign({}, memo), { [k3]: v3 }),
+      {},
+    );
   }
   var Application = class {
     constructor(element = document.documentElement, schema = defaultSchema) {
@@ -1875,7 +2172,10 @@
       this.schema = schema;
       this.dispatcher = new Dispatcher(this);
       this.router = new Router(this);
-      this.actionDescriptorFilters = Object.assign({}, defaultActionDescriptorFilters);
+      this.actionDescriptorFilters = Object.assign(
+        {},
+        defaultActionDescriptorFilters,
+      );
     }
     static start(element, schema) {
       const application2 = new this(element, schema);
@@ -1884,16 +2184,16 @@
     }
     async start() {
       await domReady();
-      this.logDebugActivity("application", "starting");
+      this.logDebugActivity('application', 'starting');
       this.dispatcher.start();
       this.router.start();
-      this.logDebugActivity("application", "start");
+      this.logDebugActivity('application', 'start');
     }
     stop() {
-      this.logDebugActivity("application", "stopping");
+      this.logDebugActivity('application', 'stopping');
       this.dispatcher.stop();
       this.router.stop();
-      this.logDebugActivity("application", "stop");
+      this.logDebugActivity('application', 'stop');
     }
     register(identifier, controllerConstructor) {
       this.load({ identifier, controllerConstructor });
@@ -1911,44 +2211,59 @@
     }
     unload(head, ...rest) {
       const identifiers = Array.isArray(head) ? head : [head, ...rest];
-      identifiers.forEach((identifier) => this.router.unloadIdentifier(identifier));
+      identifiers.forEach((identifier) =>
+        this.router.unloadIdentifier(identifier),
+      );
     }
     get controllers() {
       return this.router.contexts.map((context) => context.controller);
     }
     getControllerForElementAndIdentifier(element, identifier) {
-      const context = this.router.getContextForElementAndIdentifier(element, identifier);
+      const context = this.router.getContextForElementAndIdentifier(
+        element,
+        identifier,
+      );
       return context ? context.controller : null;
     }
     handleError(error2, message, detail) {
       var _a;
-      this.logger.error(`%s
+      this.logger.error(
+        `%s
 
 %o
 
-%o`, message, error2, detail);
-      (_a = window.onerror) === null || _a === void 0 ? void 0 : _a.call(window, message, "", 0, 0, error2);
+%o`,
+        message,
+        error2,
+        detail,
+      );
+      (_a = window.onerror) === null || _a === void 0
+        ? void 0
+        : _a.call(window, message, '', 0, 0, error2);
     }
     logFormattedMessage(identifier, functionName, detail = {}) {
       detail = Object.assign({ application: this }, detail);
       this.logger.groupCollapsed(`${identifier} #${functionName}`);
-      this.logger.log("details:", Object.assign({}, detail));
+      this.logger.log('details:', Object.assign({}, detail));
       this.logger.groupEnd();
     }
   };
   function domReady() {
     return new Promise((resolve) => {
-      if (document.readyState == "loading") {
-        document.addEventListener("DOMContentLoaded", () => resolve());
+      if (document.readyState == 'loading') {
+        document.addEventListener('DOMContentLoaded', () => resolve());
       } else {
         resolve();
       }
     });
   }
   function ClassPropertiesBlessing(constructor) {
-    const classes = readInheritableStaticArrayValues(constructor, "classes");
+    const classes = readInheritableStaticArrayValues(constructor, 'classes');
     return classes.reduce((properties, classDefinition) => {
-      return Object.assign(properties, propertiesForClassDefinition(classDefinition));
+      return Object.assign(
+        properties,
+        propertiesForClassDefinition(classDefinition),
+      );
     }, {});
   }
   function propertiesForClassDefinition(key) {
@@ -1962,24 +2277,27 @@
             const attribute = classes.getAttributeName(key);
             throw new Error(`Missing attribute "${attribute}"`);
           }
-        }
+        },
       },
       [`${key}Classes`]: {
         get() {
           return this.classes.getAll(key);
-        }
+        },
       },
       [`has${capitalize(key)}Class`]: {
         get() {
           return this.classes.has(key);
-        }
-      }
+        },
+      },
     };
   }
   function OutletPropertiesBlessing(constructor) {
-    const outlets = readInheritableStaticArrayValues(constructor, "outlets");
+    const outlets = readInheritableStaticArrayValues(constructor, 'outlets');
     return outlets.reduce((properties, outletDefinition) => {
-      return Object.assign(properties, propertiesForOutletDefinition(outletDefinition));
+      return Object.assign(
+        properties,
+        propertiesForOutletDefinition(outletDefinition),
+      );
     }, {});
   }
   function propertiesForOutletDefinition(name) {
@@ -1989,31 +2307,48 @@
         get() {
           const outlet = this.outlets.find(name);
           if (outlet) {
-            const outletController = this.application.getControllerForElementAndIdentifier(outlet, name);
+            const outletController =
+              this.application.getControllerForElementAndIdentifier(
+                outlet,
+                name,
+              );
             if (outletController) {
               return outletController;
             } else {
-              throw new Error(`Missing "data-controller=${name}" attribute on outlet element for "${this.identifier}" controller`);
+              throw new Error(
+                `Missing "data-controller=${name}" attribute on outlet element for "${this.identifier}" controller`,
+              );
             }
           }
-          throw new Error(`Missing outlet element "${name}" for "${this.identifier}" controller`);
-        }
+          throw new Error(
+            `Missing outlet element "${name}" for "${this.identifier}" controller`,
+          );
+        },
       },
       [`${camelizedName}Outlets`]: {
         get() {
           const outlets = this.outlets.findAll(name);
           if (outlets.length > 0) {
-            return outlets.map((outlet) => {
-              const controller = this.application.getControllerForElementAndIdentifier(outlet, name);
-              if (controller) {
-                return controller;
-              } else {
-                console.warn(`The provided outlet element is missing the outlet controller "${name}" for "${this.identifier}"`, outlet);
-              }
-            }).filter((controller) => controller);
+            return outlets
+              .map((outlet) => {
+                const controller =
+                  this.application.getControllerForElementAndIdentifier(
+                    outlet,
+                    name,
+                  );
+                if (controller) {
+                  return controller;
+                } else {
+                  console.warn(
+                    `The provided outlet element is missing the outlet controller "${name}" for "${this.identifier}"`,
+                    outlet,
+                  );
+                }
+              })
+              .filter((controller) => controller);
           }
           return [];
-        }
+        },
       },
       [`${camelizedName}OutletElement`]: {
         get() {
@@ -2021,26 +2356,31 @@
           if (outlet) {
             return outlet;
           } else {
-            throw new Error(`Missing outlet element "${name}" for "${this.identifier}" controller`);
+            throw new Error(
+              `Missing outlet element "${name}" for "${this.identifier}" controller`,
+            );
           }
-        }
+        },
       },
       [`${camelizedName}OutletElements`]: {
         get() {
           return this.outlets.findAll(name);
-        }
+        },
       },
       [`has${capitalize(camelizedName)}Outlet`]: {
         get() {
           return this.outlets.has(name);
-        }
-      }
+        },
+      },
     };
   }
   function TargetPropertiesBlessing(constructor) {
-    const targets = readInheritableStaticArrayValues(constructor, "targets");
+    const targets = readInheritableStaticArrayValues(constructor, 'targets');
     return targets.reduce((properties, targetDefinition) => {
-      return Object.assign(properties, propertiesForTargetDefinition(targetDefinition));
+      return Object.assign(
+        properties,
+        propertiesForTargetDefinition(targetDefinition),
+      );
     }, {});
   }
   function propertiesForTargetDefinition(name) {
@@ -2051,41 +2391,57 @@
           if (target) {
             return target;
           } else {
-            throw new Error(`Missing target element "${name}" for "${this.identifier}" controller`);
+            throw new Error(
+              `Missing target element "${name}" for "${this.identifier}" controller`,
+            );
           }
-        }
+        },
       },
       [`${name}Targets`]: {
         get() {
           return this.targets.findAll(name);
-        }
+        },
       },
       [`has${capitalize(name)}Target`]: {
         get() {
           return this.targets.has(name);
-        }
-      }
+        },
+      },
     };
   }
   function ValuePropertiesBlessing(constructor) {
-    const valueDefinitionPairs = readInheritableStaticObjectPairs(constructor, "values");
+    const valueDefinitionPairs = readInheritableStaticObjectPairs(
+      constructor,
+      'values',
+    );
     const propertyDescriptorMap = {
       valueDescriptorMap: {
         get() {
           return valueDefinitionPairs.reduce((result, valueDefinitionPair) => {
-            const valueDescriptor = parseValueDefinitionPair(valueDefinitionPair, this.identifier);
-            const attributeName = this.data.getAttributeNameForKey(valueDescriptor.key);
+            const valueDescriptor = parseValueDefinitionPair(
+              valueDefinitionPair,
+              this.identifier,
+            );
+            const attributeName = this.data.getAttributeNameForKey(
+              valueDescriptor.key,
+            );
             return Object.assign(result, { [attributeName]: valueDescriptor });
           }, {});
-        }
-      }
+        },
+      },
     };
     return valueDefinitionPairs.reduce((properties, valueDefinitionPair) => {
-      return Object.assign(properties, propertiesForValueDefinitionPair(valueDefinitionPair));
+      return Object.assign(
+        properties,
+        propertiesForValueDefinitionPair(valueDefinitionPair),
+      );
     }, propertyDescriptorMap);
   }
   function propertiesForValueDefinitionPair(valueDefinitionPair, controller) {
-    const definition = parseValueDefinitionPair(valueDefinitionPair, controller);
+    const definition = parseValueDefinitionPair(
+      valueDefinitionPair,
+      controller,
+    );
     const { key, name, reader: read, writer: write } = definition;
     return {
       [name]: {
@@ -2103,58 +2459,60 @@
           } else {
             this.data.set(key, write(value));
           }
-        }
+        },
       },
       [`has${capitalize(name)}`]: {
         get() {
           return this.data.has(key) || definition.hasCustomDefaultValue;
-        }
-      }
+        },
+      },
     };
   }
   function parseValueDefinitionPair([token, typeDefinition], controller) {
     return valueDescriptorForTokenAndTypeDefinition({
       controller,
       token,
-      typeDefinition
+      typeDefinition,
     });
   }
   function parseValueTypeConstant(constant) {
     switch (constant) {
       case Array:
-        return "array";
+        return 'array';
       case Boolean:
-        return "boolean";
+        return 'boolean';
       case Number:
-        return "number";
+        return 'number';
       case Object:
-        return "object";
+        return 'object';
       case String:
-        return "string";
+        return 'string';
     }
   }
   function parseValueTypeDefault(defaultValue) {
     switch (typeof defaultValue) {
-      case "boolean":
-        return "boolean";
-      case "number":
-        return "number";
-      case "string":
-        return "string";
+      case 'boolean':
+        return 'boolean';
+      case 'number':
+        return 'number';
+      case 'string':
+        return 'string';
     }
-    if (Array.isArray(defaultValue))
-      return "array";
-    if (Object.prototype.toString.call(defaultValue) === "[object Object]")
-      return "object";
+    if (Array.isArray(defaultValue)) return 'array';
+    if (Object.prototype.toString.call(defaultValue) === '[object Object]')
+      return 'object';
   }
   function parseValueTypeObject(payload) {
     const typeFromObject = parseValueTypeConstant(payload.typeObject.type);
-    if (!typeFromObject)
-      return;
+    if (!typeFromObject) return;
     const defaultValueType = parseValueTypeDefault(payload.typeObject.default);
     if (typeFromObject !== defaultValueType) {
-      const propertyPath = payload.controller ? `${payload.controller}.${payload.token}` : payload.token;
-      throw new Error(`The specified default value for the Stimulus Value "${propertyPath}" must match the defined type "${typeFromObject}". The provided default value of "${payload.typeObject.default}" is of type "${defaultValueType}".`);
+      const propertyPath = payload.controller
+        ? `${payload.controller}.${payload.token}`
+        : payload.token;
+      throw new Error(
+        `The specified default value for the Stimulus Value "${propertyPath}" must match the defined type "${typeFromObject}". The provided default value of "${payload.typeObject.default}" is of type "${defaultValueType}".`,
+      );
     }
     return typeFromObject;
   }
@@ -2162,23 +2520,24 @@
     const typeFromObject = parseValueTypeObject({
       controller: payload.controller,
       token: payload.token,
-      typeObject: payload.typeDefinition
+      typeObject: payload.typeDefinition,
     });
     const typeFromDefaultValue = parseValueTypeDefault(payload.typeDefinition);
     const typeFromConstant = parseValueTypeConstant(payload.typeDefinition);
     const type = typeFromObject || typeFromDefaultValue || typeFromConstant;
-    if (type)
-      return type;
-    const propertyPath = payload.controller ? `${payload.controller}.${payload.typeDefinition}` : payload.token;
-    throw new Error(`Unknown value type "${propertyPath}" for "${payload.token}" value`);
+    if (type) return type;
+    const propertyPath = payload.controller
+      ? `${payload.controller}.${payload.typeDefinition}`
+      : payload.token;
+    throw new Error(
+      `Unknown value type "${propertyPath}" for "${payload.token}" value`,
+    );
   }
   function defaultValueForDefinition(typeDefinition) {
     const constant = parseValueTypeConstant(typeDefinition);
-    if (constant)
-      return defaultValuesByType[constant];
+    if (constant) return defaultValuesByType[constant];
     const defaultValue = typeDefinition.default;
-    if (defaultValue !== void 0)
-      return defaultValue;
+    if (defaultValue !== void 0) return defaultValue;
     return typeDefinition;
   }
   function valueDescriptorForTokenAndTypeDefinition(payload) {
@@ -2195,7 +2554,7 @@
         return parseValueTypeDefault(payload.typeDefinition) !== void 0;
       },
       reader: readers[type],
-      writer: writers[type] || writers.default
+      writer: writers[type] || writers.default,
     };
   }
   var defaultValuesByType = {
@@ -2207,37 +2566,49 @@
     get object() {
       return {};
     },
-    string: ""
+    string: '',
   };
   var readers = {
     array(value) {
       const array = JSON.parse(value);
       if (!Array.isArray(array)) {
-        throw new TypeError(`expected value of type "array" but instead got value "${value}" of type "${parseValueTypeDefault(array)}"`);
+        throw new TypeError(
+          `expected value of type "array" but instead got value "${value}" of type "${parseValueTypeDefault(
+            array,
+          )}"`,
+        );
       }
       return array;
     },
     boolean(value) {
-      return !(value == "0" || String(value).toLowerCase() == "false");
+      return !(value == '0' || String(value).toLowerCase() == 'false');
     },
     number(value) {
       return Number(value);
     },
     object(value) {
       const object = JSON.parse(value);
-      if (object === null || typeof object != "object" || Array.isArray(object)) {
-        throw new TypeError(`expected value of type "object" but instead got value "${value}" of type "${parseValueTypeDefault(object)}"`);
+      if (
+        object === null ||
+        typeof object != 'object' ||
+        Array.isArray(object)
+      ) {
+        throw new TypeError(
+          `expected value of type "object" but instead got value "${value}" of type "${parseValueTypeDefault(
+            object,
+          )}"`,
+        );
       }
       return object;
     },
     string(value) {
       return value;
-    }
+    },
   };
   var writers = {
     default: writeString,
     array: writeJSON,
-    object: writeJSON
+    object: writeJSON,
   };
   function writeJSON(value) {
     return JSON.stringify(value);
@@ -2279,13 +2650,19 @@
     get data() {
       return this.scope.data;
     }
-    initialize() {
-    }
-    connect() {
-    }
-    disconnect() {
-    }
-    dispatch(eventName, { target = this.element, detail = {}, prefix = this.identifier, bubbles = true, cancelable = true } = {}) {
+    initialize() {}
+    connect() {}
+    disconnect() {}
+    dispatch(
+      eventName,
+      {
+        target = this.element,
+        detail = {},
+        prefix = this.identifier,
+        bubbles = true,
+        cancelable = true,
+      } = {},
+    ) {
       const type = prefix ? `${prefix}:${eventName}` : eventName;
       const event = new CustomEvent(type, { detail, bubbles, cancelable });
       target.dispatchEvent(event);
@@ -2296,7 +2673,7 @@
     ClassPropertiesBlessing,
     TargetPropertiesBlessing,
     ValuePropertiesBlessing,
-    OutletPropertiesBlessing
+    OutletPropertiesBlessing,
   ];
   Controller.targets = [];
   Controller.outlets = [];
@@ -2315,7 +2692,7 @@
   // controllers/application_controller.js
   var application_controller_exports = {};
   __export(application_controller_exports, {
-    default: () => application_controller_default
+    default: () => application_controller_default,
   });
 
   // ../../node_modules/morphdom/dist/morphdom-esm.js
@@ -2327,7 +2704,10 @@
     var attrNamespaceURI;
     var attrValue;
     var fromValue;
-    if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE || fromNode.nodeType === DOCUMENT_FRAGMENT_NODE) {
+    if (
+      toNode.nodeType === DOCUMENT_FRAGMENT_NODE ||
+      fromNode.nodeType === DOCUMENT_FRAGMENT_NODE
+    ) {
       return;
     }
     for (var i3 = toNodeAttrs.length - 1; i3 >= 0; i3--) {
@@ -2339,7 +2719,7 @@
         attrName = attr.localName || attrName;
         fromValue = fromNode.getAttributeNS(attrNamespaceURI, attrName);
         if (fromValue !== attrValue) {
-          if (attr.prefix === "xmlns") {
+          if (attr.prefix === 'xmlns') {
             attrName = attr.name;
           }
           fromNode.setAttributeNS(attrNamespaceURI, attrName, attrValue);
@@ -2369,12 +2749,14 @@
     }
   }
   var range;
-  var NS_XHTML = "http://www.w3.org/1999/xhtml";
-  var doc = typeof document === "undefined" ? void 0 : document;
-  var HAS_TEMPLATE_SUPPORT = !!doc && "content" in doc.createElement("template");
-  var HAS_RANGE_SUPPORT = !!doc && doc.createRange && "createContextualFragment" in doc.createRange();
+  var NS_XHTML = 'http://www.w3.org/1999/xhtml';
+  var doc = typeof document === 'undefined' ? void 0 : document;
+  var HAS_TEMPLATE_SUPPORT =
+    !!doc && 'content' in doc.createElement('template');
+  var HAS_RANGE_SUPPORT =
+    !!doc && doc.createRange && 'createContextualFragment' in doc.createRange();
   function createFragmentFromTemplate(str) {
-    var template = doc.createElement("template");
+    var template = doc.createElement('template');
     template.innerHTML = str;
     return template.content.childNodes[0];
   }
@@ -2387,7 +2769,7 @@
     return fragment.childNodes[0];
   }
   function createFragmentFromWrap(str) {
-    var fragment = doc.createElement("body");
+    var fragment = doc.createElement('body');
     fragment.innerHTML = str;
     return fragment.childNodes[0];
   }
@@ -2418,7 +2800,9 @@
     }
   }
   function createElementNS(name, namespaceURI) {
-    return !namespaceURI || namespaceURI === NS_XHTML ? doc.createElement(name) : doc.createElementNS(namespaceURI, name);
+    return !namespaceURI || namespaceURI === NS_XHTML
+      ? doc.createElement(name)
+      : doc.createElementNS(namespaceURI, name);
   }
   function moveChildren(fromEl, toEl) {
     var curChild = fromEl.firstChild;
@@ -2433,30 +2817,30 @@
     if (fromEl[name] !== toEl[name]) {
       fromEl[name] = toEl[name];
       if (fromEl[name]) {
-        fromEl.setAttribute(name, "");
+        fromEl.setAttribute(name, '');
       } else {
         fromEl.removeAttribute(name);
       }
     }
   }
   var specialElHandlers = {
-    OPTION: function(fromEl, toEl) {
+    OPTION: function (fromEl, toEl) {
       var parentNode = fromEl.parentNode;
       if (parentNode) {
         var parentName = parentNode.nodeName.toUpperCase();
-        if (parentName === "OPTGROUP") {
+        if (parentName === 'OPTGROUP') {
           parentNode = parentNode.parentNode;
           parentName = parentNode && parentNode.nodeName.toUpperCase();
         }
-        if (parentName === "SELECT" && !parentNode.hasAttribute("multiple")) {
-          if (fromEl.hasAttribute("selected") && !toEl.selected) {
-            fromEl.setAttribute("selected", "selected");
-            fromEl.removeAttribute("selected");
+        if (parentName === 'SELECT' && !parentNode.hasAttribute('multiple')) {
+          if (fromEl.hasAttribute('selected') && !toEl.selected) {
+            fromEl.setAttribute('selected', 'selected');
+            fromEl.removeAttribute('selected');
           }
           parentNode.selectedIndex = -1;
         }
       }
-      syncBooleanAttrProp(fromEl, toEl, "selected");
+      syncBooleanAttrProp(fromEl, toEl, 'selected');
     },
     /**
      * The "value" attribute is special for the <input> element since it sets
@@ -2464,17 +2848,17 @@
      * "value" property will have no effect since it is only used to the set the
      * initial value.  Similar for the "checked" attribute, and "disabled".
      */
-    INPUT: function(fromEl, toEl) {
-      syncBooleanAttrProp(fromEl, toEl, "checked");
-      syncBooleanAttrProp(fromEl, toEl, "disabled");
+    INPUT: function (fromEl, toEl) {
+      syncBooleanAttrProp(fromEl, toEl, 'checked');
+      syncBooleanAttrProp(fromEl, toEl, 'disabled');
       if (fromEl.value !== toEl.value) {
         fromEl.value = toEl.value;
       }
-      if (!toEl.hasAttribute("value")) {
-        fromEl.removeAttribute("value");
+      if (!toEl.hasAttribute('value')) {
+        fromEl.removeAttribute('value');
       }
     },
-    TEXTAREA: function(fromEl, toEl) {
+    TEXTAREA: function (fromEl, toEl) {
       var newValue = toEl.value;
       if (fromEl.value !== newValue) {
         fromEl.value = newValue;
@@ -2482,14 +2866,17 @@
       var firstChild = fromEl.firstChild;
       if (firstChild) {
         var oldValue = firstChild.nodeValue;
-        if (oldValue == newValue || !newValue && oldValue == fromEl.placeholder) {
+        if (
+          oldValue == newValue ||
+          (!newValue && oldValue == fromEl.placeholder)
+        ) {
           return;
         }
         firstChild.nodeValue = newValue;
       }
     },
-    SELECT: function(fromEl, toEl) {
-      if (!toEl.hasAttribute("multiple")) {
+    SELECT: function (fromEl, toEl) {
+      if (!toEl.hasAttribute('multiple')) {
         var selectedIndex = -1;
         var i3 = 0;
         var curChild = fromEl.firstChild;
@@ -2497,12 +2884,12 @@
         var nodeName;
         while (curChild) {
           nodeName = curChild.nodeName && curChild.nodeName.toUpperCase();
-          if (nodeName === "OPTGROUP") {
+          if (nodeName === 'OPTGROUP') {
             optgroup = curChild;
             curChild = optgroup.firstChild;
           } else {
-            if (nodeName === "OPTION") {
-              if (curChild.hasAttribute("selected")) {
+            if (nodeName === 'OPTION') {
+              if (curChild.hasAttribute('selected')) {
                 selectedIndex = i3;
                 break;
               }
@@ -2517,17 +2904,16 @@
         }
         fromEl.selectedIndex = selectedIndex;
       }
-    }
+    },
   };
   var ELEMENT_NODE = 1;
   var DOCUMENT_FRAGMENT_NODE$1 = 11;
   var TEXT_NODE = 3;
   var COMMENT_NODE = 8;
-  function noop() {
-  }
+  function noop() {}
   function defaultGetNodeKey(node) {
     if (node) {
-      return node.getAttribute && node.getAttribute("id") || node.id;
+      return (node.getAttribute && node.getAttribute('id')) || node.id;
     }
   }
   function morphdomFactory(morphAttrs2) {
@@ -2535,10 +2921,14 @@
       if (!options) {
         options = {};
       }
-      if (typeof toNode === "string") {
-        if (fromNode.nodeName === "#document" || fromNode.nodeName === "HTML" || fromNode.nodeName === "BODY") {
+      if (typeof toNode === 'string') {
+        if (
+          fromNode.nodeName === '#document' ||
+          fromNode.nodeName === 'HTML' ||
+          fromNode.nodeName === 'BODY'
+        ) {
           var toNodeHtml = toNode;
-          toNode = doc.createElement("html");
+          toNode = doc.createElement('html');
           toNode.innerHTML = toNodeHtml;
         } else {
           toNode = toElement(toNode);
@@ -2586,7 +2976,10 @@
         walkDiscardedChildNodes(node, skipKeyedNodes);
       }
       function indexTree(node) {
-        if (node.nodeType === ELEMENT_NODE || node.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
+        if (
+          node.nodeType === ELEMENT_NODE ||
+          node.nodeType === DOCUMENT_FRAGMENT_NODE$1
+        ) {
           var curChild = node.firstChild;
           while (curChild) {
             var key = getNodeKey(curChild);
@@ -2607,7 +3000,10 @@
           var key = getNodeKey(curChild);
           if (key) {
             var unmatchedFromEl = fromNodesLookup[key];
-            if (unmatchedFromEl && compareNodeNames(curChild, unmatchedFromEl)) {
+            if (
+              unmatchedFromEl &&
+              compareNodeNames(curChild, unmatchedFromEl)
+            ) {
               curChild.parentNode.replaceChild(unmatchedFromEl, curChild);
               morphEl(unmatchedFromEl, curChild);
             } else {
@@ -2622,13 +3018,13 @@
       function cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey) {
         while (curFromNodeChild) {
           var fromNextSibling = curFromNodeChild.nextSibling;
-          if (curFromNodeKey = getNodeKey(curFromNodeChild)) {
+          if ((curFromNodeKey = getNodeKey(curFromNodeChild))) {
             addKeyedRemoval(curFromNodeKey);
           } else {
             removeNode(
               curFromNodeChild,
               fromEl,
-              true
+              true,
               /* skip keyed nodes */
             );
           }
@@ -2650,7 +3046,7 @@
             return;
           }
         }
-        if (fromEl.nodeName !== "TEXTAREA") {
+        if (fromEl.nodeName !== 'TEXTAREA') {
           morphChildren(fromEl, toEl);
         } else {
           specialElHandlers.TEXTAREA(fromEl, toEl);
@@ -2664,95 +3060,108 @@
         var fromNextSibling;
         var toNextSibling;
         var matchingFromEl;
-        outer:
-          while (curToNodeChild) {
-            toNextSibling = curToNodeChild.nextSibling;
-            curToNodeKey = getNodeKey(curToNodeChild);
-            while (curFromNodeChild) {
-              fromNextSibling = curFromNodeChild.nextSibling;
-              if (curToNodeChild.isSameNode && curToNodeChild.isSameNode(curFromNodeChild)) {
-                curToNodeChild = toNextSibling;
-                curFromNodeChild = fromNextSibling;
-                continue outer;
-              }
-              curFromNodeKey = getNodeKey(curFromNodeChild);
-              var curFromNodeType = curFromNodeChild.nodeType;
-              var isCompatible = void 0;
-              if (curFromNodeType === curToNodeChild.nodeType) {
-                if (curFromNodeType === ELEMENT_NODE) {
-                  if (curToNodeKey) {
-                    if (curToNodeKey !== curFromNodeKey) {
-                      if (matchingFromEl = fromNodesLookup[curToNodeKey]) {
-                        if (fromNextSibling === matchingFromEl) {
-                          isCompatible = false;
-                        } else {
-                          fromEl.insertBefore(matchingFromEl, curFromNodeChild);
-                          if (curFromNodeKey) {
-                            addKeyedRemoval(curFromNodeKey);
-                          } else {
-                            removeNode(
-                              curFromNodeChild,
-                              fromEl,
-                              true
-                              /* skip keyed nodes */
-                            );
-                          }
-                          curFromNodeChild = matchingFromEl;
-                        }
-                      } else {
-                        isCompatible = false;
-                      }
-                    }
-                  } else if (curFromNodeKey) {
-                    isCompatible = false;
-                  }
-                  isCompatible = isCompatible !== false && compareNodeNames(curFromNodeChild, curToNodeChild);
-                  if (isCompatible) {
-                    morphEl(curFromNodeChild, curToNodeChild);
-                  }
-                } else if (curFromNodeType === TEXT_NODE || curFromNodeType == COMMENT_NODE) {
-                  isCompatible = true;
-                  if (curFromNodeChild.nodeValue !== curToNodeChild.nodeValue) {
-                    curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
-                  }
-                }
-              }
-              if (isCompatible) {
-                curToNodeChild = toNextSibling;
-                curFromNodeChild = fromNextSibling;
-                continue outer;
-              }
-              if (curFromNodeKey) {
-                addKeyedRemoval(curFromNodeKey);
-              } else {
-                removeNode(
-                  curFromNodeChild,
-                  fromEl,
-                  true
-                  /* skip keyed nodes */
-                );
-              }
+        outer: while (curToNodeChild) {
+          toNextSibling = curToNodeChild.nextSibling;
+          curToNodeKey = getNodeKey(curToNodeChild);
+          while (curFromNodeChild) {
+            fromNextSibling = curFromNodeChild.nextSibling;
+            if (
+              curToNodeChild.isSameNode &&
+              curToNodeChild.isSameNode(curFromNodeChild)
+            ) {
+              curToNodeChild = toNextSibling;
               curFromNodeChild = fromNextSibling;
+              continue outer;
             }
-            if (curToNodeKey && (matchingFromEl = fromNodesLookup[curToNodeKey]) && compareNodeNames(matchingFromEl, curToNodeChild)) {
-              fromEl.appendChild(matchingFromEl);
-              morphEl(matchingFromEl, curToNodeChild);
-            } else {
-              var onBeforeNodeAddedResult = onBeforeNodeAdded(curToNodeChild);
-              if (onBeforeNodeAddedResult !== false) {
-                if (onBeforeNodeAddedResult) {
-                  curToNodeChild = onBeforeNodeAddedResult;
+            curFromNodeKey = getNodeKey(curFromNodeChild);
+            var curFromNodeType = curFromNodeChild.nodeType;
+            var isCompatible = void 0;
+            if (curFromNodeType === curToNodeChild.nodeType) {
+              if (curFromNodeType === ELEMENT_NODE) {
+                if (curToNodeKey) {
+                  if (curToNodeKey !== curFromNodeKey) {
+                    if ((matchingFromEl = fromNodesLookup[curToNodeKey])) {
+                      if (fromNextSibling === matchingFromEl) {
+                        isCompatible = false;
+                      } else {
+                        fromEl.insertBefore(matchingFromEl, curFromNodeChild);
+                        if (curFromNodeKey) {
+                          addKeyedRemoval(curFromNodeKey);
+                        } else {
+                          removeNode(
+                            curFromNodeChild,
+                            fromEl,
+                            true,
+                            /* skip keyed nodes */
+                          );
+                        }
+                        curFromNodeChild = matchingFromEl;
+                      }
+                    } else {
+                      isCompatible = false;
+                    }
+                  }
+                } else if (curFromNodeKey) {
+                  isCompatible = false;
                 }
-                if (curToNodeChild.actualize) {
-                  curToNodeChild = curToNodeChild.actualize(fromEl.ownerDocument || doc);
+                isCompatible =
+                  isCompatible !== false &&
+                  compareNodeNames(curFromNodeChild, curToNodeChild);
+                if (isCompatible) {
+                  morphEl(curFromNodeChild, curToNodeChild);
                 }
-                fromEl.appendChild(curToNodeChild);
-                handleNodeAdded(curToNodeChild);
+              } else if (
+                curFromNodeType === TEXT_NODE ||
+                curFromNodeType == COMMENT_NODE
+              ) {
+                isCompatible = true;
+                if (curFromNodeChild.nodeValue !== curToNodeChild.nodeValue) {
+                  curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
+                }
               }
             }
-            curToNodeChild = toNextSibling;
+            if (isCompatible) {
+              curToNodeChild = toNextSibling;
+              curFromNodeChild = fromNextSibling;
+              continue outer;
+            }
+            if (curFromNodeKey) {
+              addKeyedRemoval(curFromNodeKey);
+            } else {
+              removeNode(
+                curFromNodeChild,
+                fromEl,
+                true,
+                /* skip keyed nodes */
+              );
+            }
             curFromNodeChild = fromNextSibling;
           }
+          if (
+            curToNodeKey &&
+            (matchingFromEl = fromNodesLookup[curToNodeKey]) &&
+            compareNodeNames(matchingFromEl, curToNodeChild)
+          ) {
+            fromEl.appendChild(matchingFromEl);
+            morphEl(matchingFromEl, curToNodeChild);
+          } else {
+            var onBeforeNodeAddedResult = onBeforeNodeAdded(curToNodeChild);
+            if (onBeforeNodeAddedResult !== false) {
+              if (onBeforeNodeAddedResult) {
+                curToNodeChild = onBeforeNodeAddedResult;
+              }
+              if (curToNodeChild.actualize) {
+                curToNodeChild = curToNodeChild.actualize(
+                  fromEl.ownerDocument || doc,
+                );
+              }
+              fromEl.appendChild(curToNodeChild);
+              handleNodeAdded(curToNodeChild);
+            }
+          }
+          curToNodeChild = toNextSibling;
+          curFromNodeChild = fromNextSibling;
+        }
         cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey);
         var specialElHandler = specialElHandlers[fromEl.nodeName];
         if (specialElHandler) {
@@ -2767,12 +3176,18 @@
           if (toNodeType === ELEMENT_NODE) {
             if (!compareNodeNames(fromNode, toNode)) {
               onNodeDiscarded(fromNode);
-              morphedNode = moveChildren(fromNode, createElementNS(toNode.nodeName, toNode.namespaceURI));
+              morphedNode = moveChildren(
+                fromNode,
+                createElementNS(toNode.nodeName, toNode.namespaceURI),
+              );
             }
           } else {
             morphedNode = toNode;
           }
-        } else if (morphedNodeType === TEXT_NODE || morphedNodeType === COMMENT_NODE) {
+        } else if (
+          morphedNodeType === TEXT_NODE ||
+          morphedNodeType === COMMENT_NODE
+        ) {
           if (toNodeType === morphedNodeType) {
             if (morphedNode.nodeValue !== toNode.nodeValue) {
               morphedNode.nodeValue = toNode.nodeValue;
@@ -2812,370 +3227,625 @@
   var morphdom_esm_default = morphdom;
 
   // ../../node_modules/cable_ready/dist/cable_ready.min.js
-  var t = "5.0.0-pre9";
+  var t = '5.0.0-pre9';
   var n = { INPUT: true, TEXTAREA: true, SELECT: true };
   var o = { INPUT: true, TEXTAREA: true, OPTION: true };
-  var r = { "datetime-local": true, "select-multiple": true, "select-one": true, color: true, date: true, datetime: true, email: true, month: true, number: true, password: true, range: true, search: true, tel: true, text: true, textarea: true, time: true, url: true, week: true };
+  var r = {
+    'datetime-local': true,
+    'select-multiple': true,
+    'select-one': true,
+    color: true,
+    date: true,
+    datetime: true,
+    email: true,
+    month: true,
+    number: true,
+    password: true,
+    range: true,
+    search: true,
+    tel: true,
+    text: true,
+    textarea: true,
+    time: true,
+    url: true,
+    week: true,
+  };
   var s;
-  var a = { get element() {
-    return s;
-  }, set(e) {
-    s = e;
-  } };
+  var a = {
+    get element() {
+      return s;
+    },
+    set(e) {
+      s = e;
+    },
+  };
   var i = (e) => n[e.tagName] && r[e.type];
   var l = (e) => {
-    const t2 = (e && e.nodeType === Node.ELEMENT_NODE ? e : document.querySelector(e)) || a.element;
+    const t2 =
+      (e && e.nodeType === Node.ELEMENT_NODE ? e : document.querySelector(e)) ||
+      a.element;
     t2 && t2.focus && t2.focus();
   };
   var c = (e, t2, n3 = {}) => {
-    const o3 = new CustomEvent(t2, { bubbles: true, cancelable: true, detail: n3 });
+    const o3 = new CustomEvent(t2, {
+      bubbles: true,
+      cancelable: true,
+      detail: n3,
+    });
     e.dispatchEvent(o3), window.jQuery && window.jQuery(e).trigger(t2, n3);
   };
-  var u = (e) => document.evaluate(e, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  var u = (e) =>
+    document.evaluate(
+      e,
+      document,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null,
+    ).singleNodeValue;
   var d = (e) => Array(e).flat();
   var m = (e, t2) => {
     Array.from(e.selectAll ? e.element : [e.element]).forEach(t2);
   };
-  var h = (e) => e.split("").map((e2, t2) => e2.toUpperCase() === e2 ? `${0 !== t2 ? "-" : ""}${e2.toLowerCase()}` : e2).join("");
-  var p = (e, t2) => !e.cancel && (e.delay ? setTimeout(t2, e.delay) : t2(), true);
+  var h = (e) =>
+    e
+      .split('')
+      .map((e2, t2) =>
+        e2.toUpperCase() === e2
+          ? `${0 !== t2 ? '-' : ''}${e2.toLowerCase()}`
+          : e2,
+      )
+      .join('');
+  var p = (e, t2) =>
+    !e.cancel && (e.delay ? setTimeout(t2, e.delay) : t2(), true);
   var f = (e, t2) => c(e, `cable-ready:before-${h(t2.operation)}`, t2);
   var b = (e, t2) => c(e, `cable-ready:after-${h(t2.operation)}`, t2);
   function y(e, t2) {
     let n3;
     return (...o3) => {
-      clearTimeout(n3), n3 = setTimeout(() => e.apply(this, o3), t2);
+      clearTimeout(n3), (n3 = setTimeout(() => e.apply(this, o3), t2));
     };
   }
   function g(e) {
-    if (!e.ok)
-      throw Error(e.statusText);
+    if (!e.ok) throw Error(e.statusText);
     return e;
   }
   async function w(e, t2) {
     try {
-      const n3 = await fetch(e, { headers: { "X-REQUESTED-WITH": "XmlHttpRequest", ...t2 } });
-      if (null == n3)
-        return;
+      const n3 = await fetch(e, {
+        headers: { 'X-REQUESTED-WITH': 'XmlHttpRequest', ...t2 },
+      });
+      if (null == n3) return;
       return g(n3), n3;
     } catch (t3) {
       console.error(`Could not fetch ${e}`);
     }
   }
-  var E = Object.freeze({ __proto__: null, isTextInput: i, assignFocus: l, dispatch: c, xpathToElement: u, getClassNames: d, processElements: m, operate: p, before: f, after: b, debounce: y, handleErrors: g, graciouslyFetch: w, kebabize: h });
-  var v = (e) => (t2, n3) => !x.map((o3) => "function" != typeof o3 || o3(e, t2, n3)).includes(false);
+  var E = Object.freeze({
+    __proto__: null,
+    isTextInput: i,
+    assignFocus: l,
+    dispatch: c,
+    xpathToElement: u,
+    getClassNames: d,
+    processElements: m,
+    operate: p,
+    before: f,
+    after: b,
+    debounce: y,
+    handleErrors: g,
+    graciouslyFetch: w,
+    kebabize: h,
+  });
+  var v = (e) => (t2, n3) =>
+    !x.map((o3) => 'function' != typeof o3 || o3(e, t2, n3)).includes(false);
   var T = (e) => (t2) => {
     M.forEach((n3) => {
-      "function" == typeof n3 && n3(e, t2);
+      'function' == typeof n3 && n3(e, t2);
     });
   };
   var A = (e, t2, n3) => !(!o[t2.tagName] && t2.isEqualNode(n3));
   var S = (e, t2, n3) => t2 !== a.element || !t2.isContentEditable;
   var C = (e, t2, n3) => {
     const { permanentAttributeName: o3 } = e;
-    if (!o3)
-      return true;
+    if (!o3) return true;
     const r2 = t2.closest(`[${o3}]`);
     if (!r2 && t2 === a.element && i(t2)) {
       const e2 = { value: true };
-      return Array.from(n3.attributes).forEach((n4) => {
-        e2[n4.name] || t2.setAttribute(n4.name, n4.value);
-      }), false;
+      return (
+        Array.from(n3.attributes).forEach((n4) => {
+          e2[n4.name] || t2.setAttribute(n4.name, n4.value);
+        }),
+        false
+      );
     }
     return !r2;
   };
   var x = [A, C, S];
   var M = [];
-  var O = Object.freeze({ __proto__: null, shouldMorphCallbacks: x, didMorphCallbacks: M, shouldMorph: v, didMorph: T, verifyNotMutable: A, verifyNotContentEditable: S, verifyNotPermanent: C });
-  var k = { append: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { html: n3, focusSelector: o3 } = e;
-        t2.insertAdjacentHTML("beforeend", n3 || ""), l(o3);
-      }), b(t2, e);
-    });
-  }, graft: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { parent: n3, focusSelector: o3 } = e, r2 = document.querySelector(n3);
-        r2 && (r2.appendChild(t2), l(o3));
-      }), b(t2, e);
-    });
-  }, innerHtml: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { html: n3, focusSelector: o3 } = e;
-        t2.innerHTML = n3 || "", l(o3);
-      }), b(t2, e);
-    });
-  }, insertAdjacentHtml: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { html: n3, position: o3, focusSelector: r2 } = e;
-        t2.insertAdjacentHTML(o3 || "beforeend", n3 || ""), l(r2);
-      }), b(t2, e);
-    });
-  }, insertAdjacentText: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { text: n3, position: o3, focusSelector: r2 } = e;
-        t2.insertAdjacentText(o3 || "beforeend", n3 || ""), l(r2);
-      }), b(t2, e);
-    });
-  }, morph: (t2) => {
-    m(t2, (n3) => {
-      const { html: o3 } = t2, r2 = document.createElement("template");
-      r2.innerHTML = String(o3).trim(), t2.content = r2.content;
-      const s3 = n3.parentElement, a3 = Array.from(s3.children).indexOf(n3);
-      f(n3, t2), p(t2, () => {
-        const { childrenOnly: o4, focusSelector: s4 } = t2;
-        morphdom_esm_default(n3, o4 ? r2.content : r2.innerHTML, { childrenOnly: !!o4, onBeforeElUpdated: v(t2), onElUpdated: T(t2) }), l(s4);
-      }), b(s3.children[a3], t2);
-    });
-  }, outerHtml: (e) => {
-    m(e, (t2) => {
-      const n3 = t2.parentElement, o3 = Array.from(n3.children).indexOf(t2);
-      f(t2, e), p(e, () => {
-        const { html: n4, focusSelector: o4 } = e;
-        t2.outerHTML = n4 || "", l(o4);
-      }), b(n3.children[o3], e);
-    });
-  }, prepend: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { html: n3, focusSelector: o3 } = e;
-        t2.insertAdjacentHTML("afterbegin", n3 || ""), l(o3);
-      }), b(t2, e);
-    });
-  }, remove: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { focusSelector: n3 } = e;
-        t2.remove(), l(n3);
-      }), b(document, e);
-    });
-  }, replace: (e) => {
-    m(e, (t2) => {
-      const n3 = t2.parentElement, o3 = Array.from(n3.children).indexOf(t2);
-      f(t2, e), p(e, () => {
-        const { html: n4, focusSelector: o4 } = e;
-        t2.outerHTML = n4 || "", l(o4);
-      }), b(n3.children[o3], e);
-    });
-  }, textContent: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { text: n3, focusSelector: o3 } = e;
-        t2.textContent = null != n3 ? n3 : "", l(o3);
-      }), b(t2, e);
-    });
-  }, addCssClass: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3 } = e;
-        t2.classList.add(...d(n3 || ""));
-      }), b(t2, e);
-    });
-  }, removeAttribute: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3 } = e;
-        t2.removeAttribute(n3);
-      }), b(t2, e);
-    });
-  }, removeCssClass: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3 } = e;
-        t2.classList.remove(...d(n3));
-      }), b(t2, e);
-    });
-  }, setAttribute: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3, value: o3 } = e;
-        t2.setAttribute(n3, o3 || "");
-      }), b(t2, e);
-    });
-  }, setDatasetProperty: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3, value: o3 } = e;
-        t2.dataset[n3] = o3 || "";
-      }), b(t2, e);
-    });
-  }, setProperty: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3, value: o3 } = e;
-        n3 in t2 && (t2[n3] = o3 || "");
-      }), b(t2, e);
-    });
-  }, setStyle: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3, value: o3 } = e;
-        t2.style[n3] = o3 || "";
-      }), b(t2, e);
-    });
-  }, setStyles: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { styles: n3 } = e;
-        for (let [e2, o3] of Object.entries(n3))
-          t2.style[e2] = o3 || "";
-      }), b(t2, e);
-    });
-  }, setValue: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { value: n3 } = e;
-        t2.value = n3 || "";
-      }), b(t2, e);
-    });
-  }, dispatchEvent: (e) => {
-    m(e, (t2) => {
-      f(t2, e), p(e, () => {
-        const { name: n3, detail: o3 } = e;
-        c(t2, n3, o3);
-      }), b(t2, e);
-    });
-  }, setMeta: (e) => {
-    f(document, e), p(e, () => {
-      const { name: t2, content: n3 } = e;
-      let o3 = document.head.querySelector(`meta[name='${t2}']`);
-      o3 || (o3 = document.createElement("meta"), o3.name = t2, document.head.appendChild(o3)), o3.content = n3;
-    }), b(document, e);
-  }, clearStorage: (e) => {
-    f(document, e), p(e, () => {
-      const { type: t2 } = e;
-      ("session" === t2 ? sessionStorage : localStorage).clear();
-    }), b(document, e);
-  }, go: (e) => {
-    f(window, e), p(e, () => {
-      const { delta: t2 } = e;
-      history.go(t2);
-    }), b(window, e);
-  }, pushState: (e) => {
-    f(window, e), p(e, () => {
-      const { state: t2, title: n3, url: o3 } = e;
-      history.pushState(t2 || {}, n3 || "", o3);
-    }), b(window, e);
-  }, redirectTo: (e) => {
-    f(window, e), p(e, () => {
-      let { url: t2, action: n3 } = e;
-      n3 = n3 || "advance", window.Turbo && window.Turbo.visit(t2, { action: n3 }), window.Turbolinks && window.Turbolinks.visit(t2, { action: n3 }), window.Turbo || window.Turbolinks || (window.location.href = t2);
-    }), b(window, e);
-  }, reload: (e) => {
-    f(window, e), p(e, () => {
-      window.location.reload();
-    }), b(window, e);
-  }, removeStorageItem: (e) => {
-    f(document, e), p(e, () => {
-      const { key: t2, type: n3 } = e;
-      ("session" === n3 ? sessionStorage : localStorage).removeItem(t2);
-    }), b(document, e);
-  }, replaceState: (e) => {
-    f(window, e), p(e, () => {
-      const { state: t2, title: n3, url: o3 } = e;
-      history.replaceState(t2 || {}, n3 || "", o3);
-    }), b(window, e);
-  }, scrollIntoView: (e) => {
-    const { element: t2 } = e;
-    f(t2, e), p(e, () => {
-      t2.scrollIntoView(e);
-    }), b(t2, e);
-  }, setCookie: (e) => {
-    f(document, e), p(e, () => {
-      const { cookie: t2 } = e;
-      document.cookie = t2 || "";
-    }), b(document, e);
-  }, setFocus: (e) => {
-    const { element: t2 } = e;
-    f(t2, e), p(e, () => {
-      l(t2);
-    }), b(t2, e);
-  }, setStorageItem: (e) => {
-    f(document, e), p(e, () => {
-      const { key: t2, value: n3, type: o3 } = e;
-      ("session" === o3 ? sessionStorage : localStorage).setItem(t2, n3 || "");
-    }), b(document, e);
-  }, consoleLog: (e) => {
-    f(document, e), p(e, () => {
-      const { message: t2, level: n3 } = e;
-      n3 && ["warn", "info", "error"].includes(n3) ? console[n3](t2 || "") : console.log(t2 || "");
-    }), b(document, e);
-  }, consoleTable: (e) => {
-    f(document, e), p(e, () => {
-      const { data: t2, columns: n3 } = e;
-      console.table(t2, n3 || []);
-    }), b(document, e);
-  }, notification: (e) => {
-    f(document, e), p(e, () => {
-      const { title: t2, options: n3 } = e;
-      Notification.requestPermission().then((o3) => {
-        e.permission = o3, "granted" === o3 && new Notification(t2 || "", n3);
+  var O = Object.freeze({
+    __proto__: null,
+    shouldMorphCallbacks: x,
+    didMorphCallbacks: M,
+    shouldMorph: v,
+    didMorph: T,
+    verifyNotMutable: A,
+    verifyNotContentEditable: S,
+    verifyNotPermanent: C,
+  });
+  var k = {
+    append: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { html: n3, focusSelector: o3 } = e;
+            t2.insertAdjacentHTML('beforeend', n3 || ''), l(o3);
+          }),
+          b(t2, e);
       });
-    }), b(document, e);
-  } };
+    },
+    graft: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { parent: n3, focusSelector: o3 } = e,
+              r2 = document.querySelector(n3);
+            r2 && (r2.appendChild(t2), l(o3));
+          }),
+          b(t2, e);
+      });
+    },
+    innerHtml: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { html: n3, focusSelector: o3 } = e;
+            (t2.innerHTML = n3 || ''), l(o3);
+          }),
+          b(t2, e);
+      });
+    },
+    insertAdjacentHtml: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { html: n3, position: o3, focusSelector: r2 } = e;
+            t2.insertAdjacentHTML(o3 || 'beforeend', n3 || ''), l(r2);
+          }),
+          b(t2, e);
+      });
+    },
+    insertAdjacentText: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { text: n3, position: o3, focusSelector: r2 } = e;
+            t2.insertAdjacentText(o3 || 'beforeend', n3 || ''), l(r2);
+          }),
+          b(t2, e);
+      });
+    },
+    morph: (t2) => {
+      m(t2, (n3) => {
+        const { html: o3 } = t2,
+          r2 = document.createElement('template');
+        (r2.innerHTML = String(o3).trim()), (t2.content = r2.content);
+        const s3 = n3.parentElement,
+          a3 = Array.from(s3.children).indexOf(n3);
+        f(n3, t2),
+          p(t2, () => {
+            const { childrenOnly: o4, focusSelector: s4 } = t2;
+            morphdom_esm_default(n3, o4 ? r2.content : r2.innerHTML, {
+              childrenOnly: !!o4,
+              onBeforeElUpdated: v(t2),
+              onElUpdated: T(t2),
+            }),
+              l(s4);
+          }),
+          b(s3.children[a3], t2);
+      });
+    },
+    outerHtml: (e) => {
+      m(e, (t2) => {
+        const n3 = t2.parentElement,
+          o3 = Array.from(n3.children).indexOf(t2);
+        f(t2, e),
+          p(e, () => {
+            const { html: n4, focusSelector: o4 } = e;
+            (t2.outerHTML = n4 || ''), l(o4);
+          }),
+          b(n3.children[o3], e);
+      });
+    },
+    prepend: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { html: n3, focusSelector: o3 } = e;
+            t2.insertAdjacentHTML('afterbegin', n3 || ''), l(o3);
+          }),
+          b(t2, e);
+      });
+    },
+    remove: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { focusSelector: n3 } = e;
+            t2.remove(), l(n3);
+          }),
+          b(document, e);
+      });
+    },
+    replace: (e) => {
+      m(e, (t2) => {
+        const n3 = t2.parentElement,
+          o3 = Array.from(n3.children).indexOf(t2);
+        f(t2, e),
+          p(e, () => {
+            const { html: n4, focusSelector: o4 } = e;
+            (t2.outerHTML = n4 || ''), l(o4);
+          }),
+          b(n3.children[o3], e);
+      });
+    },
+    textContent: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { text: n3, focusSelector: o3 } = e;
+            (t2.textContent = null != n3 ? n3 : ''), l(o3);
+          }),
+          b(t2, e);
+      });
+    },
+    addCssClass: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3 } = e;
+            t2.classList.add(...d(n3 || ''));
+          }),
+          b(t2, e);
+      });
+    },
+    removeAttribute: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3 } = e;
+            t2.removeAttribute(n3);
+          }),
+          b(t2, e);
+      });
+    },
+    removeCssClass: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3 } = e;
+            t2.classList.remove(...d(n3));
+          }),
+          b(t2, e);
+      });
+    },
+    setAttribute: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3, value: o3 } = e;
+            t2.setAttribute(n3, o3 || '');
+          }),
+          b(t2, e);
+      });
+    },
+    setDatasetProperty: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3, value: o3 } = e;
+            t2.dataset[n3] = o3 || '';
+          }),
+          b(t2, e);
+      });
+    },
+    setProperty: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3, value: o3 } = e;
+            n3 in t2 && (t2[n3] = o3 || '');
+          }),
+          b(t2, e);
+      });
+    },
+    setStyle: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3, value: o3 } = e;
+            t2.style[n3] = o3 || '';
+          }),
+          b(t2, e);
+      });
+    },
+    setStyles: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { styles: n3 } = e;
+            for (let [e2, o3] of Object.entries(n3)) t2.style[e2] = o3 || '';
+          }),
+          b(t2, e);
+      });
+    },
+    setValue: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { value: n3 } = e;
+            t2.value = n3 || '';
+          }),
+          b(t2, e);
+      });
+    },
+    dispatchEvent: (e) => {
+      m(e, (t2) => {
+        f(t2, e),
+          p(e, () => {
+            const { name: n3, detail: o3 } = e;
+            c(t2, n3, o3);
+          }),
+          b(t2, e);
+      });
+    },
+    setMeta: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { name: t2, content: n3 } = e;
+          let o3 = document.head.querySelector(`meta[name='${t2}']`);
+          o3 ||
+            ((o3 = document.createElement('meta')),
+            (o3.name = t2),
+            document.head.appendChild(o3)),
+            (o3.content = n3);
+        }),
+        b(document, e);
+    },
+    clearStorage: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { type: t2 } = e;
+          ('session' === t2 ? sessionStorage : localStorage).clear();
+        }),
+        b(document, e);
+    },
+    go: (e) => {
+      f(window, e),
+        p(e, () => {
+          const { delta: t2 } = e;
+          history.go(t2);
+        }),
+        b(window, e);
+    },
+    pushState: (e) => {
+      f(window, e),
+        p(e, () => {
+          const { state: t2, title: n3, url: o3 } = e;
+          history.pushState(t2 || {}, n3 || '', o3);
+        }),
+        b(window, e);
+    },
+    redirectTo: (e) => {
+      f(window, e),
+        p(e, () => {
+          let { url: t2, action: n3 } = e;
+          (n3 = n3 || 'advance'),
+            window.Turbo && window.Turbo.visit(t2, { action: n3 }),
+            window.Turbolinks && window.Turbolinks.visit(t2, { action: n3 }),
+            window.Turbo || window.Turbolinks || (window.location.href = t2);
+        }),
+        b(window, e);
+    },
+    reload: (e) => {
+      f(window, e),
+        p(e, () => {
+          window.location.reload();
+        }),
+        b(window, e);
+    },
+    removeStorageItem: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { key: t2, type: n3 } = e;
+          ('session' === n3 ? sessionStorage : localStorage).removeItem(t2);
+        }),
+        b(document, e);
+    },
+    replaceState: (e) => {
+      f(window, e),
+        p(e, () => {
+          const { state: t2, title: n3, url: o3 } = e;
+          history.replaceState(t2 || {}, n3 || '', o3);
+        }),
+        b(window, e);
+    },
+    scrollIntoView: (e) => {
+      const { element: t2 } = e;
+      f(t2, e),
+        p(e, () => {
+          t2.scrollIntoView(e);
+        }),
+        b(t2, e);
+    },
+    setCookie: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { cookie: t2 } = e;
+          document.cookie = t2 || '';
+        }),
+        b(document, e);
+    },
+    setFocus: (e) => {
+      const { element: t2 } = e;
+      f(t2, e),
+        p(e, () => {
+          l(t2);
+        }),
+        b(t2, e);
+    },
+    setStorageItem: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { key: t2, value: n3, type: o3 } = e;
+          ('session' === o3 ? sessionStorage : localStorage).setItem(
+            t2,
+            n3 || '',
+          );
+        }),
+        b(document, e);
+    },
+    consoleLog: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { message: t2, level: n3 } = e;
+          n3 && ['warn', 'info', 'error'].includes(n3)
+            ? console[n3](t2 || '')
+            : console.log(t2 || '');
+        }),
+        b(document, e);
+    },
+    consoleTable: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { data: t2, columns: n3 } = e;
+          console.table(t2, n3 || []);
+        }),
+        b(document, e);
+    },
+    notification: (e) => {
+      f(document, e),
+        p(e, () => {
+          const { title: t2, options: n3 } = e;
+          Notification.requestPermission().then((o3) => {
+            (e.permission = o3),
+              'granted' === o3 && new Notification(t2 || '', n3);
+          });
+        }),
+        b(document, e);
+    },
+  };
   var L = k;
   var R = (e) => {
     L = { ...L, ...e };
   };
-  var P = { get all() {
-    return L;
-  } };
+  var P = {
+    get all() {
+      return L;
+    },
+  };
   var q = (e, t2 = { emitMissingElementWarnings: true }) => {
     const n3 = {};
     e.forEach((e2) => {
       e2.batch && (n3[e2.batch] = n3[e2.batch] ? ++n3[e2.batch] : 1);
-    }), e.forEach((e2) => {
-      const o3 = e2.operation;
-      try {
-        if (e2.selector ? e2.element = e2.xpath ? u(e2.selector) : document[e2.selectAll ? "querySelectorAll" : "querySelector"](e2.selector) : e2.element = document, e2.element || t2.emitMissingElementWarnings) {
-          a.set(document.activeElement);
-          const t3 = P.all[o3];
-          t3 ? (t3(e2), e2.batch && 0 == --n3[e2.batch] && c(document, "cable-ready:batch-complete", { batch: e2.batch })) : console.error(`CableReady couldn't find the "${o3}" operation. Make sure you use the camelized form when calling an operation method.`);
+    }),
+      e.forEach((e2) => {
+        const o3 = e2.operation;
+        try {
+          if (
+            (e2.selector
+              ? (e2.element = e2.xpath
+                  ? u(e2.selector)
+                  : document[
+                      e2.selectAll ? 'querySelectorAll' : 'querySelector'
+                    ](e2.selector))
+              : (e2.element = document),
+            e2.element || t2.emitMissingElementWarnings)
+          ) {
+            a.set(document.activeElement);
+            const t3 = P.all[o3];
+            t3
+              ? (t3(e2),
+                e2.batch &&
+                  0 == --n3[e2.batch] &&
+                  c(document, 'cable-ready:batch-complete', {
+                    batch: e2.batch,
+                  }))
+              : console.error(
+                  `CableReady couldn't find the "${o3}" operation. Make sure you use the camelized form when calling an operation method.`,
+                );
+          }
+        } catch (t3) {
+          e2.element
+            ? (console.error(
+                `CableReady detected an error in ${o3 || 'operation'}: ${
+                  t3.message
+                }. If you need to support older browsers make sure you've included the corresponding polyfills. https://docs.stimulusreflex.com/setup#polyfills-for-ie11.`,
+              ),
+              console.error(t3))
+            : console.warn(
+                `CableReady ${
+                  o3 || 'operation'
+                } failed due to missing DOM element for selector: '${
+                  e2.selector
+                }'`,
+              );
         }
-      } catch (t3) {
-        e2.element ? (console.error(`CableReady detected an error in ${o3 || "operation"}: ${t3.message}. If you need to support older browsers make sure you've included the corresponding polyfills. https://docs.stimulusreflex.com/setup#polyfills-for-ie11.`), console.error(t3)) : console.warn(`CableReady ${o3 || "operation"} failed due to missing DOM element for selector: '${e2.selector}'`);
-      }
-    });
+      });
   };
   var H;
   var N = [25, 50, 75, 100, 200, 250, 500, 800, 1e3, 2e3];
   var I = async (e = 0) => {
-    if (H)
-      return H;
+    if (H) return H;
     if (e >= N.length)
       throw new Error("Couldn't obtain a Action Cable consumer within 5s");
     var t2;
-    return await (t2 = N[e], new Promise((e2) => setTimeout(e2, t2))), await I(e + 1);
+    return (
+      await ((t2 = N[e]), new Promise((e2) => setTimeout(e2, t2))),
+      await I(e + 1)
+    );
   };
-  var U = { setConsumer(e) {
-    H = e;
-  }, get consumer() {
-    return H;
-  }, getConsumer: async () => await I() };
+  var U = {
+    setConsumer(e) {
+      H = e;
+    },
+    get consumer() {
+      return H;
+    },
+    getConsumer: async () => await I(),
+  };
   var $ = class extends HTMLElement {
     disconnectedCallback() {
       this.channel && this.channel.unsubscribe();
     }
     createSubscription(e, t2, n3) {
-      this.channel = e.subscriptions.create({ channel: t2, identifier: this.identifier }, { received: n3 });
+      this.channel = e.subscriptions.create(
+        { channel: t2, identifier: this.identifier },
+        { received: n3 },
+      );
     }
     get preview() {
-      return document.documentElement.hasAttribute("data-turbolinks-preview") || document.documentElement.hasAttribute("data-turbo-preview");
+      return (
+        document.documentElement.hasAttribute('data-turbolinks-preview') ||
+        document.documentElement.hasAttribute('data-turbo-preview')
+      );
     }
     get identifier() {
-      return this.getAttribute("identifier");
+      return this.getAttribute('identifier');
     }
   };
   var _ = class extends $ {
     async connectedCallback() {
-      if (this.preview)
-        return;
+      if (this.preview) return;
       const e = await U.getConsumer();
-      e ? this.createSubscription(e, "CableReady::Stream", this.performOperations) : console.error("The `stream_from` helper cannot connect without an ActionCable consumer.\nPlease run `rails generate cable_ready:helpers` to fix this.");
+      e
+        ? this.createSubscription(
+            e,
+            'CableReady::Stream',
+            this.performOperations,
+          )
+        : console.error(
+            'The `stream_from` helper cannot connect without an ActionCable consumer.\nPlease run `rails generate cable_ready:helpers` to fix this.',
+          );
     }
     performOperations(e) {
       e.cableReady && q(e.operations);
@@ -3184,38 +3854,53 @@
   var j = class extends $ {
     constructor() {
       super();
-      this.attachShadow({ mode: "open" }).innerHTML = "\n<style>\n  :host {\n    display: block;\n  }\n</style>\n<slot></slot>\n";
+      this.attachShadow({ mode: 'open' }).innerHTML =
+        '\n<style>\n  :host {\n    display: block;\n  }\n</style>\n<slot></slot>\n';
     }
     async connectedCallback() {
-      if (this.preview)
-        return;
+      if (this.preview) return;
       this.update = y(this.update.bind(this), this.debounce);
       const e = await U.getConsumer();
-      e ? this.createSubscription(e, "CableReady::Stream", this.update) : console.error("The `updates-for` helper cannot connect without an ActionCable consumer.\nPlease run `rails generate cable_ready:helpers` to fix this.");
+      e
+        ? this.createSubscription(e, 'CableReady::Stream', this.update)
+        : console.error(
+            'The `updates-for` helper cannot connect without an ActionCable consumer.\nPlease run `rails generate cable_ready:helpers` to fix this.',
+          );
     }
     async update(e) {
-      const t2 = Array.from(document.querySelectorAll(this.query), (e2) => new D(e2));
-      if (t2[0].element !== this)
-        return;
-      a.set(document.activeElement), this.html = {};
+      const t2 = Array.from(
+        document.querySelectorAll(this.query),
+        (e2) => new D(e2),
+      );
+      if (t2[0].element !== this) return;
+      a.set(document.activeElement), (this.html = {});
       const n3 = [...new Set(t2.map((e2) => e2.url))];
-      await Promise.all(n3.map(async (e2) => {
-        if (!this.html.hasOwnProperty(e2)) {
-          const t3 = await w(e2, { "X-Cable-Ready": "update" });
-          this.html[e2] = await t3.text();
-        }
-      })), this.index = {}, t2.forEach((t3) => {
-        this.index.hasOwnProperty(t3.url) ? this.index[t3.url]++ : this.index[t3.url] = 0, t3.process(e, this.html, this.index);
-      });
+      await Promise.all(
+        n3.map(async (e2) => {
+          if (!this.html.hasOwnProperty(e2)) {
+            const t3 = await w(e2, { 'X-Cable-Ready': 'update' });
+            this.html[e2] = await t3.text();
+          }
+        }),
+      ),
+        (this.index = {}),
+        t2.forEach((t3) => {
+          this.index.hasOwnProperty(t3.url)
+            ? this.index[t3.url]++
+            : (this.index[t3.url] = 0),
+            t3.process(e, this.html, this.index);
+        });
     }
     get query() {
       return `updates-for[identifier="${this.identifier}"]`;
     }
     get identifier() {
-      return this.getAttribute("identifier");
+      return this.getAttribute('identifier');
     }
     get debounce() {
-      return this.hasAttribute("debounce") ? parseInt(this.getAttribute("debounce")) : 20;
+      return this.hasAttribute('debounce')
+        ? parseInt(this.getAttribute('debounce'))
+        : 20;
     }
   };
   var D = class {
@@ -3223,37 +3908,77 @@
       this.element = e;
     }
     async process(t2, n3, o3) {
-      if (!this.shouldUpdate(t2))
-        return;
-      const r2 = o3[this.url], s3 = document.createElement("template");
-      this.element.setAttribute("updating", "updating"), s3.innerHTML = String(n3[this.url]).trim(), await this.resolveTurboFrames(s3.content);
+      if (!this.shouldUpdate(t2)) return;
+      const r2 = o3[this.url],
+        s3 = document.createElement('template');
+      this.element.setAttribute('updating', 'updating'),
+        (s3.innerHTML = String(n3[this.url]).trim()),
+        await this.resolveTurboFrames(s3.content);
       const a3 = s3.content.querySelectorAll(this.query);
       if (a3.length <= r2)
-        return void console.warn(`Update aborted due to insufficient number of elements. The offending url is ${this.url}.`);
-      const i3 = { element: this.element, html: a3[r2], permanentAttributeName: "data-ignore-updates" };
-      c(this.element, "cable-ready:before-update", i3), morphdom_esm_default(this.element, a3[r2], { childrenOnly: true, onBeforeElUpdated: v(i3), onElUpdated: (e) => {
-        this.element.removeAttribute("updating"), c(this.element, "cable-ready:after-update", i3), l(i3.focusSelector);
-      } });
+        return void console.warn(
+          `Update aborted due to insufficient number of elements. The offending url is ${this.url}.`,
+        );
+      const i3 = {
+        element: this.element,
+        html: a3[r2],
+        permanentAttributeName: 'data-ignore-updates',
+      };
+      c(this.element, 'cable-ready:before-update', i3),
+        morphdom_esm_default(this.element, a3[r2], {
+          childrenOnly: true,
+          onBeforeElUpdated: v(i3),
+          onElUpdated: (e) => {
+            this.element.removeAttribute('updating'),
+              c(this.element, 'cable-ready:after-update', i3),
+              l(i3.focusSelector);
+          },
+        });
     }
     async resolveTurboFrames(e) {
-      const t2 = [...e.querySelectorAll('turbo-frame[src]:not([loading="lazy"])')];
-      return Promise.all(t2.map((t3) => new Promise(async (n3) => {
-        const o3 = await w(t3.getAttribute("src"), { "Turbo-Frame": t3.id, "X-Cable-Ready": "update" }), r2 = document.createElement("template");
-        r2.innerHTML = await o3.text(), await this.resolveTurboFrames(r2.content), e.querySelector(`turbo-frame#${t3.id}`).innerHTML = String(r2.content.querySelector(`turbo-frame#${t3.id}`).innerHTML).trim(), n3();
-      })));
+      const t2 = [
+        ...e.querySelectorAll('turbo-frame[src]:not([loading="lazy"])'),
+      ];
+      return Promise.all(
+        t2.map(
+          (t3) =>
+            new Promise(async (n3) => {
+              const o3 = await w(t3.getAttribute('src'), {
+                  'Turbo-Frame': t3.id,
+                  'X-Cable-Ready': 'update',
+                }),
+                r2 = document.createElement('template');
+              (r2.innerHTML = await o3.text()),
+                await this.resolveTurboFrames(r2.content),
+                (e.querySelector(`turbo-frame#${t3.id}`).innerHTML = String(
+                  r2.content.querySelector(`turbo-frame#${t3.id}`).innerHTML,
+                ).trim()),
+                n3();
+            }),
+        ),
+      );
     }
     shouldUpdate(e) {
       return !this.ignoresInnerUpdates && this.hasChangesSelectedForUpdate(e);
     }
     hasChangesSelectedForUpdate(e) {
-      const t2 = this.element.getAttribute("only");
-      return !(t2 && e.changed && !t2.split(" ").some((t3) => e.changed.includes(t3)));
+      const t2 = this.element.getAttribute('only');
+      return !(
+        t2 &&
+        e.changed &&
+        !t2.split(' ').some((t3) => e.changed.includes(t3))
+      );
     }
     get ignoresInnerUpdates() {
-      return this.element.hasAttribute("ignore-inner-updates") && this.element.hasAttribute("performing-inner-update");
+      return (
+        this.element.hasAttribute('ignore-inner-updates') &&
+        this.element.hasAttribute('performing-inner-update')
+      );
     }
     get url() {
-      return this.element.hasAttribute("url") ? this.element.getAttribute("url") : location.href;
+      return this.element.hasAttribute('url')
+        ? this.element.getAttribute('url')
+        : location.href;
     }
     get identifier() {
       return this.element.identifier;
@@ -3263,60 +3988,91 @@
     }
   };
   var F = (e) => {
-    const t2 = e && e.parentElement.closest("updates-for");
-    t2 && (t2.setAttribute("performing-inner-update", ""), F(t2));
+    const t2 = e && e.parentElement.closest('updates-for');
+    t2 && (t2.setAttribute('performing-inner-update', ''), F(t2));
   };
   var z = (e) => {
-    const t2 = e && e.parentElement.closest("updates-for");
-    t2 && (t2.removeAttribute("performing-inner-update"), z(t2));
+    const t2 = e && e.parentElement.closest('updates-for');
+    t2 && (t2.removeAttribute('performing-inner-update'), z(t2));
   };
-  var X = { perform: q, performAsync: (e, t2 = { emitMissingElementWarnings: true }) => new Promise((n3, o3) => {
-    try {
-      n3(q(e, t2));
-    } catch (e2) {
-      o3(e2);
-    }
-  }), shouldMorphCallbacks: x, didMorphCallbacks: M, initialize: (e = {}) => {
-    const { consumer: t2 } = e;
-    document.addEventListener("stimulus-reflex:before", (e2) => {
-      F(e2.detail.element);
-    }), document.addEventListener("stimulus-reflex:after", (e2) => {
-      setTimeout(() => {
-        z(e2.detail.element);
-      });
-    }), document.addEventListener("turbo:submit-start", (e2) => {
-      F(e2.target);
-    }), document.addEventListener("turbo:submit-end", (e2) => {
-      setTimeout(() => {
-        z(e2.target);
-      });
-    }), t2 ? U.setConsumer(t2) : console.error("CableReady requires a reference to your Action Cable `consumer` for its helpers to function.\nEnsure that you have imported the `CableReady` package as well as `consumer` from your `channels` folder, then call `CableReady.initialize({ consumer })`."), customElements.get("stream-from") || customElements.define("stream-from", _), customElements.get("updates-for") || customElements.define("updates-for", j);
-  }, addOperation: (e, t2) => {
-    const n3 = {};
-    n3[e] = t2, R(n3);
-  }, addOperations: (e) => {
-    R(e);
-  }, version: t, cable: U, get DOMOperations() {
-    return console.warn("DEPRECATED: Please use `CableReady.operations` instead of `CableReady.DOMOperations`"), P.all;
-  }, get operations() {
-    return P.all;
-  }, get consumer() {
-    return U.consumer;
-  } };
+  var X = {
+    perform: q,
+    performAsync: (e, t2 = { emitMissingElementWarnings: true }) =>
+      new Promise((n3, o3) => {
+        try {
+          n3(q(e, t2));
+        } catch (e2) {
+          o3(e2);
+        }
+      }),
+    shouldMorphCallbacks: x,
+    didMorphCallbacks: M,
+    initialize: (e = {}) => {
+      const { consumer: t2 } = e;
+      document.addEventListener('stimulus-reflex:before', (e2) => {
+        F(e2.detail.element);
+      }),
+        document.addEventListener('stimulus-reflex:after', (e2) => {
+          setTimeout(() => {
+            z(e2.detail.element);
+          });
+        }),
+        document.addEventListener('turbo:submit-start', (e2) => {
+          F(e2.target);
+        }),
+        document.addEventListener('turbo:submit-end', (e2) => {
+          setTimeout(() => {
+            z(e2.target);
+          });
+        }),
+        t2
+          ? U.setConsumer(t2)
+          : console.error(
+              'CableReady requires a reference to your Action Cable `consumer` for its helpers to function.\nEnsure that you have imported the `CableReady` package as well as `consumer` from your `channels` folder, then call `CableReady.initialize({ consumer })`.',
+            ),
+        customElements.get('stream-from') ||
+          customElements.define('stream-from', _),
+        customElements.get('updates-for') ||
+          customElements.define('updates-for', j);
+    },
+    addOperation: (e, t2) => {
+      const n3 = {};
+      (n3[e] = t2), R(n3);
+    },
+    addOperations: (e) => {
+      R(e);
+    },
+    version: t,
+    cable: U,
+    get DOMOperations() {
+      return (
+        console.warn(
+          'DEPRECATED: Please use `CableReady.operations` instead of `CableReady.DOMOperations`',
+        ),
+        P.all
+      );
+    },
+    get operations() {
+      return P.all;
+    },
+    get consumer() {
+      return U.consumer;
+    },
+  };
   window.CableReady = X;
 
   // ../../node_modules/@rails/actioncable/app/assets/javascripts/actioncable.esm.js
   var adapters = {
     logger: self.console,
-    WebSocket: self.WebSocket
+    WebSocket: self.WebSocket,
   };
   var logger = {
     log(...messages) {
       if (this.enabled) {
         messages.push(Date.now());
-        adapters.logger.log("[ActionCable]", ...messages);
+        adapters.logger.log('[ActionCable]', ...messages);
       }
-    }
+    },
   };
   var now = () => new Date().getTime();
   var secondsSince = (time) => (now() - time) / 1e3;
@@ -3331,16 +4087,18 @@
         this.startedAt = now();
         delete this.stoppedAt;
         this.startPolling();
-        addEventListener("visibilitychange", this.visibilityDidChange);
-        logger.log(`ConnectionMonitor started. stale threshold = ${this.constructor.staleThreshold} s`);
+        addEventListener('visibilitychange', this.visibilityDidChange);
+        logger.log(
+          `ConnectionMonitor started. stale threshold = ${this.constructor.staleThreshold} s`,
+        );
       }
     }
     stop() {
       if (this.isRunning()) {
         this.stoppedAt = now();
         this.stopPolling();
-        removeEventListener("visibilitychange", this.visibilityDidChange);
-        logger.log("ConnectionMonitor stopped");
+        removeEventListener('visibilitychange', this.visibilityDidChange);
+        logger.log('ConnectionMonitor stopped');
       }
     }
     isRunning() {
@@ -3353,11 +4111,11 @@
       this.reconnectAttempts = 0;
       this.recordPing();
       delete this.disconnectedAt;
-      logger.log("ConnectionMonitor recorded connect");
+      logger.log('ConnectionMonitor recorded connect');
     }
     recordDisconnect() {
       this.disconnectedAt = now();
-      logger.log("ConnectionMonitor recorded disconnect");
+      logger.log('ConnectionMonitor recorded disconnect');
     }
     startPolling() {
       this.stopPolling();
@@ -3374,19 +4132,33 @@
     }
     getPollInterval() {
       const { staleThreshold, reconnectionBackoffRate } = this.constructor;
-      const backoff = Math.pow(1 + reconnectionBackoffRate, Math.min(this.reconnectAttempts, 10));
-      const jitterMax = this.reconnectAttempts === 0 ? 1 : reconnectionBackoffRate;
+      const backoff = Math.pow(
+        1 + reconnectionBackoffRate,
+        Math.min(this.reconnectAttempts, 10),
+      );
+      const jitterMax =
+        this.reconnectAttempts === 0 ? 1 : reconnectionBackoffRate;
       const jitter = jitterMax * Math.random();
       return staleThreshold * 1e3 * backoff * (1 + jitter);
     }
     reconnectIfStale() {
       if (this.connectionIsStale()) {
-        logger.log(`ConnectionMonitor detected stale connection. reconnectAttempts = ${this.reconnectAttempts}, time stale = ${secondsSince(this.refreshedAt)} s, stale threshold = ${this.constructor.staleThreshold} s`);
+        logger.log(
+          `ConnectionMonitor detected stale connection. reconnectAttempts = ${
+            this.reconnectAttempts
+          }, time stale = ${secondsSince(
+            this.refreshedAt,
+          )} s, stale threshold = ${this.constructor.staleThreshold} s`,
+        );
         this.reconnectAttempts++;
         if (this.disconnectedRecently()) {
-          logger.log(`ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(this.disconnectedAt)} s`);
+          logger.log(
+            `ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(
+              this.disconnectedAt,
+            )} s`,
+          );
         } else {
-          logger.log("ConnectionMonitor reopening");
+          logger.log('ConnectionMonitor reopening');
           this.connection.reopen();
         }
       }
@@ -3398,13 +4170,18 @@
       return secondsSince(this.refreshedAt) > this.constructor.staleThreshold;
     }
     disconnectedRecently() {
-      return this.disconnectedAt && secondsSince(this.disconnectedAt) < this.constructor.staleThreshold;
+      return (
+        this.disconnectedAt &&
+        secondsSince(this.disconnectedAt) < this.constructor.staleThreshold
+      );
     }
     visibilityDidChange() {
-      if (document.visibilityState === "visible") {
+      if (document.visibilityState === 'visible') {
         setTimeout(() => {
           if (this.connectionIsStale() || !this.connection.isOpen()) {
-            logger.log(`ConnectionMonitor reopening stale connection on visibilitychange. visibilityState = ${document.visibilityState}`);
+            logger.log(
+              `ConnectionMonitor reopening stale connection on visibilitychange. visibilityState = ${document.visibilityState}`,
+            );
             this.connection.reopen();
           }
         }, 200);
@@ -3415,19 +4192,19 @@
   ConnectionMonitor.reconnectionBackoffRate = 0.15;
   var INTERNAL = {
     message_types: {
-      welcome: "welcome",
-      disconnect: "disconnect",
-      ping: "ping",
-      confirmation: "confirm_subscription",
-      rejection: "reject_subscription"
+      welcome: 'welcome',
+      disconnect: 'disconnect',
+      ping: 'ping',
+      confirmation: 'confirm_subscription',
+      rejection: 'reject_subscription',
     },
     disconnect_reasons: {
-      unauthorized: "unauthorized",
-      invalid_request: "invalid_request",
-      server_restart: "server_restart"
+      unauthorized: 'unauthorized',
+      invalid_request: 'invalid_request',
+      server_restart: 'server_restart',
     },
-    default_mount_path: "/cable",
-    protocols: ["actioncable-v1-json", "actioncable-unsupported"]
+    default_mount_path: '/cable',
+    protocols: ['actioncable-v1-json', 'actioncable-unsupported'],
   };
   var { message_types, protocols } = INTERNAL;
   var supportedProtocols = protocols.slice(0, protocols.length - 1);
@@ -3450,10 +4227,14 @@
     }
     open() {
       if (this.isActive()) {
-        logger.log(`Attempted to open WebSocket, but existing socket is ${this.getState()}`);
+        logger.log(
+          `Attempted to open WebSocket, but existing socket is ${this.getState()}`,
+        );
         return false;
       } else {
-        logger.log(`Opening WebSocket, current state is ${this.getState()}, subprotocols: ${protocols}`);
+        logger.log(
+          `Opening WebSocket, current state is ${this.getState()}, subprotocols: ${protocols}`,
+        );
         if (this.webSocket) {
           this.uninstallEventHandlers();
         }
@@ -3463,9 +4244,11 @@
         return true;
       }
     }
-    close({ allowReconnect } = {
-      allowReconnect: true
-    }) {
+    close(
+      { allowReconnect } = {
+        allowReconnect: true,
+      },
+    ) {
       if (!allowReconnect) {
         this.monitor.stop();
       }
@@ -3479,9 +4262,11 @@
         try {
           return this.close();
         } catch (error2) {
-          logger.log("Failed to reopen WebSocket", error2);
+          logger.log('Failed to reopen WebSocket', error2);
         } finally {
-          logger.log(`Reopening WebSocket in ${this.constructor.reopenDelay}ms`);
+          logger.log(
+            `Reopening WebSocket in ${this.constructor.reopenDelay}ms`,
+          );
           setTimeout(this.open, this.constructor.reopenDelay);
         }
       } else {
@@ -3494,10 +4279,10 @@
       }
     }
     isOpen() {
-      return this.isState("open");
+      return this.isState('open');
     }
     isActive() {
-      return this.isState("open", "connecting");
+      return this.isState('open', 'connecting');
     }
     isProtocolSupported() {
       return indexOf.call(supportedProtocols, this.getProtocol()) >= 0;
@@ -3523,8 +4308,7 @@
     }
     uninstallEventHandlers() {
       for (let eventName in this.events) {
-        this.webSocket[`on${eventName}`] = function() {
-        };
+        this.webSocket[`on${eventName}`] = function () {};
       }
     }
   };
@@ -3534,7 +4318,9 @@
       if (!this.isProtocolSupported()) {
         return;
       }
-      const { identifier, message, reason, reconnect, type } = JSON.parse(event.data);
+      const { identifier, message, reason, reconnect, type } = JSON.parse(
+        event.data,
+      );
       switch (type) {
         case message_types.welcome:
           this.monitor.recordConnect();
@@ -3542,45 +4328,49 @@
         case message_types.disconnect:
           logger.log(`Disconnecting. Reason: ${reason}`);
           return this.close({
-            allowReconnect: reconnect
+            allowReconnect: reconnect,
           });
         case message_types.ping:
           return this.monitor.recordPing();
         case message_types.confirmation:
           this.subscriptions.confirmSubscription(identifier);
-          return this.subscriptions.notify(identifier, "connected");
+          return this.subscriptions.notify(identifier, 'connected');
         case message_types.rejection:
           return this.subscriptions.reject(identifier);
         default:
-          return this.subscriptions.notify(identifier, "received", message);
+          return this.subscriptions.notify(identifier, 'received', message);
       }
     },
     open() {
-      logger.log(`WebSocket onopen event, using '${this.getProtocol()}' subprotocol`);
+      logger.log(
+        `WebSocket onopen event, using '${this.getProtocol()}' subprotocol`,
+      );
       this.disconnected = false;
       if (!this.isProtocolSupported()) {
-        logger.log("Protocol is unsupported. Stopping monitor and disconnecting.");
+        logger.log(
+          'Protocol is unsupported. Stopping monitor and disconnecting.',
+        );
         return this.close({
-          allowReconnect: false
+          allowReconnect: false,
         });
       }
     },
     close(event) {
-      logger.log("WebSocket onclose event");
+      logger.log('WebSocket onclose event');
       if (this.disconnected) {
         return;
       }
       this.disconnected = true;
       this.monitor.recordDisconnect();
-      return this.subscriptions.notifyAll("disconnected", {
-        willAttemptReconnect: this.monitor.isRunning()
+      return this.subscriptions.notifyAll('disconnected', {
+        willAttemptReconnect: this.monitor.isRunning(),
       });
     },
     error() {
-      logger.log("WebSocket onerror event");
-    }
+      logger.log('WebSocket onerror event');
+    },
   };
-  var extend2 = function(object, properties) {
+  var extend2 = function (object, properties) {
     if (properties != null) {
       for (let key in properties) {
         const value = properties[key];
@@ -3601,9 +4391,9 @@
     }
     send(data) {
       return this.consumer.send({
-        command: "message",
+        command: 'message',
         identifier: this.identifier,
-        data: JSON.stringify(data)
+        data: JSON.stringify(data),
       });
     }
     unsubscribe() {
@@ -3617,16 +4407,22 @@
     }
     guarantee(subscription) {
       if (this.pendingSubscriptions.indexOf(subscription) == -1) {
-        logger.log(`SubscriptionGuarantor guaranteeing ${subscription.identifier}`);
+        logger.log(
+          `SubscriptionGuarantor guaranteeing ${subscription.identifier}`,
+        );
         this.pendingSubscriptions.push(subscription);
       } else {
-        logger.log(`SubscriptionGuarantor already guaranteeing ${subscription.identifier}`);
+        logger.log(
+          `SubscriptionGuarantor already guaranteeing ${subscription.identifier}`,
+        );
       }
       this.startGuaranteeing();
     }
     forget(subscription) {
       logger.log(`SubscriptionGuarantor forgetting ${subscription.identifier}`);
-      this.pendingSubscriptions = this.pendingSubscriptions.filter((s3) => s3 !== subscription);
+      this.pendingSubscriptions = this.pendingSubscriptions.filter(
+        (s3) => s3 !== subscription,
+      );
     }
     startGuaranteeing() {
       this.stopGuaranteeing();
@@ -3637,9 +4433,14 @@
     }
     retrySubscribing() {
       this.retryTimeout = setTimeout(() => {
-        if (this.subscriptions && typeof this.subscriptions.subscribe === "function") {
+        if (
+          this.subscriptions &&
+          typeof this.subscriptions.subscribe === 'function'
+        ) {
           this.pendingSubscriptions.map((subscription) => {
-            logger.log(`SubscriptionGuarantor resubscribing ${subscription.identifier}`);
+            logger.log(
+              `SubscriptionGuarantor resubscribing ${subscription.identifier}`,
+            );
             this.subscriptions.subscribe(subscription);
           });
         }
@@ -3654,70 +4455,85 @@
     }
     create(channelName, mixin) {
       const channel = channelName;
-      const params = typeof channel === "object" ? channel : {
-        channel
-      };
+      const params =
+        typeof channel === 'object'
+          ? channel
+          : {
+              channel,
+            };
       const subscription = new Subscription(this.consumer, params, mixin);
       return this.add(subscription);
     }
     add(subscription) {
       this.subscriptions.push(subscription);
       this.consumer.ensureActiveConnection();
-      this.notify(subscription, "initialized");
+      this.notify(subscription, 'initialized');
       this.subscribe(subscription);
       return subscription;
     }
     remove(subscription) {
       this.forget(subscription);
       if (!this.findAll(subscription.identifier).length) {
-        this.sendCommand(subscription, "unsubscribe");
+        this.sendCommand(subscription, 'unsubscribe');
       }
       return subscription;
     }
     reject(identifier) {
       return this.findAll(identifier).map((subscription) => {
         this.forget(subscription);
-        this.notify(subscription, "rejected");
+        this.notify(subscription, 'rejected');
         return subscription;
       });
     }
     forget(subscription) {
       this.guarantor.forget(subscription);
-      this.subscriptions = this.subscriptions.filter((s3) => s3 !== subscription);
+      this.subscriptions = this.subscriptions.filter(
+        (s3) => s3 !== subscription,
+      );
       return subscription;
     }
     findAll(identifier) {
       return this.subscriptions.filter((s3) => s3.identifier === identifier);
     }
     reload() {
-      return this.subscriptions.map((subscription) => this.subscribe(subscription));
+      return this.subscriptions.map((subscription) =>
+        this.subscribe(subscription),
+      );
     }
     notifyAll(callbackName, ...args) {
-      return this.subscriptions.map((subscription) => this.notify(subscription, callbackName, ...args));
+      return this.subscriptions.map((subscription) =>
+        this.notify(subscription, callbackName, ...args),
+      );
     }
     notify(subscription, callbackName, ...args) {
       let subscriptions;
-      if (typeof subscription === "string") {
+      if (typeof subscription === 'string') {
         subscriptions = this.findAll(subscription);
       } else {
         subscriptions = [subscription];
       }
-      return subscriptions.map((subscription2) => typeof subscription2[callbackName] === "function" ? subscription2[callbackName](...args) : void 0);
+      return subscriptions.map((subscription2) =>
+        typeof subscription2[callbackName] === 'function'
+          ? subscription2[callbackName](...args)
+          : void 0,
+      );
     }
     subscribe(subscription) {
-      if (this.sendCommand(subscription, "subscribe")) {
+      if (this.sendCommand(subscription, 'subscribe')) {
         this.guarantor.guarantee(subscription);
       }
     }
     confirmSubscription(identifier) {
       logger.log(`Subscription confirmed ${identifier}`);
-      this.findAll(identifier).map((subscription) => this.guarantor.forget(subscription));
+      this.findAll(identifier).map((subscription) =>
+        this.guarantor.forget(subscription),
+      );
     }
     sendCommand(subscription, command) {
       const { identifier } = subscription;
       return this.consumer.send({
         command,
-        identifier
+        identifier,
       });
     }
   };
@@ -3738,7 +4554,7 @@
     }
     disconnect() {
       return this.connection.close({
-        allowReconnect: false
+        allowReconnect: false,
       });
     }
     ensureActiveConnection() {
@@ -3748,93 +4564,160 @@
     }
   };
   function createWebSocketURL(url) {
-    if (typeof url === "function") {
+    if (typeof url === 'function') {
       url = url();
     }
     if (url && !/^wss?:/i.test(url)) {
-      const a3 = document.createElement("a");
+      const a3 = document.createElement('a');
       a3.href = url;
       a3.href = a3.href;
-      a3.protocol = a3.protocol.replace("http", "ws");
+      a3.protocol = a3.protocol.replace('http', 'ws');
       return a3.href;
     } else {
       return url;
     }
   }
-  function createConsumer(url = getConfig("url") || INTERNAL.default_mount_path) {
+  function createConsumer(
+    url = getConfig('url') || INTERNAL.default_mount_path,
+  ) {
     return new Consumer(url);
   }
   function getConfig(name) {
-    const element = document.head.querySelector(`meta[name='action-cable-${name}']`);
+    const element = document.head.querySelector(
+      `meta[name='action-cable-${name}']`,
+    );
     if (element) {
-      return element.getAttribute("content");
+      return element.getAttribute('content');
     }
   }
 
   // ../../node_modules/stimulus_reflex/dist/stimulus_reflex.min.js
-  var l2 = { reflexAttribute: "data-reflex", reflexPermanentAttribute: "data-reflex-permanent", reflexRootAttribute: "data-reflex-root", reflexSuppressLoggingAttribute: "data-reflex-suppress-logging", reflexDatasetAttribute: "data-reflex-dataset", reflexDatasetAllAttribute: "data-reflex-dataset-all", reflexSerializeFormAttribute: "data-reflex-serialize-form", reflexFormSelectorAttribute: "data-reflex-form-selector", reflexIncludeInnerHtmlAttribute: "data-reflex-include-inner-html", reflexIncludeTextContentAttribute: "data-reflex-include-text-content" };
+  var l2 = {
+    reflexAttribute: 'data-reflex',
+    reflexPermanentAttribute: 'data-reflex-permanent',
+    reflexRootAttribute: 'data-reflex-root',
+    reflexSuppressLoggingAttribute: 'data-reflex-suppress-logging',
+    reflexDatasetAttribute: 'data-reflex-dataset',
+    reflexDatasetAllAttribute: 'data-reflex-dataset-all',
+    reflexSerializeFormAttribute: 'data-reflex-serialize-form',
+    reflexFormSelectorAttribute: 'data-reflex-form-selector',
+    reflexIncludeInnerHtmlAttribute: 'data-reflex-include-inner-html',
+    reflexIncludeTextContentAttribute: 'data-reflex-include-text-content',
+  };
   var n2 = {};
-  var o2 = { set(e) {
-    n2 = { ...l2, ...e.schema };
-    for (const e2 in n2)
-      Object.defineProperty(this, e2.slice(0, -9), { get: () => n2[e2] });
-  } };
+  var o2 = {
+    set(e) {
+      n2 = { ...l2, ...e.schema };
+      for (const e2 in n2)
+        Object.defineProperty(this, e2.slice(0, -9), { get: () => n2[e2] });
+    },
+  };
   var a2 = false;
-  var s2 = { get enabled() {
-    return a2;
-  }, get disabled() {
-    return !a2;
-  }, get value() {
-    return a2;
-  }, set(e) {
-    a2 = !!e;
-  }, set debug(e) {
-    a2 = !!e;
-  } };
+  var s2 = {
+    get enabled() {
+      return a2;
+    },
+    get disabled() {
+      return !a2;
+    },
+    get value() {
+      return a2;
+    },
+    set(e) {
+      a2 = !!e;
+    },
+    set debug(e) {
+      a2 = !!e;
+    },
+  };
   var i2 = {};
   var d2 = (e, t2, r2, l3, n3, o3) => {
     const a3 = i2[e];
-    s2.disabled || a3.promise.data.suppressLogging || (a3.timestamp = new Date(), console.log(`\u2191 stimulus \u2191 ${t2}`, { reflexId: e, args: r2, controller: l3, element: n3, controllerElement: o3 }));
+    s2.disabled ||
+      a3.promise.data.suppressLogging ||
+      ((a3.timestamp = new Date()),
+      console.log(`\u2191 stimulus \u2191 ${t2}`, {
+        reflexId: e,
+        args: r2,
+        controller: l3,
+        element: n3,
+        controllerElement: o3,
+      }));
   };
   var c2 = (e, t2) => {
-    const { detail: r2 } = e || {}, { selector: l3, payload: n3 } = r2 || {}, { reflexId: o3, target: a3, morph: d3 } = r2.stimulusReflex || {}, c3 = i2[o3];
-    if (s2.disabled || c3.promise.data.suppressLogging)
-      return;
-    const u3 = c3.totalOperations > 1 ? ` ${c3.completedOperations}/${c3.totalOperations}` : "", f3 = c3.timestamp ? `in ${new Date() - c3.timestamp}ms` : "CLONED", m3 = e.type.split(":")[1].split("-").slice(1).join("_");
-    console.log(`\u2193 reflex \u2193 ${a3} \u2192 ${l3 || "\u221E"}${u3} ${f3}`, { reflexId: o3, morph: d3, operation: m3, halted: t2, payload: n3 });
+    const { detail: r2 } = e || {},
+      { selector: l3, payload: n3 } = r2 || {},
+      { reflexId: o3, target: a3, morph: d3 } = r2.stimulusReflex || {},
+      c3 = i2[o3];
+    if (s2.disabled || c3.promise.data.suppressLogging) return;
+    const u3 =
+        c3.totalOperations > 1
+          ? ` ${c3.completedOperations}/${c3.totalOperations}`
+          : '',
+      f3 = c3.timestamp ? `in ${new Date() - c3.timestamp}ms` : 'CLONED',
+      m3 = e.type.split(':')[1].split('-').slice(1).join('_');
+    console.log(
+      `\u2193 reflex \u2193 ${a3} \u2192 ${l3 || '\u221E'}${u3} ${f3}`,
+      { reflexId: o3, morph: d3, operation: m3, halted: t2, payload: n3 },
+    );
   };
   var u2 = (e) => {
-    const { detail: t2 } = e || {}, { reflexId: r2, target: l3, payload: n3 } = t2.stimulusReflex || {}, o3 = i2[r2];
-    if (s2.disabled || o3.promise.data.suppressLogging)
-      return;
-    const a3 = o3.timestamp ? `in ${new Date() - o3.timestamp}ms` : "CLONED";
-    console.log(`\u2193 reflex \u2193 ${l3} ${a3} %cERROR: ${e.detail.body}`, "color: #f00;", { reflexId: r2, payload: n3 });
+    const { detail: t2 } = e || {},
+      { reflexId: r2, target: l3, payload: n3 } = t2.stimulusReflex || {},
+      o3 = i2[r2];
+    if (s2.disabled || o3.promise.data.suppressLogging) return;
+    const a3 = o3.timestamp ? `in ${new Date() - o3.timestamp}ms` : 'CLONED';
+    console.log(
+      `\u2193 reflex \u2193 ${l3} ${a3} %cERROR: ${e.detail.body}`,
+      'color: #f00;',
+      { reflexId: r2, payload: n3 },
+    );
   };
   var f2 = true;
-  var m2 = { get enabled() {
-    return f2;
-  }, get disabled() {
-    return !f2;
-  }, get value() {
-    return f2;
-  }, set(e) {
-    f2 = !!e;
-  }, set deprecate(e) {
-    f2 = !!e;
-  } };
+  var m2 = {
+    get enabled() {
+      return f2;
+    },
+    get disabled() {
+      return !f2;
+    },
+    get value() {
+      return f2;
+    },
+    set(e) {
+      f2 = !!e;
+    },
+    set deprecate(e) {
+      f2 = !!e;
+    },
+  };
   var p2 = () => {
     const e = window.crypto || window.msCrypto;
-    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (t2) => (t2 ^ e.getRandomValues(new Uint8Array(1))[0] & 15 >> t2 / 4).toString(16));
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (t2) =>
+      (
+        t2 ^
+        (e.getRandomValues(new Uint8Array(1))[0] & (15 >> (t2 / 4)))
+      ).toString(16),
+    );
   };
-  var x2 = (e, t2 = true) => "string" != typeof e ? "" : (e = e.replace(/[\s_](.)/g, (e2) => e2.toUpperCase()).replace(/[\s_]/g, "").replace(/^(.)/, (e2) => e2.toLowerCase()), t2 && (e = e.substr(0, 1).toUpperCase() + e.substr(1)), e);
+  var x2 = (e, t2 = true) =>
+    'string' != typeof e
+      ? ''
+      : ((e = e
+          .replace(/[\s_](.)/g, (e2) => e2.toUpperCase())
+          .replace(/[\s_]/g, '')
+          .replace(/^(.)/, (e2) => e2.toLowerCase())),
+        t2 && (e = e.substr(0, 1).toUpperCase() + e.substr(1)),
+        e);
   var h2 = (e, t2) => {
-    document.dispatchEvent(new CustomEvent(e, { bubbles: true, cancelable: false, detail: t2 })), window.jQuery && window.jQuery(document).trigger(e, t2);
+    document.dispatchEvent(
+      new CustomEvent(e, { bubbles: true, cancelable: false, detail: t2 }),
+    ),
+      window.jQuery && window.jQuery(document).trigger(e, t2);
   };
   var g2 = (e) => {
-    if ("" !== e.id)
-      return "//*[@id='" + e.id + "']";
-    if (e === document.body)
-      return "/html/body";
+    if ('' !== e.id) return "//*[@id='" + e.id + "']";
+    if (e === document.body) return '/html/body';
     let t2 = 0;
     const r2 = e?.parentNode ? e.parentNode.childNodes : [];
     for (var l3 = 0; l3 < r2.length; l3++) {
@@ -3845,205 +4728,501 @@
       1 === n3.nodeType && n3.tagName === e.tagName && t2++;
     }
   };
-  var b2 = (e) => document.evaluate(e, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  var b2 = (e) =>
+    document.evaluate(
+      e,
+      document,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null,
+    ).singleNodeValue;
   var y2 = (e, t2 = false) => {
-    const r2 = document.evaluate(e, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null), l3 = [];
-    for (let e2 = 0; e2 < r2.snapshotLength; e2++)
-      l3.push(r2.snapshotItem(e2));
+    const r2 = document.evaluate(
+        e,
+        document,
+        null,
+        XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+        null,
+      ),
+      l3 = [];
+    for (let e2 = 0; e2 < r2.snapshotLength; e2++) l3.push(r2.snapshotItem(e2));
     return t2 ? l3.reverse() : l3;
   };
   var v2 = (e = []) => {
-    const t2 = e.filter((e2) => e2 && String(e2).length).map((e2) => e2.trim()).join(" ").trim();
+    const t2 = e
+      .filter((e2) => e2 && String(e2).length)
+      .map((e2) => e2.trim())
+      .join(' ')
+      .trim();
     return t2.length ? t2 : null;
   };
-  var E2 = (e) => e && e.length ? e.split(" ").filter((e2) => e2.trim().length) : [];
+  var E2 = (e) =>
+    e && e.length ? e.split(' ').filter((e2) => e2.trim().length) : [];
   var w2 = (e) => {
-    let t2 = Array.from(e.attributes).reduce((e2, t3) => (e2[t3.name] = t3.value, e2), {});
-    if (t2.checked = !!e.checked, t2.selected = !!e.selected, t2.tag_name = e.tagName, e.tagName.match(/select/i) || ((e2) => !!["checkbox", "radio"].includes(e2.type) && document.querySelectorAll(`input[type="${e2.type}"][name="${e2.name}"]`).length > 1)(e)) {
-      const r2 = ((e2) => Array.from(e2.querySelectorAll("option:checked")).concat(Array.from(document.querySelectorAll(`input[type="${e2.type}"][name="${e2.name}"]`)).filter((e3) => e3.checked)).map((e3) => e3.value))(e);
-      t2.values = r2, t2.value = r2.join(",");
-    } else
-      t2.value = e.value;
+    let t2 = Array.from(e.attributes).reduce(
+      (e2, t3) => ((e2[t3.name] = t3.value), e2),
+      {},
+    );
+    if (
+      ((t2.checked = !!e.checked),
+      (t2.selected = !!e.selected),
+      (t2.tag_name = e.tagName),
+      e.tagName.match(/select/i) ||
+        ((e2) =>
+          !!['checkbox', 'radio'].includes(e2.type) &&
+          document.querySelectorAll(
+            `input[type="${e2.type}"][name="${e2.name}"]`,
+          ).length > 1)(e))
+    ) {
+      const r2 = ((e2) =>
+        Array.from(e2.querySelectorAll('option:checked'))
+          .concat(
+            Array.from(
+              document.querySelectorAll(
+                `input[type="${e2.type}"][name="${e2.name}"]`,
+              ),
+            ).filter((e3) => e3.checked),
+          )
+          .map((e3) => e3.value))(e);
+      (t2.values = r2), (t2.value = r2.join(','));
+    } else t2.value = e.value;
     return t2;
   };
   var C2 = (e, t2) => {
-    if (!t2 || 0 === t2.length)
-      return [];
+    if (!t2 || 0 === t2.length) return [];
     let r2 = [e];
     const l3 = g2(e);
-    return t2.forEach((e2) => {
-      try {
-        switch (e2) {
-          case "combined":
-            m2.enabled && console.warn("In the next version of StimulusReflex, the 'combined' option to data-reflex-dataset will become 'ancestors'."), r2 = [...r2, ...y2(`${l3}/ancestor::*`, true)];
-            break;
-          case "ancestors":
-            r2 = [...r2, ...y2(`${l3}/ancestor::*`, true)];
-            break;
-          case "parent":
-            r2 = [...r2, ...y2(`${l3}/parent::*`)];
-            break;
-          case "siblings":
-            r2 = [...r2, ...y2(`${l3}/preceding-sibling::*|${l3}/following-sibling::*`)];
-            break;
-          case "children":
-            r2 = [...r2, ...y2(`${l3}/child::*`)];
-            break;
-          case "descendants":
-            r2 = [...r2, ...y2(`${l3}/descendant::*`)];
-            break;
-          default:
-            r2 = [...r2, ...document.querySelectorAll(e2)];
+    return (
+      t2.forEach((e2) => {
+        try {
+          switch (e2) {
+            case 'combined':
+              m2.enabled &&
+                console.warn(
+                  "In the next version of StimulusReflex, the 'combined' option to data-reflex-dataset will become 'ancestors'.",
+                ),
+                (r2 = [...r2, ...y2(`${l3}/ancestor::*`, true)]);
+              break;
+            case 'ancestors':
+              r2 = [...r2, ...y2(`${l3}/ancestor::*`, true)];
+              break;
+            case 'parent':
+              r2 = [...r2, ...y2(`${l3}/parent::*`)];
+              break;
+            case 'siblings':
+              r2 = [
+                ...r2,
+                ...y2(`${l3}/preceding-sibling::*|${l3}/following-sibling::*`),
+              ];
+              break;
+            case 'children':
+              r2 = [...r2, ...y2(`${l3}/child::*`)];
+              break;
+            case 'descendants':
+              r2 = [...r2, ...y2(`${l3}/descendant::*`)];
+              break;
+            default:
+              r2 = [...r2, ...document.querySelectorAll(e2)];
+          }
+        } catch (e3) {
+          s2.enabled && console.error(e3);
         }
-      } catch (e3) {
-        s2.enabled && console.error(e3);
-      }
-    }), r2;
+      }),
+      r2
+    );
   };
   var I2 = (e) => {
     let t2 = {};
-    return e && e.attributes && Array.from(e.attributes).forEach((e2) => {
-      e2.name.startsWith("data-") && (t2[e2.name] = e2.value);
-    }), t2;
+    return (
+      e &&
+        e.attributes &&
+        Array.from(e.attributes).forEach((e2) => {
+          e2.name.startsWith('data-') && (t2[e2.name] = e2.value);
+        }),
+      t2
+    );
   };
   var R2 = false;
-  var S2 = { get disabled() {
-    return !R2;
-  }, set(e) {
-    R2 = e;
-  } };
-  var A2 = (e, t2, r2, l3, n3) => {
-    if (!r2 || !r2.reflexData[l3])
-      return;
-    const o3 = r2.reflexController[l3], a3 = r2.reflexData[l3].target, s3 = a3.split("#")[1], d3 = o3[["before", "after", "finalize"].includes(e) ? `${e}${x2(s3)}` : `${x2(s3, false)}${x2(e)}`], c3 = o3[["before", "after", "finalize"].includes(e) ? `${e}Reflex` : `reflex${x2(e)}`];
-    "function" == typeof d3 && d3.call(o3, t2, a3, r2.reflexError[l3], l3, n3), "function" == typeof c3 && c3.call(o3, t2, a3, r2.reflexError[l3], l3, n3), i2[l3] && e === i2[l3].finalStage && (Reflect.deleteProperty(r2.reflexController, l3), Reflect.deleteProperty(r2.reflexData, l3), Reflect.deleteProperty(r2.reflexError, l3));
+  var S2 = {
+    get disabled() {
+      return !R2;
+    },
+    set(e) {
+      R2 = e;
+    },
   };
-  document.addEventListener("stimulus-reflex:before", (e) => A2("before", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload), true), document.addEventListener("stimulus-reflex:success", (e) => {
-    A2("success", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload), $2("after", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload);
-  }, true), document.addEventListener("stimulus-reflex:nothing", (e) => {
-    $2("success", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload);
-  }, true), document.addEventListener("stimulus-reflex:error", (e) => {
-    A2("error", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload), $2("after", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload);
-  }, true), document.addEventListener("stimulus-reflex:halted", (e) => A2("halted", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload), true), document.addEventListener("stimulus-reflex:after", (e) => A2("after", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload), true), document.addEventListener("stimulus-reflex:finalize", (e) => A2("finalize", e.detail.element, e.detail.controller.element, e.detail.reflexId, e.detail.payload), true);
+  var A2 = (e, t2, r2, l3, n3) => {
+    if (!r2 || !r2.reflexData[l3]) return;
+    const o3 = r2.reflexController[l3],
+      a3 = r2.reflexData[l3].target,
+      s3 = a3.split('#')[1],
+      d3 =
+        o3[
+          ['before', 'after', 'finalize'].includes(e)
+            ? `${e}${x2(s3)}`
+            : `${x2(s3, false)}${x2(e)}`
+        ],
+      c3 =
+        o3[
+          ['before', 'after', 'finalize'].includes(e)
+            ? `${e}Reflex`
+            : `reflex${x2(e)}`
+        ];
+    'function' == typeof d3 && d3.call(o3, t2, a3, r2.reflexError[l3], l3, n3),
+      'function' == typeof c3 &&
+        c3.call(o3, t2, a3, r2.reflexError[l3], l3, n3),
+      i2[l3] &&
+        e === i2[l3].finalStage &&
+        (Reflect.deleteProperty(r2.reflexController, l3),
+        Reflect.deleteProperty(r2.reflexData, l3),
+        Reflect.deleteProperty(r2.reflexError, l3));
+  };
+  document.addEventListener(
+    'stimulus-reflex:before',
+    (e) =>
+      A2(
+        'before',
+        e.detail.element,
+        e.detail.controller.element,
+        e.detail.reflexId,
+        e.detail.payload,
+      ),
+    true,
+  ),
+    document.addEventListener(
+      'stimulus-reflex:success',
+      (e) => {
+        A2(
+          'success',
+          e.detail.element,
+          e.detail.controller.element,
+          e.detail.reflexId,
+          e.detail.payload,
+        ),
+          $2(
+            'after',
+            e.detail.element,
+            e.detail.controller.element,
+            e.detail.reflexId,
+            e.detail.payload,
+          );
+      },
+      true,
+    ),
+    document.addEventListener(
+      'stimulus-reflex:nothing',
+      (e) => {
+        $2(
+          'success',
+          e.detail.element,
+          e.detail.controller.element,
+          e.detail.reflexId,
+          e.detail.payload,
+        );
+      },
+      true,
+    ),
+    document.addEventListener(
+      'stimulus-reflex:error',
+      (e) => {
+        A2(
+          'error',
+          e.detail.element,
+          e.detail.controller.element,
+          e.detail.reflexId,
+          e.detail.payload,
+        ),
+          $2(
+            'after',
+            e.detail.element,
+            e.detail.controller.element,
+            e.detail.reflexId,
+            e.detail.payload,
+          );
+      },
+      true,
+    ),
+    document.addEventListener(
+      'stimulus-reflex:halted',
+      (e) =>
+        A2(
+          'halted',
+          e.detail.element,
+          e.detail.controller.element,
+          e.detail.reflexId,
+          e.detail.payload,
+        ),
+      true,
+    ),
+    document.addEventListener(
+      'stimulus-reflex:after',
+      (e) =>
+        A2(
+          'after',
+          e.detail.element,
+          e.detail.controller.element,
+          e.detail.reflexId,
+          e.detail.payload,
+        ),
+      true,
+    ),
+    document.addEventListener(
+      'stimulus-reflex:finalize',
+      (e) =>
+        A2(
+          'finalize',
+          e.detail.element,
+          e.detail.controller.element,
+          e.detail.reflexId,
+          e.detail.payload,
+        ),
+      true,
+    );
   var $2 = (e, t2, r2, l3, n3) => {
     if (!r2)
-      return void (s2.enabled && !i2[l3].warned && (console.warn(`StimulusReflex was not able execute callbacks or emit events for "${e}" or later life-cycle stages for this Reflex. The StimulusReflex Controller Element is no longer present in the DOM. Could you move the StimulusReflex Controller to an element higher in your DOM?`), i2[l3].warned = true));
-    if (!r2.reflexController || r2.reflexController && !r2.reflexController[l3])
-      return void (s2.enabled && !i2[l3].warned && (console.warn(`StimulusReflex detected that the StimulusReflex Controller responsible for this Reflex has been replaced with a new instance. Callbacks and events for "${e}" or later life-cycle stages cannot be executed.`), i2[l3].warned = true));
-    const { target: o3 } = r2.reflexData[l3] || {}, a3 = r2.reflexController[l3] || {}, d3 = `stimulus-reflex:${e}`, c3 = `${d3}:${o3.split("#")[1]}`, u3 = { reflex: o3, controller: a3, reflexId: l3, element: t2, payload: n3 }, f3 = { bubbles: true, cancelable: false, detail: u3 };
-    r2.dispatchEvent(new CustomEvent(d3, f3)), r2.dispatchEvent(new CustomEvent(c3, f3)), window.jQuery && (window.jQuery(r2).trigger(d3, u3), window.jQuery(r2).trigger(c3, u3));
+      return void (
+        s2.enabled &&
+        !i2[l3].warned &&
+        (console.warn(
+          `StimulusReflex was not able execute callbacks or emit events for "${e}" or later life-cycle stages for this Reflex. The StimulusReflex Controller Element is no longer present in the DOM. Could you move the StimulusReflex Controller to an element higher in your DOM?`,
+        ),
+        (i2[l3].warned = true))
+      );
+    if (
+      !r2.reflexController ||
+      (r2.reflexController && !r2.reflexController[l3])
+    )
+      return void (
+        s2.enabled &&
+        !i2[l3].warned &&
+        (console.warn(
+          `StimulusReflex detected that the StimulusReflex Controller responsible for this Reflex has been replaced with a new instance. Callbacks and events for "${e}" or later life-cycle stages cannot be executed.`,
+        ),
+        (i2[l3].warned = true))
+      );
+    const { target: o3 } = r2.reflexData[l3] || {},
+      a3 = r2.reflexController[l3] || {},
+      d3 = `stimulus-reflex:${e}`,
+      c3 = `${d3}:${o3.split('#')[1]}`,
+      u3 = {
+        reflex: o3,
+        controller: a3,
+        reflexId: l3,
+        element: t2,
+        payload: n3,
+      },
+      f3 = { bubbles: true, cancelable: false, detail: u3 };
+    r2.dispatchEvent(new CustomEvent(d3, f3)),
+      r2.dispatchEvent(new CustomEvent(c3, f3)),
+      window.jQuery &&
+        (window.jQuery(r2).trigger(d3, u3), window.jQuery(r2).trigger(c3, u3));
   };
-  var L2 = (e, t2) => E2(t2.getAttribute(o2.controller)).reduce((r2, l3) => {
-    const n3 = e.getControllerForElementAndIdentifier(t2, l3);
-    return n3 && n3.StimulusReflex && r2.push(n3), r2;
-  }, []);
+  var L2 = (e, t2) =>
+    E2(t2.getAttribute(o2.controller)).reduce((r2, l3) => {
+      const n3 = e.getControllerForElementAndIdentifier(t2, l3);
+      return n3 && n3.StimulusReflex && r2.push(n3), r2;
+    }, []);
   var O2 = (e) => {
-    if (!e.cableReady)
-      return;
-    if (e.version.replace(".pre", "-pre") !== X.version)
-      return void (s2.enabled && console.error(`Reflex failed due to cable_ready gem/NPM package version mismatch. Package versions must match exactly.
+    if (!e.cableReady) return;
+    if (e.version.replace('.pre', '-pre') !== X.version)
+      return void (
+        s2.enabled &&
+        console.error(`Reflex failed due to cable_ready gem/NPM package version mismatch. Package versions must match exactly.
 Note that if you are using pre-release builds, gems use the "x.y.z.preN" version format, while NPM packages use "x.y.z-preN".
 
 cable_ready gem: ${e.version}
-cable_ready NPM: ${X.version}`));
-    let r2, l3 = [];
+cable_ready NPM: ${X.version}`)
+      );
+    let r2,
+      l3 = [];
     for (let t2 = e.operations.length - 1; t2 >= 0; t2--)
-      e.operations[t2].stimulusReflex && (l3.push(e.operations[t2]), e.operations.splice(t2, 1));
+      e.operations[t2].stimulusReflex &&
+        (l3.push(e.operations[t2]), e.operations.splice(t2, 1));
     if (!l3.some((e2) => e2.stimulusReflex.url !== location.href))
-      if (l3.length && (r2 = l3[0].stimulusReflex, r2.payload = l3[0].payload), r2) {
+      if (
+        (l3.length &&
+          ((r2 = l3[0].stimulusReflex), (r2.payload = l3[0].payload)),
+        r2)
+      ) {
         const { reflexId: n3, payload: o3 } = r2;
         if (!i2[n3] && S2.disabled) {
-          const e2 = b2(r2.xpathController), t2 = b2(r2.xpathElement);
-          e2.reflexController = e2.reflexController || {}, e2.reflexData = e2.reflexData || {}, e2.reflexError = e2.reflexError || {}, e2.reflexController[n3] = i2.app.getControllerForElementAndIdentifier(e2, r2.reflexController), e2.reflexData[n3] = r2, $2("before", t2, e2, n3, o3), _2(r2);
+          const e2 = b2(r2.xpathController),
+            t2 = b2(r2.xpathElement);
+          (e2.reflexController = e2.reflexController || {}),
+            (e2.reflexData = e2.reflexData || {}),
+            (e2.reflexError = e2.reflexError || {}),
+            (e2.reflexController[n3] =
+              i2.app.getControllerForElementAndIdentifier(
+                e2,
+                r2.reflexController,
+              )),
+            (e2.reflexData[n3] = r2),
+            $2('before', t2, e2, n3, o3),
+            _2(r2);
         }
-        i2[n3] && (i2[n3].totalOperations = l3.length, i2[n3].pendingOperations = l3.length, i2[n3].completedOperations = 0, i2[n3].piggybackOperations = e.operations, X.perform(l3));
+        i2[n3] &&
+          ((i2[n3].totalOperations = l3.length),
+          (i2[n3].pendingOperations = l3.length),
+          (i2[n3].completedOperations = 0),
+          (i2[n3].piggybackOperations = e.operations),
+          X.perform(l3));
       } else
-        e.operations.length && i2[e.operations[0].reflexId] && X.perform(e.operations);
+        e.operations.length &&
+          i2[e.operations[0].reflexId] &&
+          X.perform(e.operations);
   };
   var _2 = (e) => {
     const { reflexId: t2 } = e;
-    i2[t2] = { finalStage: "finalize" };
+    i2[t2] = { finalStage: 'finalize' };
     const r2 = new Promise((r3, l3) => {
       i2[t2].promise = { resolve: r3, reject: l3, data: e };
     });
-    return r2.reflexId = t2, s2.enabled && r2.catch(() => {
-    }), r2;
+    return (r2.reflexId = t2), s2.enabled && r2.catch(() => {}), r2;
   };
   var D2 = ((e, t2 = 250) => {
     let r2;
     return (...l3) => {
-      clearTimeout(r2), r2 = setTimeout(() => {
-        r2 = null, e(...l3);
-      }, t2);
+      clearTimeout(r2),
+        (r2 = setTimeout(() => {
+          (r2 = null), e(...l3);
+        }, t2));
     };
   })(() => {
     document.querySelectorAll(`[${o2.reflex}]`).forEach((e) => {
-      const t2 = E2(e.getAttribute(o2.controller)), r2 = E2(e.getAttribute(o2.reflex)), l3 = E2(e.getAttribute(o2.action));
+      const t2 = E2(e.getAttribute(o2.controller)),
+        r2 = E2(e.getAttribute(o2.reflex)),
+        l3 = E2(e.getAttribute(o2.action));
       r2.forEach((r3) => {
-        const n4 = ((e2, t3) => t3.find((t4) => {
-          if (t4.identifier)
-            return ((e3) => {
-              const t5 = e3.match(/(?:.*->)?(.*?)(?:Reflex)?#/);
-              return t5 ? t5[1] : "";
-            })(e2).replace(/([a-z0–9])([A-Z])/g, "$1-$2").replace(/(::)/g, "--").toLowerCase() === t4.identifier;
-        }) || t3[0])(r3, ((e2, t3) => {
-          let r4 = [];
-          for (; t3; )
-            r4 = r4.concat(L2(e2, t3)), t3 = t3.parentElement;
-          return r4;
-        })(i2.app, e));
+        const n4 = ((e2, t3) =>
+          t3.find((t4) => {
+            if (t4.identifier)
+              return (
+                ((e3) => {
+                  const t5 = e3.match(/(?:.*->)?(.*?)(?:Reflex)?#/);
+                  return t5 ? t5[1] : '';
+                })(e2)
+                  .replace(/([a-z0–9])([A-Z])/g, '$1-$2')
+                  .replace(/(::)/g, '--')
+                  .toLowerCase() === t4.identifier
+              );
+          }) || t3[0])(
+          r3,
+          ((e2, t3) => {
+            let r4 = [];
+            for (; t3; ) (r4 = r4.concat(L2(e2, t3))), (t3 = t3.parentElement);
+            return r4;
+          })(i2.app, e),
+        );
         let o3;
-        n4 ? (o3 = `${r3.split("->")[0]}->${n4.identifier}#__perform`, l3.includes(o3) || l3.push(o3)) : (o3 = `${r3.split("->")[0]}->stimulus-reflex#__perform`, t2.includes("stimulus-reflex") || t2.push("stimulus-reflex"), l3.includes(o3) || l3.push(o3));
+        n4
+          ? ((o3 = `${r3.split('->')[0]}->${n4.identifier}#__perform`),
+            l3.includes(o3) || l3.push(o3))
+          : ((o3 = `${r3.split('->')[0]}->stimulus-reflex#__perform`),
+            t2.includes('stimulus-reflex') || t2.push('stimulus-reflex'),
+            l3.includes(o3) || l3.push(o3));
       });
-      const n3 = v2(t2), a3 = v2(l3);
-      n3 && e.getAttribute(o2.controller) != n3 && e.setAttribute(o2.controller, n3), a3 && e.getAttribute(o2.action) != a3 && e.setAttribute(o2.action, a3);
-    }), h2("stimulus-reflex:ready");
+      const n3 = v2(t2),
+        a3 = v2(l3);
+      n3 &&
+        e.getAttribute(o2.controller) != n3 &&
+        e.setAttribute(o2.controller, n3),
+        a3 && e.getAttribute(o2.action) != a3 && e.setAttribute(o2.action, a3);
+    }),
+      h2('stimulus-reflex:ready');
   }, 20);
   var T2 = class {
     constructor(e, t2, r2, l3, n3, o3, a3, s3, i3) {
-      this.options = e, this.reflexElement = t2, this.controllerElement = r2, this.reflexController = l3, this.permanentAttributeName = n3, this.target = o3, this.args = a3, this.url = s3, this.tabId = i3;
+      (this.options = e),
+        (this.reflexElement = t2),
+        (this.controllerElement = r2),
+        (this.reflexController = l3),
+        (this.permanentAttributeName = n3),
+        (this.target = o3),
+        (this.args = a3),
+        (this.url = s3),
+        (this.tabId = i3);
     }
     get attrs() {
-      return this._attrs = this._attrs || this.options.attrs || w2(this.reflexElement), this._attrs;
+      return (
+        (this._attrs =
+          this._attrs || this.options.attrs || w2(this.reflexElement)),
+        this._attrs
+      );
     }
     get reflexId() {
-      return this._reflexId = this._reflexId || this.options.reflexId || p2(), this._reflexId;
+      return (
+        (this._reflexId = this._reflexId || this.options.reflexId || p2()),
+        this._reflexId
+      );
     }
     get selectors() {
-      return this._selectors = this._selectors || this.options.selectors || ((e) => {
-        let t2 = [];
-        for (; 0 === t2.length && e; ) {
-          let r2 = e.getAttribute(o2.reflexRoot);
-          if (r2) {
-            0 === r2.length && e.id && (r2 = `#${e.id}`);
-            const l3 = r2.split(",").filter((e2) => e2.trim().length);
-            s2.enabled && 0 === l3.length && console.error(`No value found for ${o2.reflexRoot}. Add an #id to the element or provide a value for ${o2.reflexRoot}.`, e), t2 = t2.concat(l3.filter((e2) => document.querySelector(e2)));
-          }
-          e = e.parentElement ? e.parentElement.closest(`[${o2.reflexRoot}]`) : null;
-        }
-        return t2;
-      })(this.reflexElement), "string" == typeof this._selectors ? [this._selectors] : this._selectors;
+      return (
+        (this._selectors =
+          this._selectors ||
+          this.options.selectors ||
+          ((e) => {
+            let t2 = [];
+            for (; 0 === t2.length && e; ) {
+              let r2 = e.getAttribute(o2.reflexRoot);
+              if (r2) {
+                0 === r2.length && e.id && (r2 = `#${e.id}`);
+                const l3 = r2.split(',').filter((e2) => e2.trim().length);
+                s2.enabled &&
+                  0 === l3.length &&
+                  console.error(
+                    `No value found for ${o2.reflexRoot}. Add an #id to the element or provide a value for ${o2.reflexRoot}.`,
+                    e,
+                  ),
+                  (t2 = t2.concat(
+                    l3.filter((e2) => document.querySelector(e2)),
+                  ));
+              }
+              e = e.parentElement
+                ? e.parentElement.closest(`[${o2.reflexRoot}]`)
+                : null;
+            }
+            return t2;
+          })(this.reflexElement)),
+        'string' == typeof this._selectors ? [this._selectors] : this._selectors
+      );
     }
     get resolveLate() {
       return this.options.resolveLate || false;
     }
     get dataset() {
-      return this._dataset = this._dataset || ((e) => {
-        const t2 = e.attributes[o2.reflexDataset], r2 = e.attributes[o2.reflexDatasetAll], l3 = t2 && t2.value.split(" ") || [], n3 = r2 && r2.value.split(" ") || [], a3 = C2(e, l3), s3 = C2(e, n3), i3 = a3.reduce((e2, t3) => ({ ...I2(t3), ...e2 }), {}), d3 = { dataset: { ...I2(e), ...i3 }, datasetAll: {} };
-        return s3.forEach((e2) => {
-          const t3 = I2(e2);
-          Object.keys(t3).forEach((e3) => {
-            const r3 = t3[e3];
-            d3.datasetAll[e3] && Array.isArray(d3.datasetAll[e3]) ? d3.datasetAll[e3].push(r3) : d3.datasetAll[e3] = [r3];
-          });
-        }), d3;
-      })(this.reflexElement), this._dataset;
+      return (
+        (this._dataset =
+          this._dataset ||
+          ((e) => {
+            const t2 = e.attributes[o2.reflexDataset],
+              r2 = e.attributes[o2.reflexDatasetAll],
+              l3 = (t2 && t2.value.split(' ')) || [],
+              n3 = (r2 && r2.value.split(' ')) || [],
+              a3 = C2(e, l3),
+              s3 = C2(e, n3),
+              i3 = a3.reduce((e2, t3) => ({ ...I2(t3), ...e2 }), {}),
+              d3 = { dataset: { ...I2(e), ...i3 }, datasetAll: {} };
+            return (
+              s3.forEach((e2) => {
+                const t3 = I2(e2);
+                Object.keys(t3).forEach((e3) => {
+                  const r3 = t3[e3];
+                  d3.datasetAll[e3] && Array.isArray(d3.datasetAll[e3])
+                    ? d3.datasetAll[e3].push(r3)
+                    : (d3.datasetAll[e3] = [r3]);
+                });
+              }),
+              d3
+            );
+          })(this.reflexElement)),
+        this._dataset
+      );
     }
     get innerHTML() {
-      return this.includeInnerHtml ? this.reflexElement.innerHTML : "";
+      return this.includeInnerHtml ? this.reflexElement.innerHTML : '';
     }
     get textContent() {
-      return this.includeTextContent ? this.reflexElement.textContent : "";
+      return this.includeTextContent ? this.reflexElement.textContent : '';
     }
     get xpathController() {
       return g2(this.controllerElement);
@@ -4052,150 +5231,438 @@ cable_ready NPM: ${X.version}`));
       return g2(this.reflexElement);
     }
     get formSelector() {
-      const e = this.reflexElement.attributes[o2.reflexFormSelector] ? this.reflexElement.attributes[o2.reflexFormSelector].value : void 0;
+      const e = this.reflexElement.attributes[o2.reflexFormSelector]
+        ? this.reflexElement.attributes[o2.reflexFormSelector].value
+        : void 0;
       return this.options.formSelector || e;
     }
     get includeInnerHtml() {
-      const e = this.reflexElement.attributes[o2.reflexIncludeInnerHtml] || false;
-      return !(!this.options.includeInnerHTML && !e) && "false" !== e.value;
+      const e =
+        this.reflexElement.attributes[o2.reflexIncludeInnerHtml] || false;
+      return !(!this.options.includeInnerHTML && !e) && 'false' !== e.value;
     }
     get includeTextContent() {
-      const e = this.reflexElement.attributes[o2.reflexIncludeTextContent] || false;
-      return !(!this.options.includeTextContent && !e) && "false" !== e.value;
+      const e =
+        this.reflexElement.attributes[o2.reflexIncludeTextContent] || false;
+      return !(!this.options.includeTextContent && !e) && 'false' !== e.value;
     }
     get suppressLogging() {
-      return this.options.suppressLogging || this.reflexElement.attributes[o2.reflexSuppressLogging] || false;
+      return (
+        this.options.suppressLogging ||
+        this.reflexElement.attributes[o2.reflexSuppressLogging] ||
+        false
+      );
     }
     valueOf() {
-      return { attrs: this.attrs, dataset: this.dataset, selectors: this.selectors, reflexId: this.reflexId, resolveLate: this.resolveLate, suppressLogging: this.suppressLogging, xpathController: this.xpathController, xpathElement: this.xpathElement, inner_html: this.innerHTML, text_content: this.textContent, formSelector: this.formSelector, reflexController: this.reflexController, permanentAttributeName: this.permanentAttributeName, target: this.target, args: this.args, url: this.url, tabId: this.tabId, version: "3.5.0-pre9" };
+      return {
+        attrs: this.attrs,
+        dataset: this.dataset,
+        selectors: this.selectors,
+        reflexId: this.reflexId,
+        resolveLate: this.resolveLate,
+        suppressLogging: this.suppressLogging,
+        xpathController: this.xpathController,
+        xpathElement: this.xpathElement,
+        inner_html: this.innerHTML,
+        text_content: this.textContent,
+        formSelector: this.formSelector,
+        reflexController: this.reflexController,
+        permanentAttributeName: this.permanentAttributeName,
+        target: this.target,
+        args: this.args,
+        url: this.url,
+        tabId: this.tabId,
+        version: '3.5.0-pre9',
+      };
     }
   };
   var N2;
   var j2;
   var k2;
   var z2 = () => {
-    k2 = true, document.body.classList.replace("stimulus-reflex-disconnected", "stimulus-reflex-connected"), h2("stimulus-reflex:connected"), h2("stimulus-reflex:action-cable:connected");
+    (k2 = true),
+      document.body.classList.replace(
+        'stimulus-reflex-disconnected',
+        'stimulus-reflex-connected',
+      ),
+      h2('stimulus-reflex:connected'),
+      h2('stimulus-reflex:action-cable:connected');
   };
   var P2 = () => {
-    k2 = false, document.body.classList.replace("stimulus-reflex-connected", "stimulus-reflex-disconnected"), h2("stimulus-reflex:rejected"), h2("stimulus-reflex:action-cable:rejected"), Debug.enabled && console.warn("Channel subscription was rejected.");
+    (k2 = false),
+      document.body.classList.replace(
+        'stimulus-reflex-connected',
+        'stimulus-reflex-disconnected',
+      ),
+      h2('stimulus-reflex:rejected'),
+      h2('stimulus-reflex:action-cable:rejected'),
+      Debug.enabled && console.warn('Channel subscription was rejected.');
   };
   var F2 = (e) => {
-    k2 = false, document.body.classList.replace("stimulus-reflex-connected", "stimulus-reflex-disconnected"), h2("stimulus-reflex:disconnected", e), h2("stimulus-reflex:action-cable:disconnected", e);
+    (k2 = false),
+      document.body.classList.replace(
+        'stimulus-reflex-connected',
+        'stimulus-reflex-disconnected',
+      ),
+      h2('stimulus-reflex:disconnected', e),
+      h2('stimulus-reflex:action-cable:disconnected', e);
   };
-  var M2 = { consumer: N2, params: j2, get subscriptionActive() {
-    return k2;
-  }, createSubscription: (e) => {
-    N2 = N2 || e.application.consumer || createConsumer();
-    const { channel: t2 } = e.StimulusReflex, l3 = { channel: t2, ...j2 }, n3 = JSON.stringify(l3);
-    e.StimulusReflex.subscription = N2.subscriptions.findAll(n3)[0] || N2.subscriptions.create(l3, { received: O2, connected: z2, rejected: P2, disconnected: F2 });
-  }, connected: z2, rejected: P2, disconnected: F2, set(e, t2) {
-    N2 = e, j2 = t2;
-  } };
+  var M2 = {
+    consumer: N2,
+    params: j2,
+    get subscriptionActive() {
+      return k2;
+    },
+    createSubscription: (e) => {
+      N2 = N2 || e.application.consumer || createConsumer();
+      const { channel: t2 } = e.StimulusReflex,
+        l3 = { channel: t2, ...j2 },
+        n3 = JSON.stringify(l3);
+      e.StimulusReflex.subscription =
+        N2.subscriptions.findAll(n3)[0] ||
+        N2.subscriptions.create(l3, {
+          received: O2,
+          connected: z2,
+          rejected: P2,
+          disconnected: F2,
+        });
+    },
+    connected: z2,
+    rejected: P2,
+    disconnected: F2,
+    set(e, t2) {
+      (N2 = e), (j2 = t2);
+    },
+  };
   var H2 = (e) => {
     const { stimulusReflex: t2, payload: r2 } = e.detail || {};
-    if (!t2)
-      return;
-    const { reflexId: l3, xpathElement: n3, xpathController: o3 } = t2, a3 = b2(o3), s3 = b2(n3), d3 = i2[l3], { promise: c3 } = d3;
-    d3.pendingOperations--, d3.pendingOperations > 0 || (t2.resolveLate || setTimeout(() => c3.resolve({ element: s3, event: e, data: c3.data, payload: r2, reflexId: l3, toString: () => "" })), setTimeout(() => $2("success", s3, a3, l3, r2)));
+    if (!t2) return;
+    const { reflexId: l3, xpathElement: n3, xpathController: o3 } = t2,
+      a3 = b2(o3),
+      s3 = b2(n3),
+      d3 = i2[l3],
+      { promise: c3 } = d3;
+    d3.pendingOperations--,
+      d3.pendingOperations > 0 ||
+        (t2.resolveLate ||
+          setTimeout(() =>
+            c3.resolve({
+              element: s3,
+              event: e,
+              data: c3.data,
+              payload: r2,
+              reflexId: l3,
+              toString: () => '',
+            }),
+          ),
+        setTimeout(() => $2('success', s3, a3, l3, r2)));
   };
   var U2 = (e) => {
     const { stimulusReflex: r2, payload: l3 } = e.detail || {};
-    if (!r2)
-      return;
-    const { reflexId: n3, xpathElement: o3, xpathController: a3 } = r2, s3 = b2(a3), d3 = b2(o3), u3 = i2[n3], { promise: f3 } = u3;
-    u3.completedOperations++, c2(e, false), u3.completedOperations < u3.totalOperations || (r2.resolveLate && setTimeout(() => f3.resolve({ element: d3, event: e, data: f3.data, payload: l3, reflexId: n3, toString: () => "" })), setTimeout(() => $2("finalize", d3, s3, n3, l3)), u3.piggybackOperations.length && X.perform(u3.piggybackOperations));
+    if (!r2) return;
+    const { reflexId: n3, xpathElement: o3, xpathController: a3 } = r2,
+      s3 = b2(a3),
+      d3 = b2(o3),
+      u3 = i2[n3],
+      { promise: f3 } = u3;
+    u3.completedOperations++,
+      c2(e, false),
+      u3.completedOperations < u3.totalOperations ||
+        (r2.resolveLate &&
+          setTimeout(() =>
+            f3.resolve({
+              element: d3,
+              event: e,
+              data: f3.data,
+              payload: l3,
+              reflexId: n3,
+              toString: () => '',
+            }),
+          ),
+        setTimeout(() => $2('finalize', d3, s3, n3, l3)),
+        u3.piggybackOperations.length && X.perform(u3.piggybackOperations));
   };
   var q2 = (e, t2, r2, l3, n3) => {
-    l3.finalStage = "after", c2(e, false), setTimeout(() => r2.resolve({ data: r2.data, element: n3, event: e, payload: t2, reflexId: r2.data.reflexId, toString: () => "" }));
+    (l3.finalStage = 'after'),
+      c2(e, false),
+      setTimeout(() =>
+        r2.resolve({
+          data: r2.data,
+          element: n3,
+          event: e,
+          payload: t2,
+          reflexId: r2.data.reflexId,
+          toString: () => '',
+        }),
+      );
   };
   var Q = (e, t2, r2, l3, n3) => {
-    l3.finalStage = "halted", c2(e, true), setTimeout(() => r2.resolve({ data: r2.data, element: n3, event: e, payload: t2, reflexId: r2.data.reflexId, toString: () => "" }));
+    (l3.finalStage = 'halted'),
+      c2(e, true),
+      setTimeout(() =>
+        r2.resolve({
+          data: r2.data,
+          element: n3,
+          event: e,
+          payload: t2,
+          reflexId: r2.data.reflexId,
+          toString: () => '',
+        }),
+      );
   };
   var V = (e, t2, r2, l3, n3) => {
-    l3.finalStage = "after", u2(e), setTimeout(() => r2.reject({ data: r2.data, element: n3, event: e, payload: t2, reflexId: r2.data.reflexId, error: e.detail.body, toString: () => e.detail.body }));
+    (l3.finalStage = 'after'),
+      u2(e),
+      setTimeout(() =>
+        r2.reject({
+          data: r2.data,
+          element: n3,
+          event: e,
+          payload: t2,
+          reflexId: r2.data.reflexId,
+          error: e.detail.body,
+          toString: () => e.detail.body,
+        }),
+      );
   };
   var X2 = class extends Controller {
     constructor(...e) {
       super(...e), J(this);
     }
   };
-  var Y = (e, { controller: t2, consumer: r2, debug: l3, params: n3, isolate: a3, deprecate: d3 } = {}) => {
-    M2.set(r2, n3), document.addEventListener("DOMContentLoaded", () => {
-      document.body.classList.remove("stimulus-reflex-connected"), document.body.classList.add("stimulus-reflex-disconnected"), m2.enabled && r2 && console.warn("Deprecation warning: the next version of StimulusReflex will obtain a reference to consumer via the Stimulus application object.\nPlease add 'application.consumer = consumer' to your index.js after your Stimulus application has been established, and remove the consumer key from your StimulusReflex initialize() options object."), m2.enabled && S2.disabled && console.warn("Deprecation warning: the next version of StimulusReflex will standardize isolation mode, and the isolate option will be removed.\nPlease update your applications to assume that every tab will be isolated.");
-    }, { once: true }), S2.set(!!a3), i2.app = e, o2.set(e), i2.app.register("stimulus-reflex", t2 || X2), s2.set(!!l3), void 0 !== d3 && m2.set(d3);
-    new MutationObserver(D2).observe(document.documentElement, { attributeFilter: [o2.reflex, o2.action], childList: true, subtree: true });
+  var Y = (
+    e,
+    {
+      controller: t2,
+      consumer: r2,
+      debug: l3,
+      params: n3,
+      isolate: a3,
+      deprecate: d3,
+    } = {},
+  ) => {
+    M2.set(r2, n3),
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          document.body.classList.remove('stimulus-reflex-connected'),
+            document.body.classList.add('stimulus-reflex-disconnected'),
+            m2.enabled &&
+              r2 &&
+              console.warn(
+                "Deprecation warning: the next version of StimulusReflex will obtain a reference to consumer via the Stimulus application object.\nPlease add 'application.consumer = consumer' to your index.js after your Stimulus application has been established, and remove the consumer key from your StimulusReflex initialize() options object.",
+              ),
+            m2.enabled &&
+              S2.disabled &&
+              console.warn(
+                'Deprecation warning: the next version of StimulusReflex will standardize isolation mode, and the isolate option will be removed.\nPlease update your applications to assume that every tab will be isolated.',
+              );
+        },
+        { once: true },
+      ),
+      S2.set(!!a3),
+      (i2.app = e),
+      o2.set(e),
+      i2.app.register('stimulus-reflex', t2 || X2),
+      s2.set(!!l3),
+      void 0 !== d3 && m2.set(d3);
+    new MutationObserver(D2).observe(document.documentElement, {
+      attributeFilter: [o2.reflex, o2.action],
+      childList: true,
+      subtree: true,
+    });
   };
   var J = (e, t2 = {}) => {
-    e.StimulusReflex = { ...t2, channel: "StimulusReflex::Channel" }, M2.createSubscription(e), Object.assign(e, { isActionCableConnectionOpen() {
-      return this.StimulusReflex.subscription.consumer.connection.isOpen();
-    }, stimulate() {
-      const e2 = location.href, t3 = Array.from(arguments), r2 = t3.shift() || "StimulusReflex::Reflex#default_reflex", l3 = this.element, n3 = t3[0] && t3[0].nodeType === Node.ELEMENT_NODE ? t3.shift() : l3;
-      if ("number" === n3.type && n3.validity && n3.validity.badInput)
-        return void (s2.enabled && console.warn("Reflex aborted: invalid numeric input"));
-      const a3 = {};
-      if (t3[0] && "object" == typeof t3[0] && Object.keys(t3[0]).filter((e3) => ["attrs", "selectors", "reflexId", "resolveLate", "serializeForm", "suppressLogging", "includeInnerHTML", "includeTextContent"].includes(e3)).length) {
-        const e3 = t3.shift();
-        Object.keys(e3).forEach((t4) => a3[t4] = e3[t4]);
-      }
-      const i3 = new T2(a3, n3, l3, this.identifier, o2.reflexPermanent, r2, t3, e2, W), c3 = i3.reflexId;
-      if (!this.isActionCableConnectionOpen())
-        throw "The ActionCable connection is not open! `this.isActionCableConnectionOpen()` must return true before calling `this.stimulate()`";
-      if (!M2.subscriptionActive)
-        throw "The ActionCable channel subscription for StimulusReflex was rejected.";
-      l3.reflexController = l3.reflexController || {}, l3.reflexData = l3.reflexData || {}, l3.reflexError = l3.reflexError || {}, l3.reflexController[c3] = this, l3.reflexData[c3] = i3.valueOf(), $2("before", n3, l3, c3), setTimeout(() => {
-        const { params: e3 } = l3.reflexData[c3] || {}, t4 = n3.attributes[o2.reflexSerializeForm];
-        t4 && (a3.serializeForm = "false" !== t4.value);
-        const r3 = n3.closest(i3.formSelector) || document.querySelector(i3.formSelector) || n3.closest("form");
-        m2.enabled && void 0 === a3.serializeForm && r3 && console.warn(`Deprecation warning: the next version of StimulusReflex will not serialize forms by default.
+    (e.StimulusReflex = { ...t2, channel: 'StimulusReflex::Channel' }),
+      M2.createSubscription(e),
+      Object.assign(e, {
+        isActionCableConnectionOpen() {
+          return this.StimulusReflex.subscription.consumer.connection.isOpen();
+        },
+        stimulate() {
+          const e2 = location.href,
+            t3 = Array.from(arguments),
+            r2 = t3.shift() || 'StimulusReflex::Reflex#default_reflex',
+            l3 = this.element,
+            n3 =
+              t3[0] && t3[0].nodeType === Node.ELEMENT_NODE ? t3.shift() : l3;
+          if ('number' === n3.type && n3.validity && n3.validity.badInput)
+            return void (
+              s2.enabled &&
+              console.warn('Reflex aborted: invalid numeric input')
+            );
+          const a3 = {};
+          if (
+            t3[0] &&
+            'object' == typeof t3[0] &&
+            Object.keys(t3[0]).filter((e3) =>
+              [
+                'attrs',
+                'selectors',
+                'reflexId',
+                'resolveLate',
+                'serializeForm',
+                'suppressLogging',
+                'includeInnerHTML',
+                'includeTextContent',
+              ].includes(e3),
+            ).length
+          ) {
+            const e3 = t3.shift();
+            Object.keys(e3).forEach((t4) => (a3[t4] = e3[t4]));
+          }
+          const i3 = new T2(
+              a3,
+              n3,
+              l3,
+              this.identifier,
+              o2.reflexPermanent,
+              r2,
+              t3,
+              e2,
+              W,
+            ),
+            c3 = i3.reflexId;
+          if (!this.isActionCableConnectionOpen())
+            throw 'The ActionCable connection is not open! `this.isActionCableConnectionOpen()` must return true before calling `this.stimulate()`';
+          if (!M2.subscriptionActive)
+            throw 'The ActionCable channel subscription for StimulusReflex was rejected.';
+          (l3.reflexController = l3.reflexController || {}),
+            (l3.reflexData = l3.reflexData || {}),
+            (l3.reflexError = l3.reflexError || {}),
+            (l3.reflexController[c3] = this),
+            (l3.reflexData[c3] = i3.valueOf()),
+            $2('before', n3, l3, c3),
+            setTimeout(() => {
+              const { params: e3 } = l3.reflexData[c3] || {},
+                t4 = n3.attributes[o2.reflexSerializeForm];
+              t4 && (a3.serializeForm = 'false' !== t4.value);
+              const r3 =
+                n3.closest(i3.formSelector) ||
+                document.querySelector(i3.formSelector) ||
+                n3.closest('form');
+              m2.enabled &&
+                void 0 === a3.serializeForm &&
+                r3 &&
+                console.warn(`Deprecation warning: the next version of StimulusReflex will not serialize forms by default.
 Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or pass { serializeForm: true } as an option to stimulate.`);
-        const s3 = false === a3.serializeForm ? "" : ((e4, t5 = {}) => {
-          if (!e4)
-            return "";
-          const r4 = t5.w || window, { element: l4 } = t5, n4 = new r4.FormData(e4), o3 = Array.from(n4, (e5) => e5.map(encodeURIComponent).join("=")), a4 = e4.querySelector("input[type=submit]");
-          return l4 && l4.name && "INPUT" === l4.nodeName && "submit" === l4.type ? o3.push(`${encodeURIComponent(l4.name)}=${encodeURIComponent(l4.value)}`) : a4 && a4.name && o3.push(`${encodeURIComponent(a4.name)}=${encodeURIComponent(a4.value)}`), Array.from(o3).join("&");
-        })(r3, { element: n3 });
-        l3.reflexData[c3] = { ...i3.valueOf(), params: e3, formData: s3 }, this.StimulusReflex.subscription.send(l3.reflexData[c3]);
+              const s3 =
+                false === a3.serializeForm
+                  ? ''
+                  : ((e4, t5 = {}) => {
+                      if (!e4) return '';
+                      const r4 = t5.w || window,
+                        { element: l4 } = t5,
+                        n4 = new r4.FormData(e4),
+                        o3 = Array.from(n4, (e5) =>
+                          e5.map(encodeURIComponent).join('='),
+                        ),
+                        a4 = e4.querySelector('input[type=submit]');
+                      return (
+                        l4 &&
+                        l4.name &&
+                        'INPUT' === l4.nodeName &&
+                        'submit' === l4.type
+                          ? o3.push(
+                              `${encodeURIComponent(
+                                l4.name,
+                              )}=${encodeURIComponent(l4.value)}`,
+                            )
+                          : a4 &&
+                            a4.name &&
+                            o3.push(
+                              `${encodeURIComponent(
+                                a4.name,
+                              )}=${encodeURIComponent(a4.value)}`,
+                            ),
+                        Array.from(o3).join('&')
+                      );
+                    })(r3, { element: n3 });
+              (l3.reflexData[c3] = {
+                ...i3.valueOf(),
+                params: e3,
+                formData: s3,
+              }),
+                this.StimulusReflex.subscription.send(l3.reflexData[c3]);
+            });
+          const u3 = _2(i3.valueOf());
+          return d2(c3, r2, t3, this.context.scope.identifier, n3, l3), u3;
+        },
+        __perform(e2) {
+          let t3,
+            r2 = e2.target;
+          for (; r2 && !t3; )
+            (t3 = r2.getAttribute(o2.reflex)),
+              (t3 && t3.trim().length) || (r2 = r2.parentElement);
+          const l3 = E2(t3).find((t4) => t4.split('->')[0] === e2.type);
+          l3 &&
+            (e2.preventDefault(),
+            e2.stopPropagation(),
+            this.stimulate(l3.split('->')[1], r2));
+        },
       });
-      const u3 = _2(i3.valueOf());
-      return d2(c3, r2, t3, this.context.scope.identifier, n3, l3), u3;
-    }, __perform(e2) {
-      let t3, r2 = e2.target;
-      for (; r2 && !t3; )
-        t3 = r2.getAttribute(o2.reflex), t3 && t3.trim().length || (r2 = r2.parentElement);
-      const l3 = E2(t3).find((t4) => t4.split("->")[0] === e2.type);
-      l3 && (e2.preventDefault(), e2.stopPropagation(), this.stimulate(l3.split("->")[1], r2));
-    } });
   };
   var W = p2();
   var Z = (e, t2 = {}) => {
     J(e, t2);
   };
-  document.addEventListener("cable-ready:after-dispatch-event", (e) => {
-    const { stimulusReflex: r2, payload: l3, name: n3, body: o3 } = e.detail || {}, a3 = n3.split("-")[2];
-    if (!r2 || !["nothing", "halted", "error"].includes(a3))
-      return;
-    const { reflexId: s3, xpathElement: d3, xpathController: c3 } = r2, u3 = b2(d3), f3 = b2(c3), m3 = i2[s3], { promise: p3 } = m3;
-    switch (f3 && (f3.reflexError = f3.reflexError || {}, "error" === a3 && (f3.reflexError[s3] = o3)), a3) {
-      case "nothing":
+  document.addEventListener('cable-ready:after-dispatch-event', (e) => {
+    const {
+        stimulusReflex: r2,
+        payload: l3,
+        name: n3,
+        body: o3,
+      } = e.detail || {},
+      a3 = n3.split('-')[2];
+    if (!r2 || !['nothing', 'halted', 'error'].includes(a3)) return;
+    const { reflexId: s3, xpathElement: d3, xpathController: c3 } = r2,
+      u3 = b2(d3),
+      f3 = b2(c3),
+      m3 = i2[s3],
+      { promise: p3 } = m3;
+    switch (
+      (f3 &&
+        ((f3.reflexError = f3.reflexError || {}),
+        'error' === a3 && (f3.reflexError[s3] = o3)),
+      a3)
+    ) {
+      case 'nothing':
         q2(e, l3, p3, m3, u3);
         break;
-      case "error":
+      case 'error':
         V(e, l3, p3, m3, u3);
         break;
-      case "halted":
+      case 'halted':
         Q(e, l3, p3, m3, u3);
     }
-    setTimeout(() => $2(a3, u3, f3, s3, l3)), m3.piggybackOperations.length && X.perform(m3.piggybackOperations);
-  }), document.addEventListener("cable-ready:before-inner-html", H2), document.addEventListener("cable-ready:before-morph", H2), document.addEventListener("cable-ready:after-inner-html", U2), document.addEventListener("cable-ready:after-morph", U2), window.addEventListener("load", D2);
-  var B = { ...Object.freeze({ __proto__: null, initialize: Y, register: J, useReflex: Z }), get debug() {
-    return s2.value;
-  }, set debug(e) {
-    s2.set(!!e);
-  }, get deprecate() {
-    return m2.value;
-  }, set deprecate(e) {
-    m2.set(!!e);
-  } };
+    setTimeout(() => $2(a3, u3, f3, s3, l3)),
+      m3.piggybackOperations.length && X.perform(m3.piggybackOperations);
+  }),
+    document.addEventListener('cable-ready:before-inner-html', H2),
+    document.addEventListener('cable-ready:before-morph', H2),
+    document.addEventListener('cable-ready:after-inner-html', U2),
+    document.addEventListener('cable-ready:after-morph', U2),
+    window.addEventListener('load', D2);
+  var B = {
+    ...Object.freeze({
+      __proto__: null,
+      initialize: Y,
+      register: J,
+      useReflex: Z,
+    }),
+    get debug() {
+      return s2.value;
+    },
+    set debug(e) {
+      s2.set(!!e);
+    },
+    get deprecate() {
+      return m2.value;
+    },
+    set deprecate(e) {
+      m2.set(!!e);
+    },
+  };
   window.StimulusReflex = B;
 
   // controllers/application_controller.js
@@ -4219,35 +5686,40 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
      *
      *   reflexId - a UUID4 or developer-provided unique identifier for each Reflex
      */
-    beforeReflex(element, reflex, noop2, reflexId) {
-    }
-    reflexSuccess(element, reflex, noop2, reflexId) {
-    }
-    reflexError(element, reflex, error2, reflexId) {
-    }
-    reflexHalted(element, reflex, error2, reflexId) {
-    }
-    afterReflex(element, reflex, noop2, reflexId) {
-    }
-    finalizeReflex(element, reflex, noop2, reflexId) {
-    }
+    beforeReflex(element, reflex, noop2, reflexId) {}
+    reflexSuccess(element, reflex, noop2, reflexId) {}
+    reflexError(element, reflex, error2, reflexId) {}
+    reflexHalted(element, reflex, error2, reflexId) {}
+    afterReflex(element, reflex, noop2, reflexId) {}
+    finalizeReflex(element, reflex, noop2, reflexId) {}
   };
 
   // controllers/create_todo_controller.js
   var create_todo_controller_exports = {};
   __export(create_todo_controller_exports, {
-    default: () => create_todo_controller_default
+    default: () => create_todo_controller_default,
   });
   var create_todo_controller_default = class extends application_controller_default {
     add(e) {
       e.preventDefault();
-      Array.from(e.target.elements).forEach((e2) => e2.value = "");
-      this.stimulate("CreateTodoComponent#add", e.target);
+      Array.from(e.target.elements).forEach((e2) => (e2.value = ''));
+      this.stimulate('CreateTodoComponent#add', e.target);
     }
   };
 
   // rails:/Users/xiaobo/Desktop/stimulus_reflex_todos/app/javascript/controllers/**/*_controller.js
-  var modules = [{ name: "application", module: application_controller_exports, filename: "./application_controller.js" }, { name: "create-todo", module: create_todo_controller_exports, filename: "./create_todo_controller.js" }];
+  var modules = [
+    {
+      name: 'application',
+      module: application_controller_exports,
+      filename: './application_controller.js',
+    },
+    {
+      name: 'create-todo',
+      module: create_todo_controller_exports,
+      filename: './create_todo_controller.js',
+    },
+  ];
   var controller_default = modules;
 
   // controllers/index.js
@@ -4260,6 +5732,9 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
 
   // config/setupStimulus.js
   application.consumer = consumer_default;
-  B.initialize(application, { controller: application_controller_default, isolate: true });
+  B.initialize(application, {
+    controller: application_controller_default,
+    isolate: true,
+  });
 })();
 //# sourceMappingURL=application.js.map

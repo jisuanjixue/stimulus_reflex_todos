@@ -1,1 +1,1 @@
-import "./**/*_channel.js"
+import './**/*_channel.js';
