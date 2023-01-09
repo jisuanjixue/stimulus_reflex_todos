@@ -37,7 +37,7 @@ class TodosComponent < ViewComponentReflex::Component
   end
 
   def tags
-    buttons = %w[All active completed]
+    buttons = %w[All Active Completed]
     tag.div class: "" do
       buttons.each do |button|
         opts = {
