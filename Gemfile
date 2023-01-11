@@ -26,6 +26,9 @@ gem "view_component_reflex", "3.2.0"
 # A new way to craft modern, reactive web interfaces with Ruby on Rails.
 gem "stimulus_reflex", "~> 3.5.pre9"
 
+# ViewComponent common UI 
+gem "primer_view_components"
+
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 # gem "turbo-rails"
 
