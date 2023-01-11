@@ -7,7 +7,7 @@ class TodoComponent < ViewComponentReflex::Component
   end
 
   def collection_key
-    @todo.id
+    @todo.id || SecureRandom.hex(16)
   end
 
   def toggle_completed

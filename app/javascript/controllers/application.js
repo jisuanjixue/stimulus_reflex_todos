@@ -8,5 +8,9 @@ application.warnings = true;
 application.debug = false;
 window.Stimulus = application;
 application.load(definitions);
+document.documentElement.setAttribute(
+  'data-theme',
+  window.localStorage.getItem('theme'),
+);
 
 export { application };
