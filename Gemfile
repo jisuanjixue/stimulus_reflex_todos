@@ -89,3 +89,5 @@ end
 
 
 gem "kredis", "~> 1.3"
+
+gem "cable_ready", "~> 5.0.pre9"
