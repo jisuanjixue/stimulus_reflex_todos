@@ -4291,7 +4291,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   // channels/consumer.js
   var consumer_default = createConsumer();
 
-  // config/setupStimulus.js
+  // config/cable_ready.js
+  X.initialize({ consumer: consumer_default });
+
+  // config/stimulus_reflex.js
   application.consumer = consumer_default;
   B.debug = true;
   window.reflexes = B.reflexes;
