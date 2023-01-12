@@ -10,13 +10,12 @@
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-  <%= javascript_include_tag("primer_view_components") %>
 </head>
 
 <body>
   <div
     class="flex flex-col min-h-screen bg-gradient-to-br from-primary to-secondary lg:bg-tertiary lg:from-inherit lg:to-inherit">
-    <div class="mockup-window border bg-base-300">
+    <div class="mockup-window bg-base-300">
       <%= render(AppBackgroundComponent.new) %>
       <%= render(HeadLineComponent.new) %>
       <%= yield %>
