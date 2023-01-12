@@ -24,6 +24,18 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
+  config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" } }
+
+  config.session_store :redis_session_store, {
+    key: "todo_list_session_",
+    serializer: :json,
+    redis: {
+      expire_after: 1.year,
+      ttl: 1.year,
+      url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" },
+    },
+  }
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 

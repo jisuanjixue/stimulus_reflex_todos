@@ -25,7 +25,15 @@ Rails.application.configure do
 
     # config.cache_store = :memory_store
     config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } }
-    config.session_store :cache_store, key: "_sessions_development", compress: true, pool_size: 5, expire_after: 1.year
+    config.session_store :redis_session_store, {
+      key: "todo_list_session_",
+      serializer: :json,
+      redis: {
+        expire_after: 1.year,
+        ttl: 1.year,
+        url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" }
+      }
+    }
     config.public_file_server.headers = {
       "Cache-Control" => "public, max-age=#{2.days.to_i}",
     }

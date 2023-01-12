@@ -38,6 +38,9 @@ gem "cssbundling-rails"
 # Use Redis adapter to run Action Cable in production
 gem "redis", "~> 4.0"
 
+# Redis session
+gem "redis-session-store", "~> 0.11.3"
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
@@ -84,3 +87,5 @@ group :development do
   # gem "spring"
 end
 
+
+gem "kredis", "~> 1.3"
