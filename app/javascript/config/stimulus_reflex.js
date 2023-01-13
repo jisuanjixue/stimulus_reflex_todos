@@ -5,7 +5,8 @@ import controller from '../controllers/application_controller';
 import consumer from '../channels/consumer';
 
 application.consumer = consumer;
-StimulusReflex.debug = true;
+// StimulusReflex.debug = true;
+StimulusReflex.debug = process.env.RAILS_ENV === 'development';
 window.reflexes = StimulusReflex.reflexes;
 
 // Load and register StimulusReflex

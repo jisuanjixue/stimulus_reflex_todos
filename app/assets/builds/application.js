@@ -4296,7 +4296,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
 
   // config/stimulus_reflex.js
   application.consumer = consumer_default;
-  B.debug = true;
+  B.debug = process.env.RAILS_ENV === "development";
   window.reflexes = B.reflexes;
   B.initialize(application, { controller: application_controller_default, isolate: true });
 })();
