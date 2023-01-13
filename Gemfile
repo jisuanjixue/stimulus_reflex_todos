@@ -19,7 +19,7 @@ gem "puma", "~> 5.0"
 gem "jsbundling-rails"
 
 # A framework for building reusable, testable & encapsulated view components in Ruby on Rails. (https://viewcomponent.org)
-gem 'view_component'
+gem 'view_component', '~> 2.82'
 
 # ViewComponentReflex allows you to write reflexes right in your view component code.
 gem "view_component_reflex", "3.2.0"

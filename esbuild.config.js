@@ -29,6 +29,12 @@ const config = {
   sourcemap: true,
   incremental: watch,
   banner: { js: bannerJs },
+  define: {
+    global: 'window',
+    RAILS_ENV: JSON.stringify(process.env.RAILS_ENV || 'development'),
+    VERSION: JSON.stringify(process.env.IMAGE_TAG || 'beta'),
+    COMMITHASH: JSON.stringify(process.env.GIT_COMMIT || ''),
+  },
 };
 
 if (watch) {

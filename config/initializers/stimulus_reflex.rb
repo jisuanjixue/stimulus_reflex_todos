@@ -15,6 +15,8 @@ StimulusReflex.configure do |config|
   # `:exit` or `:warn` or `:ignore`
   config.on_failed_sanity_checks = :warn
 
+  config.logging = proc { "[#{session_id}] #{operation_counter.magenta} #{reflex_info.green} -> #{selector.cyan} via #{mode} Morph (#{operation.yellow})" }
+
   # config.on_new_version_available = :ignore
 
   # Enable/disable exiting / warning when there is no default URLs specified in environment config

@@ -12,6 +12,7 @@
     "esbuild": "^0.16.15",
     "esbuild-plugin-stimulus": "^0.1.5",
     "postcss": "^8.4.21",
+    "radiolabel": "^1.1.1",
     "stimulus_reflex": "^3.5.0-pre9",
     "tailwindcss": "^3.2.4"
   },

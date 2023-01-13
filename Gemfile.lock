@@ -230,7 +230,7 @@ GEM
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
-    view_component (2.80.0)
+    view_component (2.82.0)
       activesupport (>= 5.2.0, < 8.0)
       concurrent-ruby (~> 1.0)
       method_source (~> 1.0)
@@ -271,7 +271,7 @@ DEPENDENCIES
   rubocop-rspec
   stimulus_reflex (~> 3.5.pre9)
   tzinfo-data
-  view_component
+  view_component (~> 2.82)
   view_component_reflex (= 3.2.0)
   web-console
 

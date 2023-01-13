@@ -3,10 +3,13 @@ import { application } from '../controllers/application';
 import StimulusReflex from 'stimulus_reflex';
 import controller from '../controllers/application_controller';
 import consumer from '../channels/consumer';
+import Radiolabel from 'radiolabel';
 
 application.consumer = consumer;
+application.register('radiolabel', Radiolabel);
 // StimulusReflex.debug = true;
-StimulusReflex.debug = process.env.RAILS_ENV === 'development';
+StimulusReflex.debug = true;
+
 window.reflexes = StimulusReflex.reflexes;
 
 // Load and register StimulusReflex

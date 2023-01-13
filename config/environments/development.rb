@@ -17,6 +17,8 @@ Rails.application.configure do
   # Enable server timing
   config.server_timing = true
 
+  config.log_level = :warn
+
   config.action_controller.default_url_options = { host: "localhost", port: 3000 }
   # config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
@@ -27,7 +29,7 @@ Rails.application.configure do
     config.action_controller.enable_fragment_cache_logging = true
 
     config.cache_store = :redis_cache_store, { driver: :hiredis, url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } }
-    config.session_store :cache_store, key: "_session_development", compress: true, pool_size: 5, expire_after: 1.year
+    config.session_store :cache_store, key: "stimulus_reflex_todo_development", compress: true, pool_size: 5, expire_after: 1.year
     config.public_file_server.headers = {
       "Cache-Control" => "public, max-age=#{2.days.to_i}",
     }

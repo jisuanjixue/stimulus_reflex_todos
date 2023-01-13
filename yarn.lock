@@ -127,6 +127,11 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
+"@hotwired/stimulus-webpack-helpers@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/@hotwired/stimulus-webpack-helpers/-/stimulus-webpack-helpers-1.0.1.tgz#4cd74487adeca576c9865ac2b9fe5cb20cef16dd"
+  integrity sha512-wa/zupVG0eWxRYJjC1IiPBdt3Lruv0RqGN+/DTMmUWUyMAEB27KXmVY6a8YpUVTM7QwVuaLNGW4EqDgrS2upXQ==
+
 "@hotwired/stimulus@>= 3.0", "@hotwired/stimulus@^3.2.1":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@hotwired/stimulus/-/stimulus-3.2.1.tgz#e3de23623b0c52c247aba4cd5d530d257008676b"
@@ -317,17 +322,17 @@ browserslist@^4.21.4:
     node-releases "^2.0.6"
     update-browserslist-db "^1.0.9"
 
-"cable_ready@>= 5.0.0-pre9":
+"cable_ready@>= 5.0.0-pre9", cable_ready@^5.0.0-pre9:
   version "5.0.0-pre9"
-  resolved "https://registry.yarnpkg.com/cable_ready/-/cable_ready-5.0.0-pre9.tgz#9c082b796f7b7add7965ce637a8d8717726be5ab"
+  resolved "https://registry.npmmirror.com/cable_ready/-/cable_ready-5.0.0-pre9.tgz#9c082b796f7b7add7965ce637a8d8717726be5ab"
   integrity sha512-m7XggG+LRPFLsbH78G603F3AAYpkv+VfGCouN6RrP20Mgz9H0+xr7v2DN2F1CeJBBAliYPKcAt/48uTGjSrBaA==
   dependencies:
     morphdom "^2.6.1"
 
-cable_ready@^5.0.0-pre9:
-  version "5.0.0-pre9"
-  resolved "https://registry.npmmirror.com/cable_ready/-/cable_ready-5.0.0-pre9.tgz#9c082b796f7b7add7965ce637a8d8717726be5ab"
-  integrity sha512-m7XggG+LRPFLsbH78G603F3AAYpkv+VfGCouN6RrP20Mgz9H0+xr7v2DN2F1CeJBBAliYPKcAt/48uTGjSrBaA==
+cable_ready@>=4.5.0:
+  version "4.5.0"
+  resolved "https://registry.npmmirror.com/cable_ready/-/cable_ready-4.5.0.tgz#1207218dd16934d12addfbd34c26ead853570672"
+  integrity sha512-9bom1DuYe1teBdRckgKWjg+rWRLWrkOvkhzlXkhb33X+Pfu/QK9e4vGk6hGK9PVKVr0SYZC41dByFGknW4spLg==
   dependencies:
     morphdom "^2.6.1"
 
@@ -804,6 +809,11 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.npmmirror.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
+gsap@^3.8.0:
+  version "3.11.4"
+  resolved "https://registry.npmmirror.com/gsap/-/gsap-3.11.4.tgz#e6d972d3509a7431b86d81d6fc3bbeb6862e5ff1"
+  integrity sha512-McHhEguHyExMMnjqKA8G+7TvxmlKQGMbjgwAilnFe1e4id7V/tFveRQ2YMZhTYu0oxHGWvbPltdVYQOu3z1SCA==
+
 has-flag@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmmirror.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
@@ -1188,6 +1198,15 @@ quick-lru@^5.1.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
 
+radiolabel@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/radiolabel/-/radiolabel-1.1.1.tgz#34ac99b62eddeff728068163e28a7fa9a5ac92a8"
+  integrity sha512-ffPhtYGLqEEysijyGg4b3ZNhlHnqM1J5dHzhZ2U/yNALnClOxkdTfsMUAbSLymc9mHTLdZoOBJFn7idO/heDkw==
+  dependencies:
+    cable_ready ">=4.5.0"
+    gsap "^3.8.0"
+    stimulus ">=2.0.0"
+
 read-cache@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/read-cache/-/read-cache-1.0.0.tgz#e664ef31161166c9751cdbe8dbcf86b5fb58f774"
@@ -1263,6 +1282,14 @@ source-map-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
   integrity sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==
+
+stimulus@>=2.0.0:
+  version "3.2.1"
+  resolved "https://registry.npmmirror.com/stimulus/-/stimulus-3.2.1.tgz#bf049a4379ed4ff7475515acce1f0b6fa15a0187"
+  integrity sha512-EhpuHnTwtkWrE5m7tQxLBLsi1aE6xJ/9MbB88aKXZSquIC4pCueKJ2AGaF5gq+/BzP7+xvYaVYA0j1dIUuBsgA==
+  dependencies:
+    "@hotwired/stimulus" "^3.2.1"
+    "@hotwired/stimulus-webpack-helpers" "^1.0.0"
 
 stimulus_reflex@^3.5.0-pre9:
   version "3.5.0-pre9"
