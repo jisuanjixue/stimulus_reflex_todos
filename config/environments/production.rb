@@ -24,14 +24,16 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
 
-  config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" } }
+  config.cache_store = :redis_cache_store, { driver: :hiredis, url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" } }
 
   config.session_store = :redis_session_store, {
-    key: "todo_list_session_",
+    key: "_session_production",
     serializer: :json,
     redis: {
+      driver: :hiredis,
       expire_after: 1.year,
       ttl: 1.year,
+      key_prefix: "app:session:",
       url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" },
     },
   }

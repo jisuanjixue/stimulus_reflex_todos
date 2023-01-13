@@ -17,6 +17,9 @@ Rails.application.configure do
   # Enable server timing
   config.server_timing = true
 
+  config.action_controller.default_url_options = { host: "localhost", port: 3000 }
+  # config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
   if Rails.root.join("tmp/caching-dev.txt").exist?
@@ -24,21 +27,12 @@ Rails.application.configure do
     config.action_controller.enable_fragment_cache_logging = true
 
     config.cache_store = :redis_cache_store, { driver: :hiredis, url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } }
-    config.session_store = :redis_session_store, {
-      key: "todo_list_session_",
-      serializer: :json,
-      pool_size: 6,
-      redis: {
-        expire_after: 1.year,
-        ttl: 1.year,
-        url: ENV.fetch("REDIS_URL") { "redis://127.0.0.1:6379/1" },
-      },
-    }
+    config.session_store :cache_store, key: "_session_development", compress: true, pool_size: 5, expire_after: 1.year
     config.public_file_server.headers = {
       "Cache-Control" => "public, max-age=#{2.days.to_i}",
     }
   else
-    config.action_controller.perform_caching = true
+    config.action_controller.perform_caching = false
 
     config.cache_store = :null_store
   end

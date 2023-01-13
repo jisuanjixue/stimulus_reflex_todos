@@ -36,7 +36,7 @@ gem "stimulus_reflex", "~> 3.5.pre9"
 gem "cssbundling-rails"
 
 # Use Redis adapter to run Action Cable in production
-gem "redis", "~> 4.0"
+gem "redis", ">= 4.0", :require => ["redis", "redis/connection/hiredis"]
 gem 'hiredis'
 
 # Redis session
@@ -89,6 +89,6 @@ group :development do
 end
 
 
-gem "kredis", "~> 1.3"
-
 gem "cable_ready", "~> 5.0.pre9"
+
+# gem "activerecord-session_store", "~> 2.0"
