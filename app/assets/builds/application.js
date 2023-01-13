@@ -1,9 +1,14 @@
  (() => new EventSource("http://localhost:8082").onmessage = () => location.reload())();
 (() => {
   var __defProp = Object.defineProperty;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
   };
 
   // ../../node_modules/@hotwired/stimulus/dist/stimulus.js
@@ -335,8 +340,8 @@
       let passes = true;
       for (const [name, value] of Object.entries(this.eventOptions)) {
         if (name in actionDescriptorFilters) {
-          const filter = actionDescriptorFilters[name];
-          passes = passes && filter({ name, value, event, element });
+          const filter2 = actionDescriptorFilters[name];
+          passes = passes && filter2({ name, value, event, element });
         } else {
           continue;
         }
@@ -1898,8 +1903,8 @@
     register(identifier, controllerConstructor) {
       this.load({ identifier, controllerConstructor });
     }
-    registerActionOption(name, filter) {
-      this.actionDescriptorFilters[name] = filter;
+    registerActionOption(name, filter2) {
+      this.actionDescriptorFilters[name] = filter2;
     }
     load(head, ...rest) {
       const definitions2 = Array.isArray(head) ? head : [head, ...rest];
@@ -4202,10 +4207,687 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   } };
   window.StimulusReflex = B;
 
+  // ../../node_modules/hotkeys-js/dist/hotkeys.esm.js
+  var isff = typeof navigator !== "undefined" ? navigator.userAgent.toLowerCase().indexOf("firefox") > 0 : false;
+  function addEvent(object, event, method, useCapture) {
+    if (object.addEventListener) {
+      object.addEventListener(event, method, useCapture);
+    } else if (object.attachEvent) {
+      object.attachEvent("on".concat(event), function() {
+        method(window.event);
+      });
+    }
+  }
+  function getMods(modifier, key) {
+    var mods = key.slice(0, key.length - 1);
+    for (var i3 = 0; i3 < mods.length; i3++) {
+      mods[i3] = modifier[mods[i3].toLowerCase()];
+    }
+    return mods;
+  }
+  function getKeys(key) {
+    if (typeof key !== "string")
+      key = "";
+    key = key.replace(/\s/g, "");
+    var keys = key.split(",");
+    var index = keys.lastIndexOf("");
+    for (; index >= 0; ) {
+      keys[index - 1] += ",";
+      keys.splice(index, 1);
+      index = keys.lastIndexOf("");
+    }
+    return keys;
+  }
+  function compareArray(a1, a22) {
+    var arr1 = a1.length >= a22.length ? a1 : a22;
+    var arr2 = a1.length >= a22.length ? a22 : a1;
+    var isIndex = true;
+    for (var i3 = 0; i3 < arr1.length; i3++) {
+      if (arr2.indexOf(arr1[i3]) === -1)
+        isIndex = false;
+    }
+    return isIndex;
+  }
+  var _keyMap = {
+    backspace: 8,
+    "\u232B": 8,
+    tab: 9,
+    clear: 12,
+    enter: 13,
+    "\u21A9": 13,
+    return: 13,
+    esc: 27,
+    escape: 27,
+    space: 32,
+    left: 37,
+    up: 38,
+    right: 39,
+    down: 40,
+    del: 46,
+    delete: 46,
+    ins: 45,
+    insert: 45,
+    home: 36,
+    end: 35,
+    pageup: 33,
+    pagedown: 34,
+    capslock: 20,
+    num_0: 96,
+    num_1: 97,
+    num_2: 98,
+    num_3: 99,
+    num_4: 100,
+    num_5: 101,
+    num_6: 102,
+    num_7: 103,
+    num_8: 104,
+    num_9: 105,
+    num_multiply: 106,
+    num_add: 107,
+    num_enter: 108,
+    num_subtract: 109,
+    num_decimal: 110,
+    num_divide: 111,
+    "\u21EA": 20,
+    ",": 188,
+    ".": 190,
+    "/": 191,
+    "`": 192,
+    "-": isff ? 173 : 189,
+    "=": isff ? 61 : 187,
+    ";": isff ? 59 : 186,
+    "'": 222,
+    "[": 219,
+    "]": 221,
+    "\\": 220
+  };
+  var _modifier = {
+    // shiftKey
+    "\u21E7": 16,
+    shift: 16,
+    // altKey
+    "\u2325": 18,
+    alt: 18,
+    option: 18,
+    // ctrlKey
+    "\u2303": 17,
+    ctrl: 17,
+    control: 17,
+    // metaKey
+    "\u2318": 91,
+    cmd: 91,
+    command: 91
+  };
+  var modifierMap = {
+    16: "shiftKey",
+    18: "altKey",
+    17: "ctrlKey",
+    91: "metaKey",
+    shiftKey: 16,
+    ctrlKey: 17,
+    altKey: 18,
+    metaKey: 91
+  };
+  var _mods = {
+    16: false,
+    18: false,
+    17: false,
+    91: false
+  };
+  var _handlers = {};
+  for (k3 = 1; k3 < 20; k3++) {
+    _keyMap["f".concat(k3)] = 111 + k3;
+  }
+  var k3;
+  var _downKeys = [];
+  var winListendFocus = false;
+  var _scope = "all";
+  var elementHasBindEvent = [];
+  var code = function code2(x3) {
+    return _keyMap[x3.toLowerCase()] || _modifier[x3.toLowerCase()] || x3.toUpperCase().charCodeAt(0);
+  };
+  var getKey = function getKey2(x3) {
+    return Object.keys(_keyMap).find(function(k3) {
+      return _keyMap[k3] === x3;
+    });
+  };
+  var getModifier = function getModifier2(x3) {
+    return Object.keys(_modifier).find(function(k3) {
+      return _modifier[k3] === x3;
+    });
+  };
+  function setScope(scope) {
+    _scope = scope || "all";
+  }
+  function getScope() {
+    return _scope || "all";
+  }
+  function getPressedKeyCodes() {
+    return _downKeys.slice(0);
+  }
+  function getPressedKeyString() {
+    return _downKeys.map(function(c3) {
+      return getKey(c3) || getModifier(c3) || String.fromCharCode(c3);
+    });
+  }
+  function filter(event) {
+    var target = event.target || event.srcElement;
+    var tagName = target.tagName;
+    var flag = true;
+    if (target.isContentEditable || (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT") && !target.readOnly) {
+      flag = false;
+    }
+    return flag;
+  }
+  function isPressed(keyCode) {
+    if (typeof keyCode === "string") {
+      keyCode = code(keyCode);
+    }
+    return _downKeys.indexOf(keyCode) !== -1;
+  }
+  function deleteScope(scope, newScope) {
+    var handlers;
+    var i3;
+    if (!scope)
+      scope = getScope();
+    for (var key in _handlers) {
+      if (Object.prototype.hasOwnProperty.call(_handlers, key)) {
+        handlers = _handlers[key];
+        for (i3 = 0; i3 < handlers.length; ) {
+          if (handlers[i3].scope === scope)
+            handlers.splice(i3, 1);
+          else
+            i3++;
+        }
+      }
+    }
+    if (getScope() === scope)
+      setScope(newScope || "all");
+  }
+  function clearModifier(event) {
+    var key = event.keyCode || event.which || event.charCode;
+    var i3 = _downKeys.indexOf(key);
+    if (i3 >= 0) {
+      _downKeys.splice(i3, 1);
+    }
+    if (event.key && event.key.toLowerCase() === "meta") {
+      _downKeys.splice(0, _downKeys.length);
+    }
+    if (key === 93 || key === 224)
+      key = 91;
+    if (key in _mods) {
+      _mods[key] = false;
+      for (var k3 in _modifier) {
+        if (_modifier[k3] === key)
+          hotkeys[k3] = false;
+      }
+    }
+  }
+  function unbind(keysInfo) {
+    if (typeof keysInfo === "undefined") {
+      Object.keys(_handlers).forEach(function(key) {
+        return delete _handlers[key];
+      });
+    } else if (Array.isArray(keysInfo)) {
+      keysInfo.forEach(function(info) {
+        if (info.key)
+          eachUnbind(info);
+      });
+    } else if (typeof keysInfo === "object") {
+      if (keysInfo.key)
+        eachUnbind(keysInfo);
+    } else if (typeof keysInfo === "string") {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+      var scope = args[0], method = args[1];
+      if (typeof scope === "function") {
+        method = scope;
+        scope = "";
+      }
+      eachUnbind({
+        key: keysInfo,
+        scope,
+        method,
+        splitKey: "+"
+      });
+    }
+  }
+  var eachUnbind = function eachUnbind2(_ref) {
+    var key = _ref.key, scope = _ref.scope, method = _ref.method, _ref$splitKey = _ref.splitKey, splitKey = _ref$splitKey === void 0 ? "+" : _ref$splitKey;
+    var multipleKeys = getKeys(key);
+    multipleKeys.forEach(function(originKey) {
+      var unbindKeys = originKey.split(splitKey);
+      var len = unbindKeys.length;
+      var lastKey = unbindKeys[len - 1];
+      var keyCode = lastKey === "*" ? "*" : code(lastKey);
+      if (!_handlers[keyCode])
+        return;
+      if (!scope)
+        scope = getScope();
+      var mods = len > 1 ? getMods(_modifier, unbindKeys) : [];
+      _handlers[keyCode] = _handlers[keyCode].filter(function(record) {
+        var isMatchingMethod = method ? record.method === method : true;
+        return !(isMatchingMethod && record.scope === scope && compareArray(record.mods, mods));
+      });
+    });
+  };
+  function eventHandler(event, handler, scope, element) {
+    if (handler.element !== element) {
+      return;
+    }
+    var modifiersMatch;
+    if (handler.scope === scope || handler.scope === "all") {
+      modifiersMatch = handler.mods.length > 0;
+      for (var y3 in _mods) {
+        if (Object.prototype.hasOwnProperty.call(_mods, y3)) {
+          if (!_mods[y3] && handler.mods.indexOf(+y3) > -1 || _mods[y3] && handler.mods.indexOf(+y3) === -1) {
+            modifiersMatch = false;
+          }
+        }
+      }
+      if (handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91] || modifiersMatch || handler.shortcut === "*") {
+        if (handler.method(event, handler) === false) {
+          if (event.preventDefault)
+            event.preventDefault();
+          else
+            event.returnValue = false;
+          if (event.stopPropagation)
+            event.stopPropagation();
+          if (event.cancelBubble)
+            event.cancelBubble = true;
+        }
+      }
+    }
+  }
+  function dispatch(event, element) {
+    var asterisk = _handlers["*"];
+    var key = event.keyCode || event.which || event.charCode;
+    if (!hotkeys.filter.call(this, event))
+      return;
+    if (key === 93 || key === 224)
+      key = 91;
+    if (_downKeys.indexOf(key) === -1 && key !== 229)
+      _downKeys.push(key);
+    ["ctrlKey", "altKey", "shiftKey", "metaKey"].forEach(function(keyName) {
+      var keyNum = modifierMap[keyName];
+      if (event[keyName] && _downKeys.indexOf(keyNum) === -1) {
+        _downKeys.push(keyNum);
+      } else if (!event[keyName] && _downKeys.indexOf(keyNum) > -1) {
+        _downKeys.splice(_downKeys.indexOf(keyNum), 1);
+      } else if (keyName === "metaKey" && event[keyName] && _downKeys.length === 3) {
+        if (!(event.ctrlKey || event.shiftKey || event.altKey)) {
+          _downKeys = _downKeys.slice(_downKeys.indexOf(keyNum));
+        }
+      }
+    });
+    if (key in _mods) {
+      _mods[key] = true;
+      for (var k3 in _modifier) {
+        if (_modifier[k3] === key)
+          hotkeys[k3] = true;
+      }
+      if (!asterisk)
+        return;
+    }
+    for (var e in _mods) {
+      if (Object.prototype.hasOwnProperty.call(_mods, e)) {
+        _mods[e] = event[modifierMap[e]];
+      }
+    }
+    if (event.getModifierState && !(event.altKey && !event.ctrlKey) && event.getModifierState("AltGraph")) {
+      if (_downKeys.indexOf(17) === -1) {
+        _downKeys.push(17);
+      }
+      if (_downKeys.indexOf(18) === -1) {
+        _downKeys.push(18);
+      }
+      _mods[17] = true;
+      _mods[18] = true;
+    }
+    var scope = getScope();
+    if (asterisk) {
+      for (var i3 = 0; i3 < asterisk.length; i3++) {
+        if (asterisk[i3].scope === scope && (event.type === "keydown" && asterisk[i3].keydown || event.type === "keyup" && asterisk[i3].keyup)) {
+          eventHandler(event, asterisk[i3], scope, element);
+        }
+      }
+    }
+    if (!(key in _handlers))
+      return;
+    for (var _i = 0; _i < _handlers[key].length; _i++) {
+      if (event.type === "keydown" && _handlers[key][_i].keydown || event.type === "keyup" && _handlers[key][_i].keyup) {
+        if (_handlers[key][_i].key) {
+          var record = _handlers[key][_i];
+          var splitKey = record.splitKey;
+          var keyShortcut = record.key.split(splitKey);
+          var _downKeysCurrent = [];
+          for (var a3 = 0; a3 < keyShortcut.length; a3++) {
+            _downKeysCurrent.push(code(keyShortcut[a3]));
+          }
+          if (_downKeysCurrent.sort().join("") === _downKeys.sort().join("")) {
+            eventHandler(event, record, scope, element);
+          }
+        }
+      }
+    }
+  }
+  function isElementBind(element) {
+    return elementHasBindEvent.indexOf(element) > -1;
+  }
+  function hotkeys(key, option, method) {
+    _downKeys = [];
+    var keys = getKeys(key);
+    var mods = [];
+    var scope = "all";
+    var element = document;
+    var i3 = 0;
+    var keyup = false;
+    var keydown = true;
+    var splitKey = "+";
+    var capture = false;
+    if (method === void 0 && typeof option === "function") {
+      method = option;
+    }
+    if (Object.prototype.toString.call(option) === "[object Object]") {
+      if (option.scope)
+        scope = option.scope;
+      if (option.element)
+        element = option.element;
+      if (option.keyup)
+        keyup = option.keyup;
+      if (option.keydown !== void 0)
+        keydown = option.keydown;
+      if (option.capture !== void 0)
+        capture = option.capture;
+      if (typeof option.splitKey === "string")
+        splitKey = option.splitKey;
+    }
+    if (typeof option === "string")
+      scope = option;
+    for (; i3 < keys.length; i3++) {
+      key = keys[i3].split(splitKey);
+      mods = [];
+      if (key.length > 1)
+        mods = getMods(_modifier, key);
+      key = key[key.length - 1];
+      key = key === "*" ? "*" : code(key);
+      if (!(key in _handlers))
+        _handlers[key] = [];
+      _handlers[key].push({
+        keyup,
+        keydown,
+        scope,
+        mods,
+        shortcut: keys[i3],
+        method,
+        key: keys[i3],
+        splitKey,
+        element
+      });
+    }
+    if (typeof element !== "undefined" && !isElementBind(element) && window) {
+      elementHasBindEvent.push(element);
+      addEvent(element, "keydown", function(e) {
+        dispatch(e, element);
+      }, capture);
+      if (!winListendFocus) {
+        winListendFocus = true;
+        addEvent(window, "focus", function() {
+          _downKeys = [];
+        }, capture);
+      }
+      addEvent(element, "keyup", function(e) {
+        dispatch(e, element);
+        clearModifier(e);
+      }, capture);
+    }
+  }
+  function trigger(shortcut) {
+    var scope = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "all";
+    Object.keys(_handlers).forEach(function(key) {
+      var dataList = _handlers[key].filter(function(item) {
+        return item.scope === scope && item.shortcut === shortcut;
+      });
+      dataList.forEach(function(data) {
+        if (data && data.method) {
+          data.method();
+        }
+      });
+    });
+  }
+  var _api = {
+    getPressedKeyString,
+    setScope,
+    getScope,
+    deleteScope,
+    getPressedKeyCodes,
+    isPressed,
+    filter,
+    trigger,
+    unbind,
+    keyMap: _keyMap,
+    modifier: _modifier,
+    modifierMap
+  };
+  for (a3 in _api) {
+    if (Object.prototype.hasOwnProperty.call(_api, a3)) {
+      hotkeys[a3] = _api[a3];
+    }
+  }
+  var a3;
+  if (typeof window !== "undefined") {
+    _hotkeys = window.hotkeys;
+    hotkeys.noConflict = function(deep) {
+      if (deep && window.hotkeys === hotkeys) {
+        window.hotkeys = _hotkeys;
+      }
+      return hotkeys;
+    };
+    window.hotkeys = hotkeys;
+  }
+  var _hotkeys;
+
+  // ../../node_modules/stimulus-use/dist/index.js
+  var composeEventName = (name, controller, eventPrefix) => {
+    let composedName = name;
+    if (eventPrefix === true) {
+      composedName = `${controller.identifier}:${name}`;
+    } else if (typeof eventPrefix === "string") {
+      composedName = `${eventPrefix}:${name}`;
+    }
+    return composedName;
+  };
+  function __rest(s3, e) {
+    var t2 = {};
+    for (var p3 in s3)
+      if (Object.prototype.hasOwnProperty.call(s3, p3) && e.indexOf(p3) < 0)
+        t2[p3] = s3[p3];
+    if (s3 != null && typeof Object.getOwnPropertySymbols === "function")
+      for (var i3 = 0, p3 = Object.getOwnPropertySymbols(s3); i3 < p3.length; i3++) {
+        if (e.indexOf(p3[i3]) < 0 && Object.prototype.propertyIsEnumerable.call(s3, p3[i3]))
+          t2[p3[i3]] = s3[p3[i3]];
+      }
+    return t2;
+  }
+  var defaultOptions$5 = {
+    debug: false,
+    logger: console,
+    dispatchEvent: true,
+    eventPrefix: true
+  };
+  var StimulusUse = class {
+    constructor(controller, options = {}) {
+      var _a, _b, _c;
+      this.log = (functionName, args) => {
+        if (!this.debug)
+          return;
+        this.logger.groupCollapsed(`%c${this.controller.identifier} %c#${functionName}`, "color: #3B82F6", "color: unset");
+        this.logger.log(Object.assign({ controllerId: this.controllerId }, args));
+        this.logger.groupEnd();
+      };
+      this.warn = (message) => {
+        this.logger.warn(`%c${this.controller.identifier} %c${message}`, "color: #3B82F6; font-weight: bold", "color: unset");
+      };
+      this.dispatch = (eventName, details = {}) => {
+        if (this.dispatchEvent) {
+          const { event } = details, eventDetails = __rest(details, ["event"]);
+          const customEvent = this.extendedEvent(eventName, event || null, eventDetails);
+          this.targetElement.dispatchEvent(customEvent);
+          this.log("dispatchEvent", Object.assign({ eventName: customEvent.type }, eventDetails));
+        }
+      };
+      this.call = (methodName, args = {}) => {
+        const method = this.controller[methodName];
+        if (typeof method == "function") {
+          return method.call(this.controller, args);
+        }
+      };
+      this.extendedEvent = (name, event, detail) => {
+        const { bubbles, cancelable, composed } = event || { bubbles: true, cancelable: true, composed: true };
+        if (event) {
+          Object.assign(detail, { originalEvent: event });
+        }
+        const customEvent = new CustomEvent(this.composeEventName(name), {
+          bubbles,
+          cancelable,
+          composed,
+          detail
+        });
+        return customEvent;
+      };
+      this.composeEventName = (name) => {
+        let composedName = name;
+        if (this.eventPrefix === true) {
+          composedName = `${this.controller.identifier}:${name}`;
+        } else if (typeof this.eventPrefix === "string") {
+          composedName = `${this.eventPrefix}:${name}`;
+        }
+        return composedName;
+      };
+      this.debug = (_b = (_a = options === null || options === void 0 ? void 0 : options.debug) !== null && _a !== void 0 ? _a : controller.application.stimulusUseDebug) !== null && _b !== void 0 ? _b : defaultOptions$5.debug;
+      this.logger = (_c = options === null || options === void 0 ? void 0 : options.logger) !== null && _c !== void 0 ? _c : defaultOptions$5.logger;
+      this.controller = controller;
+      this.controllerId = controller.element.id || controller.element.dataset.id;
+      this.targetElement = (options === null || options === void 0 ? void 0 : options.element) || controller.element;
+      const { dispatchEvent, eventPrefix } = Object.assign({}, defaultOptions$5, options);
+      Object.assign(this, { dispatchEvent, eventPrefix });
+      this.controllerInitialize = controller.initialize.bind(controller);
+      this.controllerConnect = controller.connect.bind(controller);
+      this.controllerDisconnect = controller.disconnect.bind(controller);
+    }
+  };
+  var defaultOptions$4 = {
+    eventPrefix: true,
+    bubbles: true,
+    cancelable: true
+  };
+  var UseDispatch = class extends StimulusUse {
+    constructor(controller, options = {}) {
+      var _a, _b, _c, _d;
+      super(controller, options);
+      this.dispatch = (eventName, detail = {}) => {
+        const { controller: controller2, targetElement, eventPrefix, bubbles, cancelable, log, warn } = this;
+        Object.assign(detail, { controller: controller2 });
+        const eventNameWithPrefix = composeEventName(eventName, this.controller, eventPrefix);
+        const event = new CustomEvent(eventNameWithPrefix, {
+          detail,
+          bubbles,
+          cancelable
+        });
+        targetElement.dispatchEvent(event);
+        warn("`useDispatch()` is deprecated. Please use the built-in `this.dispatch()` function from Stimulus. You can find more information on how to upgrade at: https://stimulus-use.github.io/stimulus-use/#/use-dispatch");
+        log("dispatch", { eventName: eventNameWithPrefix, detail, bubbles, cancelable });
+        return event;
+      };
+      this.targetElement = (_a = options.element) !== null && _a !== void 0 ? _a : controller.element;
+      this.eventPrefix = (_b = options.eventPrefix) !== null && _b !== void 0 ? _b : defaultOptions$4.eventPrefix;
+      this.bubbles = (_c = options.bubbles) !== null && _c !== void 0 ? _c : defaultOptions$4.bubbles;
+      this.cancelable = (_d = options.cancelable) !== null && _d !== void 0 ? _d : defaultOptions$4.cancelable;
+      this.enhanceController();
+    }
+    enhanceController() {
+      Object.assign(this.controller, { dispatch: this.dispatch });
+    }
+  };
+  var useDispatch = (controller, options = {}) => {
+    return new UseDispatch(controller, options);
+  };
+  var defaultOptions$3 = {
+    overwriteDispatch: true
+  };
+  var useApplication = (controller, options = {}) => {
+    const { overwriteDispatch } = Object.assign({}, defaultOptions$3, options);
+    Object.defineProperty(controller, "isPreview", {
+      get() {
+        return document.documentElement.hasAttribute("data-turbolinks-preview") || document.documentElement.hasAttribute("data-turbo-preview");
+      }
+    });
+    Object.defineProperty(controller, "isConnected", {
+      get() {
+        return !!Array.from(this.context.module.connectedContexts).find((c3) => c3 === this.context);
+      }
+    });
+    Object.defineProperty(controller, "csrfToken", {
+      get() {
+        return this.metaValue("csrf-token");
+      }
+    });
+    if (overwriteDispatch) {
+      useDispatch(controller, options);
+    }
+    Object.assign(controller, {
+      metaValue(name) {
+        const element = document.head.querySelector(`meta[name="${name}"]`);
+        return element && element.getAttribute("content");
+      }
+    });
+  };
+  var DebounceController = class extends Controller {
+  };
+  DebounceController.debounces = [];
+  var defaultWait$1 = 200;
+  var debounce = (fn, wait = defaultWait$1) => {
+    let timeoutId = null;
+    return function() {
+      const args = Array.from(arguments);
+      const context = this;
+      const params = args.map((arg) => arg.params);
+      const callback = () => {
+        args.forEach((arg, index) => arg.params = params[index]);
+        return fn.apply(context, args);
+      };
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(callback, wait);
+    };
+  };
+  var useDebounce = (composableController, options) => {
+    const controller = composableController;
+    const constructor = controller.constructor;
+    constructor.debounces.forEach((func) => {
+      if (typeof func === "string") {
+        controller[func] = debounce(controller[func], options === null || options === void 0 ? void 0 : options.wait);
+      }
+      if (typeof func === "object") {
+        const { name, wait } = func;
+        if (!name)
+          return;
+        controller[name] = debounce(controller[name], wait || (options === null || options === void 0 ? void 0 : options.wait));
+      }
+    });
+  };
+  var ThrottleController = class extends Controller {
+  };
+  ThrottleController.throttles = [];
+  console.log(`Local Stimulus Use`);
+
   // controllers/application_controller.js
   var application_controller_default = class extends Controller {
     connect() {
       B.register(this);
+      useApplication(this);
     }
     /* Application-wide lifecycle methods
      *
@@ -4245,10 +4927,13 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   var create_todo_controller_default = class extends application_controller_default {
     add(e) {
       e.preventDefault();
+      useDebounce(this);
       Array.from(e.target.elements).forEach((e2) => e2.value = "");
       this.stimulate("CreateTodoComponent#add", e.target);
     }
   };
+  // static debounces = ['add'];
+  __publicField(create_todo_controller_default, "debounces", ["add"]);
 
   // controllers/head_line_controller.js
   var head_line_controller_exports = {};
@@ -5372,7 +6057,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     if (focusElement && focusElement.focus)
       focusElement.focus();
   };
-  var dispatch = (element, name, detail = {}) => {
+  var dispatch2 = (element, name, detail = {}) => {
     const init4 = {
       bubbles: true,
       cancelable: true,
@@ -5432,7 +6117,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     // DOM Mutations
     append: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-append", operation);
+        dispatch2(element, "cable-ready:before-append", operation);
         const {
           html,
           focusSelector
@@ -5441,12 +6126,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.insertAdjacentHTML("beforeend", html);
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-append", operation);
+        dispatch2(element, "cable-ready:after-append", operation);
       });
     },
     graft: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-graft", operation);
+        dispatch2(element, "cable-ready:before-graft", operation);
         const {
           parent,
           focusSelector
@@ -5456,12 +6141,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           parentElement.appendChild(element);
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-graft", operation);
+        dispatch2(element, "cable-ready:after-graft", operation);
       });
     },
     innerHtml: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-inner-html", operation);
+        dispatch2(element, "cable-ready:before-inner-html", operation);
         const {
           html,
           focusSelector
@@ -5470,12 +6155,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.innerHTML = html;
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-inner-html", operation);
+        dispatch2(element, "cable-ready:after-inner-html", operation);
       });
     },
     insertAdjacentHtml: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-insert-adjacent-html", operation);
+        dispatch2(element, "cable-ready:before-insert-adjacent-html", operation);
         const {
           html,
           position,
@@ -5485,12 +6170,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.insertAdjacentHTML(position || "beforeend", html);
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-insert-adjacent-html", operation);
+        dispatch2(element, "cable-ready:after-insert-adjacent-html", operation);
       });
     },
     insertAdjacentText: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-insert-adjacent-text", operation);
+        dispatch2(element, "cable-ready:before-insert-adjacent-text", operation);
         const {
           text,
           position,
@@ -5500,7 +6185,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.insertAdjacentText(position || "beforeend", text);
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-insert-adjacent-text", operation);
+        dispatch2(element, "cable-ready:after-insert-adjacent-text", operation);
       });
     },
     morph: (operation) => {
@@ -5511,7 +6196,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
         const template = document.createElement("template");
         template.innerHTML = String(html).trim();
         operation.content = template.content;
-        dispatch(element, "cable-ready:before-morph", operation);
+        dispatch2(element, "cable-ready:before-morph", operation);
         const {
           childrenOnly,
           focusSelector
@@ -5526,12 +6211,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           });
           assignFocus(focusSelector);
         }
-        dispatch(parent.children[ordinal], "cable-ready:after-morph", operation);
+        dispatch2(parent.children[ordinal], "cable-ready:after-morph", operation);
       });
     },
     outerHtml: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-outer-html", operation);
+        dispatch2(element, "cable-ready:before-outer-html", operation);
         const {
           html,
           focusSelector
@@ -5542,12 +6227,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.outerHTML = html;
           assignFocus(focusSelector);
         }
-        dispatch(parent.children[ordinal], "cable-ready:after-outer-html", operation);
+        dispatch2(parent.children[ordinal], "cable-ready:after-outer-html", operation);
       });
     },
     prepend: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-prepend", operation);
+        dispatch2(element, "cable-ready:before-prepend", operation);
         const {
           html,
           focusSelector
@@ -5556,12 +6241,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.insertAdjacentHTML("afterbegin", html);
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-prepend", operation);
+        dispatch2(element, "cable-ready:after-prepend", operation);
       });
     },
     remove: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-remove", operation);
+        dispatch2(element, "cable-ready:before-remove", operation);
         const {
           focusSelector
         } = operation;
@@ -5569,12 +6254,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.remove();
           assignFocus(focusSelector);
         }
-        dispatch(document, "cable-ready:after-remove", operation);
+        dispatch2(document, "cable-ready:after-remove", operation);
       });
     },
     replace: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-replace", operation);
+        dispatch2(element, "cable-ready:before-replace", operation);
         const {
           html,
           focusSelector
@@ -5585,12 +6270,12 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.outerHTML = html;
           assignFocus(focusSelector);
         }
-        dispatch(parent.children[ordinal], "cable-ready:after-replace", operation);
+        dispatch2(parent.children[ordinal], "cable-ready:after-replace", operation);
       });
     },
     textContent: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-text-content", operation);
+        dispatch2(element, "cable-ready:before-text-content", operation);
         const {
           text,
           focusSelector
@@ -5599,94 +6284,94 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           element.textContent = text;
           assignFocus(focusSelector);
         }
-        dispatch(element, "cable-ready:after-text-content", operation);
+        dispatch2(element, "cable-ready:after-text-content", operation);
       });
     },
     // Element Property Mutations
     addCssClass: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-add-css-class", operation);
+        dispatch2(element, "cable-ready:before-add-css-class", operation);
         const {
           name
         } = operation;
         if (!operation.cancel)
           element.classList.add(...getClassNames(name));
-        dispatch(element, "cable-ready:after-add-css-class", operation);
+        dispatch2(element, "cable-ready:after-add-css-class", operation);
       });
     },
     removeAttribute: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-remove-attribute", operation);
+        dispatch2(element, "cable-ready:before-remove-attribute", operation);
         const {
           name
         } = operation;
         if (!operation.cancel)
           element.removeAttribute(name);
-        dispatch(element, "cable-ready:after-remove-attribute", operation);
+        dispatch2(element, "cable-ready:after-remove-attribute", operation);
       });
     },
     removeCssClass: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-remove-css-class", operation);
+        dispatch2(element, "cable-ready:before-remove-css-class", operation);
         const {
           name
         } = operation;
         if (!operation.cancel)
           element.classList.remove(...getClassNames(name));
-        dispatch(element, "cable-ready:after-remove-css-class", operation);
+        dispatch2(element, "cable-ready:after-remove-css-class", operation);
       });
     },
     setAttribute: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-set-attribute", operation);
+        dispatch2(element, "cable-ready:before-set-attribute", operation);
         const {
           name,
           value
         } = operation;
         if (!operation.cancel)
           element.setAttribute(name, value);
-        dispatch(element, "cable-ready:after-set-attribute", operation);
+        dispatch2(element, "cable-ready:after-set-attribute", operation);
       });
     },
     setDatasetProperty: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-set-dataset-property", operation);
+        dispatch2(element, "cable-ready:before-set-dataset-property", operation);
         const {
           name,
           value
         } = operation;
         if (!operation.cancel)
           element.dataset[name] = value;
-        dispatch(element, "cable-ready:after-set-dataset-property", operation);
+        dispatch2(element, "cable-ready:after-set-dataset-property", operation);
       });
     },
     setProperty: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-set-property", operation);
+        dispatch2(element, "cable-ready:before-set-property", operation);
         const {
           name,
           value
         } = operation;
         if (!operation.cancel && name in element)
           element[name] = value;
-        dispatch(element, "cable-ready:after-set-property", operation);
+        dispatch2(element, "cable-ready:after-set-property", operation);
       });
     },
     setStyle: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-set-style", operation);
+        dispatch2(element, "cable-ready:before-set-style", operation);
         const {
           name,
           value
         } = operation;
         if (!operation.cancel)
           element.style[name] = value;
-        dispatch(element, "cable-ready:after-set-style", operation);
+        dispatch2(element, "cable-ready:after-set-style", operation);
       });
     },
     setStyles: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-set-styles", operation);
+        dispatch2(element, "cable-ready:before-set-styles", operation);
         const {
           styles
         } = operation;
@@ -5694,18 +6379,18 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           if (!operation.cancel)
             element.style[name] = value;
         }
-        dispatch(element, "cable-ready:after-set-styles", operation);
+        dispatch2(element, "cable-ready:after-set-styles", operation);
       });
     },
     setValue: (operation) => {
       processElements(operation, (element) => {
-        dispatch(element, "cable-ready:before-set-value", operation);
+        dispatch2(element, "cable-ready:before-set-value", operation);
         const {
           value
         } = operation;
         if (!operation.cancel)
           element.value = value;
-        dispatch(element, "cable-ready:after-set-value", operation);
+        dispatch2(element, "cable-ready:after-set-value", operation);
       });
     },
     // DOM Events
@@ -5715,31 +6400,31 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           name,
           detail
         } = operation;
-        dispatch(element, name, detail);
+        dispatch2(element, name, detail);
       });
     },
     // Browser Manipulations
     clearStorage: (operation) => {
-      dispatch(document, "cable-ready:before-clear-storage", operation);
+      dispatch2(document, "cable-ready:before-clear-storage", operation);
       const {
         type
       } = operation;
       const storage = type === "session" ? sessionStorage : localStorage;
       if (!operation.cancel)
         storage.clear();
-      dispatch(document, "cable-ready:after-clear-storage", operation);
+      dispatch2(document, "cable-ready:after-clear-storage", operation);
     },
     go: (operation) => {
-      dispatch(window, "cable-ready:before-go", operation);
+      dispatch2(window, "cable-ready:before-go", operation);
       const {
         delta
       } = operation;
       if (!operation.cancel)
         history.go(delta);
-      dispatch(window, "cable-ready:after-go", operation);
+      dispatch2(window, "cable-ready:after-go", operation);
     },
     pushState: (operation) => {
-      dispatch(window, "cable-ready:before-push-state", operation);
+      dispatch2(window, "cable-ready:before-push-state", operation);
       const {
         state,
         title,
@@ -5747,10 +6432,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       } = operation;
       if (!operation.cancel)
         history.pushState(state || {}, title || "", url);
-      dispatch(window, "cable-ready:after-push-state", operation);
+      dispatch2(window, "cable-ready:after-push-state", operation);
     },
     removeStorageItem: (operation) => {
-      dispatch(document, "cable-ready:before-remove-storage-item", operation);
+      dispatch2(document, "cable-ready:before-remove-storage-item", operation);
       const {
         key,
         type
@@ -5758,10 +6443,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       const storage = type === "session" ? sessionStorage : localStorage;
       if (!operation.cancel)
         storage.removeItem(key);
-      dispatch(document, "cable-ready:after-remove-storage-item", operation);
+      dispatch2(document, "cable-ready:after-remove-storage-item", operation);
     },
     replaceState: (operation) => {
-      dispatch(window, "cable-ready:before-replace-state", operation);
+      dispatch2(window, "cable-ready:before-replace-state", operation);
       const {
         state,
         title,
@@ -5769,37 +6454,37 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       } = operation;
       if (!operation.cancel)
         history.replaceState(state || {}, title || "", url);
-      dispatch(window, "cable-ready:after-replace-state", operation);
+      dispatch2(window, "cable-ready:after-replace-state", operation);
     },
     scrollIntoView: (operation) => {
       const {
         element
       } = operation;
-      dispatch(element, "cable-ready:before-scroll-into-view", operation);
+      dispatch2(element, "cable-ready:before-scroll-into-view", operation);
       if (!operation.cancel)
         element.scrollIntoView(operation);
-      dispatch(element, "cable-ready:after-scroll-into-view", operation);
+      dispatch2(element, "cable-ready:after-scroll-into-view", operation);
     },
     setCookie: (operation) => {
-      dispatch(document, "cable-ready:before-set-cookie", operation);
+      dispatch2(document, "cable-ready:before-set-cookie", operation);
       const {
         cookie
       } = operation;
       if (!operation.cancel)
         document.cookie = cookie;
-      dispatch(document, "cable-ready:after-set-cookie", operation);
+      dispatch2(document, "cable-ready:after-set-cookie", operation);
     },
     setFocus: (operation) => {
       const {
         element
       } = operation;
-      dispatch(element, "cable-ready:before-set-focus", operation);
+      dispatch2(element, "cable-ready:before-set-focus", operation);
       if (!operation.cancel)
         assignFocus(element);
-      dispatch(element, "cable-ready:after-set-focus", operation);
+      dispatch2(element, "cable-ready:after-set-focus", operation);
     },
     setStorageItem: (operation) => {
-      dispatch(document, "cable-ready:before-set-storage-item", operation);
+      dispatch2(document, "cable-ready:before-set-storage-item", operation);
       const {
         key,
         value,
@@ -5808,7 +6493,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       const storage = type === "session" ? sessionStorage : localStorage;
       if (!operation.cancel)
         storage.setItem(key, value);
-      dispatch(document, "cable-ready:after-set-storage-item", operation);
+      dispatch2(document, "cable-ready:after-set-storage-item", operation);
     },
     // Notifications
     consoleLog: (operation) => {
@@ -5819,7 +6504,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       level && ["warn", "info", "error"].includes(level) ? console[level](message) : console.log(message);
     },
     notification: (operation) => {
-      dispatch(document, "cable-ready:before-notification", operation);
+      dispatch2(document, "cable-ready:before-notification", operation);
       const {
         title,
         options
@@ -5830,10 +6515,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
           if (result === "granted")
             new Notification(title || "", options);
         });
-      dispatch(document, "cable-ready:after-notification", operation);
+      dispatch2(document, "cable-ready:after-notification", operation);
     },
     playSound: (operation) => {
-      dispatch(document, "cable-ready:before-play-sound", operation);
+      dispatch2(document, "cable-ready:before-play-sound", operation);
       const {
         src
       } = operation;
@@ -5844,14 +6529,14 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
         };
         const ended = () => {
           document.audio.removeEventListener("ended", canplaythrough);
-          dispatch(document, "cable-ready:after-play-sound", operation);
+          dispatch2(document, "cable-ready:after-play-sound", operation);
         };
         document.audio.addEventListener("canplaythrough", canplaythrough);
         document.audio.addEventListener("ended", ended);
         document.audio.src = src;
         document.audio.play();
       } else
-        dispatch(document, "cable-ready:after-play-sound", operation);
+        dispatch2(document, "cable-ready:after-play-sound", operation);
     }
   };
   var perform = (operations, options = {
@@ -6243,8 +6928,8 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     skipChecks || _postAddChecks(timeline2, child);
     return timeline2;
   };
-  var _scrollTrigger = function _scrollTrigger2(animation, trigger) {
-    return (_globals.ScrollTrigger || _missingPlugin("scrollTrigger", trigger)) && _globals.ScrollTrigger.create(trigger, animation);
+  var _scrollTrigger = function _scrollTrigger2(animation, trigger2) {
+    return (_globals.ScrollTrigger || _missingPlugin("scrollTrigger", trigger2)) && _globals.ScrollTrigger.create(trigger2, animation);
   };
   var _attemptInitTween = function _attemptInitTween2(tween, totalTime, force, suppressEvents) {
     _initTween(tween, totalTime);
@@ -6834,7 +7519,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   var _tickerActive;
   var _ticker = function() {
     var _getTime = Date.now, _lagThreshold = 500, _adjustedLag = 33, _startTime = _getTime(), _lastUpdate = _startTime, _gap = 1e3 / 240, _nextTime = _gap, _listeners = [], _id, _req, _raf, _self, _delta, _i, _tick = function _tick2(v3) {
-      var elapsed = _getTime() - _lastUpdate, manual = v3 === true, overlap, dispatch2, time, frame;
+      var elapsed = _getTime() - _lastUpdate, manual = v3 === true, overlap, dispatch3, time, frame;
       elapsed > _lagThreshold && (_startTime += elapsed - _adjustedLag);
       _lastUpdate += elapsed;
       time = _lastUpdate - _startTime;
@@ -6844,10 +7529,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
         _delta = time - _self.time * 1e3;
         _self.time = time = time / 1e3;
         _nextTime += overlap + (overlap >= _gap ? 4 : _gap - overlap);
-        dispatch2 = 1;
+        dispatch3 = 1;
       }
       manual || (_id = _req(_tick2));
-      if (dispatch2) {
+      if (dispatch3) {
         for (_i = 0; _i < _listeners.length; _i++) {
           _listeners[_i](time, _delta, frame, v3);
         }
@@ -9725,6 +10410,22 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   B.initialize(application, { controller: application_controller_default, isolate: true });
 })();
 /*! Bundled license information:
+
+stimulus-use/dist/index.js:
+  (*! *****************************************************************************
+  Copyright (c) Microsoft Corporation.
+  
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted.
+  
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+  PERFORMANCE OF THIS SOFTWARE.
+  ***************************************************************************** *)
 
 radiolabel/dist/index.m.js:
   (*!
