@@ -1,119 +1,31 @@
 <%= component_controller do %>
-<div class="mt-16 overflow-y-auto shadow-2xl top-px dropdown-content h-96 w-52 rounded-b-box bg-base-200 text-base-content">
-    
-    <ul class="p-4 menu compact" data_controller="theme">
+<div
+    class="mt-16 overflow-y-auto shadow-2xl top-px dropdown-content h-96 w-52 rounded-b-box bg-base-200 text-base-content">
+
+    <ul class="menu bg-base-100 w-56 rounded-box">
+        <% themes.each do |theme| %>
         <li>
+            <a 
+                data-reflex="click->ThemeChangeComponentReflex#set_theme" 
+                data-value="<%= theme %>" 
+                tabindex="0"
+                data-key="<%= key %>"
+                data-action="click->ThemeChangeComponentReflex#hand_theme"
+            >
+                <%= theme %>
+            </a>
+            <!-- <%= reflex_tag(
+                :hand_theme,
+                :a,
+                "#{theme}",
+                tabindex: "0"
+            ) %> -->
+           
+        </li>
+        <!-- <li>
             <a tabindex="0" data_action=" click->theme#switch" data_theme_value="light">light</a>
-        </li>
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="dark">dark</a>
-        </li>
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="cupcake">cupcake</a>
-        </li>
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="bumblebee">bumblebee</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="emerald">emerald</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="Corporate">Corporate</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="synthwave">synthwave</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="retro">retro</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="cyberpunk">cyberpunk</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="valentine">valentine</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="halloween">halloween</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="garden">garden</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="forest">forest</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="aqua">aqua</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="lofi">lofi</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="pastel">pastel</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="fantasy">fantasy</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="wireframe">wireframe</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="black">black</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="luxury">luxury</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="dracula">dracula</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="cmyk">cmyk</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="autumn">autumn</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="business">business</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="Acid">Acid</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="Lemonade">Lemonade</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="Night">Night</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="Coffee">Coffee</a>
-        </li>
-
-        <li>
-            <a tabindex="0" data_action=" click->theme#switch" data_theme_value="Winter">Winter</a>
-        </li>
+        </li> -->
     </ul>
+    <% end %>
 </div>
 <% end %>
