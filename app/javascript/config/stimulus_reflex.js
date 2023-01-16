@@ -7,8 +7,7 @@ import Radiolabel from 'radiolabel';
 
 application.consumer = consumer;
 application.register('radiolabel', Radiolabel);
-// StimulusReflex.debug = true;
-StimulusReflex.debug = true;
+StimulusReflex.debug = process.env.NODE_ENV === 'development';
 
 window.reflexes = StimulusReflex.reflexes;
 

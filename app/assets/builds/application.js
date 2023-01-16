@@ -32,12 +32,12 @@
       this.unorderedBindings.delete(binding);
     }
     handleEvent(event) {
-      const extendedEvent = extendEvent(event);
+      const extendedEvent2 = extendEvent(event);
       for (const binding of this.bindings) {
-        if (extendedEvent.immediatePropagationStopped) {
+        if (extendedEvent2.immediatePropagationStopped) {
           break;
         } else {
-          binding.handleEvent(extendedEvent);
+          binding.handleEvent(extendedEvent2);
         }
       }
     }
@@ -328,9 +328,9 @@
       return this.action.eventName;
     }
     get method() {
-      const method = this.controller[this.methodName];
-      if (typeof method == "function") {
-        return method;
+      const method2 = this.controller[this.methodName];
+      if (typeof method2 == "function") {
+        return method2;
       }
       throw new Error(`Action "${this.action}" references undefined method "${this.methodName}"`);
     }
@@ -2307,6 +2307,639 @@
   Controller.outlets = [];
   Controller.values = {};
 
+  // ../../node_modules/hotkeys-js/dist/hotkeys.esm.js
+  var isff = typeof navigator !== "undefined" ? navigator.userAgent.toLowerCase().indexOf("firefox") > 0 : false;
+  function addEvent(object, event, method2, useCapture) {
+    if (object.addEventListener) {
+      object.addEventListener(event, method2, useCapture);
+    } else if (object.attachEvent) {
+      object.attachEvent("on".concat(event), function() {
+        method2(window.event);
+      });
+    }
+  }
+  function getMods(modifier, key) {
+    var mods = key.slice(0, key.length - 1);
+    for (var i3 = 0; i3 < mods.length; i3++) {
+      mods[i3] = modifier[mods[i3].toLowerCase()];
+    }
+    return mods;
+  }
+  function getKeys(key) {
+    if (typeof key !== "string")
+      key = "";
+    key = key.replace(/\s/g, "");
+    var keys = key.split(",");
+    var index = keys.lastIndexOf("");
+    for (; index >= 0; ) {
+      keys[index - 1] += ",";
+      keys.splice(index, 1);
+      index = keys.lastIndexOf("");
+    }
+    return keys;
+  }
+  function compareArray(a1, a22) {
+    var arr1 = a1.length >= a22.length ? a1 : a22;
+    var arr2 = a1.length >= a22.length ? a22 : a1;
+    var isIndex = true;
+    for (var i3 = 0; i3 < arr1.length; i3++) {
+      if (arr2.indexOf(arr1[i3]) === -1)
+        isIndex = false;
+    }
+    return isIndex;
+  }
+  var _keyMap = {
+    backspace: 8,
+    "\u232B": 8,
+    tab: 9,
+    clear: 12,
+    enter: 13,
+    "\u21A9": 13,
+    return: 13,
+    esc: 27,
+    escape: 27,
+    space: 32,
+    left: 37,
+    up: 38,
+    right: 39,
+    down: 40,
+    del: 46,
+    delete: 46,
+    ins: 45,
+    insert: 45,
+    home: 36,
+    end: 35,
+    pageup: 33,
+    pagedown: 34,
+    capslock: 20,
+    num_0: 96,
+    num_1: 97,
+    num_2: 98,
+    num_3: 99,
+    num_4: 100,
+    num_5: 101,
+    num_6: 102,
+    num_7: 103,
+    num_8: 104,
+    num_9: 105,
+    num_multiply: 106,
+    num_add: 107,
+    num_enter: 108,
+    num_subtract: 109,
+    num_decimal: 110,
+    num_divide: 111,
+    "\u21EA": 20,
+    ",": 188,
+    ".": 190,
+    "/": 191,
+    "`": 192,
+    "-": isff ? 173 : 189,
+    "=": isff ? 61 : 187,
+    ";": isff ? 59 : 186,
+    "'": 222,
+    "[": 219,
+    "]": 221,
+    "\\": 220
+  };
+  var _modifier = {
+    // shiftKey
+    "\u21E7": 16,
+    shift: 16,
+    // altKey
+    "\u2325": 18,
+    alt: 18,
+    option: 18,
+    // ctrlKey
+    "\u2303": 17,
+    ctrl: 17,
+    control: 17,
+    // metaKey
+    "\u2318": 91,
+    cmd: 91,
+    command: 91
+  };
+  var modifierMap = {
+    16: "shiftKey",
+    18: "altKey",
+    17: "ctrlKey",
+    91: "metaKey",
+    shiftKey: 16,
+    ctrlKey: 17,
+    altKey: 18,
+    metaKey: 91
+  };
+  var _mods = {
+    16: false,
+    18: false,
+    17: false,
+    91: false
+  };
+  var _handlers = {};
+  for (k3 = 1; k3 < 20; k3++) {
+    _keyMap["f".concat(k3)] = 111 + k3;
+  }
+  var k3;
+  var _downKeys = [];
+  var winListendFocus = false;
+  var _scope = "all";
+  var elementHasBindEvent = [];
+  var code = function code2(x3) {
+    return _keyMap[x3.toLowerCase()] || _modifier[x3.toLowerCase()] || x3.toUpperCase().charCodeAt(0);
+  };
+  var getKey = function getKey2(x3) {
+    return Object.keys(_keyMap).find(function(k3) {
+      return _keyMap[k3] === x3;
+    });
+  };
+  var getModifier = function getModifier2(x3) {
+    return Object.keys(_modifier).find(function(k3) {
+      return _modifier[k3] === x3;
+    });
+  };
+  function setScope(scope) {
+    _scope = scope || "all";
+  }
+  function getScope() {
+    return _scope || "all";
+  }
+  function getPressedKeyCodes() {
+    return _downKeys.slice(0);
+  }
+  function getPressedKeyString() {
+    return _downKeys.map(function(c3) {
+      return getKey(c3) || getModifier(c3) || String.fromCharCode(c3);
+    });
+  }
+  function filter(event) {
+    var target = event.target || event.srcElement;
+    var tagName = target.tagName;
+    var flag = true;
+    if (target.isContentEditable || (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT") && !target.readOnly) {
+      flag = false;
+    }
+    return flag;
+  }
+  function isPressed(keyCode) {
+    if (typeof keyCode === "string") {
+      keyCode = code(keyCode);
+    }
+    return _downKeys.indexOf(keyCode) !== -1;
+  }
+  function deleteScope(scope, newScope) {
+    var handlers;
+    var i3;
+    if (!scope)
+      scope = getScope();
+    for (var key in _handlers) {
+      if (Object.prototype.hasOwnProperty.call(_handlers, key)) {
+        handlers = _handlers[key];
+        for (i3 = 0; i3 < handlers.length; ) {
+          if (handlers[i3].scope === scope)
+            handlers.splice(i3, 1);
+          else
+            i3++;
+        }
+      }
+    }
+    if (getScope() === scope)
+      setScope(newScope || "all");
+  }
+  function clearModifier(event) {
+    var key = event.keyCode || event.which || event.charCode;
+    var i3 = _downKeys.indexOf(key);
+    if (i3 >= 0) {
+      _downKeys.splice(i3, 1);
+    }
+    if (event.key && event.key.toLowerCase() === "meta") {
+      _downKeys.splice(0, _downKeys.length);
+    }
+    if (key === 93 || key === 224)
+      key = 91;
+    if (key in _mods) {
+      _mods[key] = false;
+      for (var k3 in _modifier) {
+        if (_modifier[k3] === key)
+          hotkeys[k3] = false;
+      }
+    }
+  }
+  function unbind(keysInfo) {
+    if (typeof keysInfo === "undefined") {
+      Object.keys(_handlers).forEach(function(key) {
+        return delete _handlers[key];
+      });
+    } else if (Array.isArray(keysInfo)) {
+      keysInfo.forEach(function(info) {
+        if (info.key)
+          eachUnbind(info);
+      });
+    } else if (typeof keysInfo === "object") {
+      if (keysInfo.key)
+        eachUnbind(keysInfo);
+    } else if (typeof keysInfo === "string") {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+      var scope = args[0], method2 = args[1];
+      if (typeof scope === "function") {
+        method2 = scope;
+        scope = "";
+      }
+      eachUnbind({
+        key: keysInfo,
+        scope,
+        method: method2,
+        splitKey: "+"
+      });
+    }
+  }
+  var eachUnbind = function eachUnbind2(_ref) {
+    var key = _ref.key, scope = _ref.scope, method2 = _ref.method, _ref$splitKey = _ref.splitKey, splitKey = _ref$splitKey === void 0 ? "+" : _ref$splitKey;
+    var multipleKeys = getKeys(key);
+    multipleKeys.forEach(function(originKey) {
+      var unbindKeys = originKey.split(splitKey);
+      var len = unbindKeys.length;
+      var lastKey = unbindKeys[len - 1];
+      var keyCode = lastKey === "*" ? "*" : code(lastKey);
+      if (!_handlers[keyCode])
+        return;
+      if (!scope)
+        scope = getScope();
+      var mods = len > 1 ? getMods(_modifier, unbindKeys) : [];
+      _handlers[keyCode] = _handlers[keyCode].filter(function(record) {
+        var isMatchingMethod = method2 ? record.method === method2 : true;
+        return !(isMatchingMethod && record.scope === scope && compareArray(record.mods, mods));
+      });
+    });
+  };
+  function eventHandler(event, handler, scope, element) {
+    if (handler.element !== element) {
+      return;
+    }
+    var modifiersMatch;
+    if (handler.scope === scope || handler.scope === "all") {
+      modifiersMatch = handler.mods.length > 0;
+      for (var y3 in _mods) {
+        if (Object.prototype.hasOwnProperty.call(_mods, y3)) {
+          if (!_mods[y3] && handler.mods.indexOf(+y3) > -1 || _mods[y3] && handler.mods.indexOf(+y3) === -1) {
+            modifiersMatch = false;
+          }
+        }
+      }
+      if (handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91] || modifiersMatch || handler.shortcut === "*") {
+        if (handler.method(event, handler) === false) {
+          if (event.preventDefault)
+            event.preventDefault();
+          else
+            event.returnValue = false;
+          if (event.stopPropagation)
+            event.stopPropagation();
+          if (event.cancelBubble)
+            event.cancelBubble = true;
+        }
+      }
+    }
+  }
+  function dispatch(event, element) {
+    var asterisk = _handlers["*"];
+    var key = event.keyCode || event.which || event.charCode;
+    if (!hotkeys.filter.call(this, event))
+      return;
+    if (key === 93 || key === 224)
+      key = 91;
+    if (_downKeys.indexOf(key) === -1 && key !== 229)
+      _downKeys.push(key);
+    ["ctrlKey", "altKey", "shiftKey", "metaKey"].forEach(function(keyName) {
+      var keyNum = modifierMap[keyName];
+      if (event[keyName] && _downKeys.indexOf(keyNum) === -1) {
+        _downKeys.push(keyNum);
+      } else if (!event[keyName] && _downKeys.indexOf(keyNum) > -1) {
+        _downKeys.splice(_downKeys.indexOf(keyNum), 1);
+      } else if (keyName === "metaKey" && event[keyName] && _downKeys.length === 3) {
+        if (!(event.ctrlKey || event.shiftKey || event.altKey)) {
+          _downKeys = _downKeys.slice(_downKeys.indexOf(keyNum));
+        }
+      }
+    });
+    if (key in _mods) {
+      _mods[key] = true;
+      for (var k3 in _modifier) {
+        if (_modifier[k3] === key)
+          hotkeys[k3] = true;
+      }
+      if (!asterisk)
+        return;
+    }
+    for (var e in _mods) {
+      if (Object.prototype.hasOwnProperty.call(_mods, e)) {
+        _mods[e] = event[modifierMap[e]];
+      }
+    }
+    if (event.getModifierState && !(event.altKey && !event.ctrlKey) && event.getModifierState("AltGraph")) {
+      if (_downKeys.indexOf(17) === -1) {
+        _downKeys.push(17);
+      }
+      if (_downKeys.indexOf(18) === -1) {
+        _downKeys.push(18);
+      }
+      _mods[17] = true;
+      _mods[18] = true;
+    }
+    var scope = getScope();
+    if (asterisk) {
+      for (var i3 = 0; i3 < asterisk.length; i3++) {
+        if (asterisk[i3].scope === scope && (event.type === "keydown" && asterisk[i3].keydown || event.type === "keyup" && asterisk[i3].keyup)) {
+          eventHandler(event, asterisk[i3], scope, element);
+        }
+      }
+    }
+    if (!(key in _handlers))
+      return;
+    for (var _i = 0; _i < _handlers[key].length; _i++) {
+      if (event.type === "keydown" && _handlers[key][_i].keydown || event.type === "keyup" && _handlers[key][_i].keyup) {
+        if (_handlers[key][_i].key) {
+          var record = _handlers[key][_i];
+          var splitKey = record.splitKey;
+          var keyShortcut = record.key.split(splitKey);
+          var _downKeysCurrent = [];
+          for (var a3 = 0; a3 < keyShortcut.length; a3++) {
+            _downKeysCurrent.push(code(keyShortcut[a3]));
+          }
+          if (_downKeysCurrent.sort().join("") === _downKeys.sort().join("")) {
+            eventHandler(event, record, scope, element);
+          }
+        }
+      }
+    }
+  }
+  function isElementBind(element) {
+    return elementHasBindEvent.indexOf(element) > -1;
+  }
+  function hotkeys(key, option, method2) {
+    _downKeys = [];
+    var keys = getKeys(key);
+    var mods = [];
+    var scope = "all";
+    var element = document;
+    var i3 = 0;
+    var keyup = false;
+    var keydown = true;
+    var splitKey = "+";
+    var capture = false;
+    if (method2 === void 0 && typeof option === "function") {
+      method2 = option;
+    }
+    if (Object.prototype.toString.call(option) === "[object Object]") {
+      if (option.scope)
+        scope = option.scope;
+      if (option.element)
+        element = option.element;
+      if (option.keyup)
+        keyup = option.keyup;
+      if (option.keydown !== void 0)
+        keydown = option.keydown;
+      if (option.capture !== void 0)
+        capture = option.capture;
+      if (typeof option.splitKey === "string")
+        splitKey = option.splitKey;
+    }
+    if (typeof option === "string")
+      scope = option;
+    for (; i3 < keys.length; i3++) {
+      key = keys[i3].split(splitKey);
+      mods = [];
+      if (key.length > 1)
+        mods = getMods(_modifier, key);
+      key = key[key.length - 1];
+      key = key === "*" ? "*" : code(key);
+      if (!(key in _handlers))
+        _handlers[key] = [];
+      _handlers[key].push({
+        keyup,
+        keydown,
+        scope,
+        mods,
+        shortcut: keys[i3],
+        method: method2,
+        key: keys[i3],
+        splitKey,
+        element
+      });
+    }
+    if (typeof element !== "undefined" && !isElementBind(element) && window) {
+      elementHasBindEvent.push(element);
+      addEvent(element, "keydown", function(e) {
+        dispatch(e, element);
+      }, capture);
+      if (!winListendFocus) {
+        winListendFocus = true;
+        addEvent(window, "focus", function() {
+          _downKeys = [];
+        }, capture);
+      }
+      addEvent(element, "keyup", function(e) {
+        dispatch(e, element);
+        clearModifier(e);
+      }, capture);
+    }
+  }
+  function trigger(shortcut) {
+    var scope = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "all";
+    Object.keys(_handlers).forEach(function(key) {
+      var dataList = _handlers[key].filter(function(item) {
+        return item.scope === scope && item.shortcut === shortcut;
+      });
+      dataList.forEach(function(data) {
+        if (data && data.method) {
+          data.method();
+        }
+      });
+    });
+  }
+  var _api = {
+    getPressedKeyString,
+    setScope,
+    getScope,
+    deleteScope,
+    getPressedKeyCodes,
+    isPressed,
+    filter,
+    trigger,
+    unbind,
+    keyMap: _keyMap,
+    modifier: _modifier,
+    modifierMap
+  };
+  for (a3 in _api) {
+    if (Object.prototype.hasOwnProperty.call(_api, a3)) {
+      hotkeys[a3] = _api[a3];
+    }
+  }
+  var a3;
+  if (typeof window !== "undefined") {
+    _hotkeys = window.hotkeys;
+    hotkeys.noConflict = function(deep) {
+      if (deep && window.hotkeys === hotkeys) {
+        window.hotkeys = _hotkeys;
+      }
+      return hotkeys;
+    };
+    window.hotkeys = hotkeys;
+  }
+  var _hotkeys;
+
+  // ../../node_modules/stimulus-use/dist/index.js
+  var method = (controller, methodName) => {
+    const method2 = controller[methodName];
+    if (typeof method2 == "function") {
+      return method2;
+    } else {
+      return (...args) => {
+      };
+    }
+  };
+  var composeEventName = (name, controller, eventPrefix) => {
+    let composedName = name;
+    if (eventPrefix === true) {
+      composedName = `${controller.identifier}:${name}`;
+    } else if (typeof eventPrefix === "string") {
+      composedName = `${eventPrefix}:${name}`;
+    }
+    return composedName;
+  };
+  var extendedEvent = (type, event, detail) => {
+    const { bubbles, cancelable, composed } = event || { bubbles: true, cancelable: true, composed: true };
+    if (event) {
+      Object.assign(detail, { originalEvent: event });
+    }
+    const customEvent = new CustomEvent(type, {
+      bubbles,
+      cancelable,
+      composed,
+      detail
+    });
+    return customEvent;
+  };
+  var defaultOptions$8 = {
+    dispatchEvent: true,
+    eventPrefix: true,
+    visibleAttribute: "isVisible"
+  };
+  var useIntersection = (composableController, options = {}) => {
+    const controller = composableController;
+    const { dispatchEvent, eventPrefix, visibleAttribute } = Object.assign({}, defaultOptions$8, options);
+    const targetElement = (options === null || options === void 0 ? void 0 : options.element) || controller.element;
+    if (!controller.intersectionElements)
+      controller.intersectionElements = [];
+    controller.intersectionElements.push(targetElement);
+    const callback = (entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        dispatchAppear(entry);
+      } else if (targetElement.hasAttribute(visibleAttribute)) {
+        dispatchDisappear(entry);
+      }
+    };
+    const dispatchAppear = (entry) => {
+      targetElement.setAttribute(visibleAttribute, "true");
+      method(controller, "appear").call(controller, entry);
+      if (dispatchEvent) {
+        const eventName = composeEventName("appear", controller, eventPrefix);
+        const appearEvent = extendedEvent(eventName, null, { controller, entry });
+        targetElement.dispatchEvent(appearEvent);
+      }
+    };
+    const dispatchDisappear = (entry) => {
+      targetElement.removeAttribute(visibleAttribute);
+      method(controller, "disappear").call(controller, entry);
+      if (dispatchEvent) {
+        const eventName = composeEventName("disappear", controller, eventPrefix);
+        const disappearEvent = extendedEvent(eventName, null, { controller, entry });
+        targetElement.dispatchEvent(disappearEvent);
+      }
+    };
+    const controllerDisconnect = controller.disconnect.bind(controller);
+    const observer = new IntersectionObserver(callback, options);
+    const observe = () => {
+      observer.observe(targetElement);
+    };
+    const unobserve = () => {
+      observer.unobserve(targetElement);
+    };
+    const noneVisible = () => {
+      return controller.intersectionElements.filter((element) => element.hasAttribute(visibleAttribute)).length === 0;
+    };
+    const oneVisible = () => {
+      return controller.intersectionElements.filter((element) => element.hasAttribute(visibleAttribute)).length === 1;
+    };
+    const atLeastOneVisible = () => {
+      return controller.intersectionElements.some((element) => element.hasAttribute(visibleAttribute));
+    };
+    const allVisible = () => {
+      return controller.intersectionElements.every((element) => element.hasAttribute(visibleAttribute));
+    };
+    const isVisible = allVisible;
+    Object.assign(controller, {
+      isVisible,
+      noneVisible,
+      oneVisible,
+      atLeastOneVisible,
+      allVisible,
+      disconnect() {
+        unobserve();
+        controllerDisconnect();
+      }
+    });
+    observe();
+    return [observe, unobserve];
+  };
+  var IntersectionComposableController = class extends Controller {
+  };
+  var IntersectionController = class extends IntersectionComposableController {
+    constructor(context) {
+      super(context);
+      requestAnimationFrame(() => {
+        const [observe, unobserve] = useIntersection(this, this.options);
+        Object.assign(this, { observe, unobserve });
+      });
+    }
+  };
+  var useWindowResize = (composableController) => {
+    const controller = composableController;
+    const callback = (event) => {
+      const { innerWidth, innerHeight } = window;
+      const payload = {
+        height: innerHeight || Infinity,
+        width: innerWidth || Infinity,
+        event
+      };
+      method(controller, "windowResize").call(controller, payload);
+    };
+    const controllerDisconnect = controller.disconnect.bind(controller);
+    const observe = () => {
+      window.addEventListener("resize", callback);
+      callback();
+    };
+    const unobserve = () => {
+      window.removeEventListener("resize", callback);
+    };
+    Object.assign(controller, {
+      disconnect() {
+        unobserve();
+        controllerDisconnect();
+      }
+    });
+    observe();
+    return [observe, unobserve];
+  };
+  var DebounceController = class extends Controller {
+  };
+  DebounceController.debounces = [];
+  var ThrottleController = class extends Controller {
+  };
+  ThrottleController.throttles = [];
+  console.log(`Local Stimulus Use`);
+
   // stimulus_ns:/Users/xiaobo/Desktop/stimulus_reflex_todos/app/javascript/controllers/controllers
   var definitions = [];
 
@@ -4207,687 +4840,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   } };
   window.StimulusReflex = B;
 
-  // ../../node_modules/hotkeys-js/dist/hotkeys.esm.js
-  var isff = typeof navigator !== "undefined" ? navigator.userAgent.toLowerCase().indexOf("firefox") > 0 : false;
-  function addEvent(object, event, method, useCapture) {
-    if (object.addEventListener) {
-      object.addEventListener(event, method, useCapture);
-    } else if (object.attachEvent) {
-      object.attachEvent("on".concat(event), function() {
-        method(window.event);
-      });
-    }
-  }
-  function getMods(modifier, key) {
-    var mods = key.slice(0, key.length - 1);
-    for (var i3 = 0; i3 < mods.length; i3++) {
-      mods[i3] = modifier[mods[i3].toLowerCase()];
-    }
-    return mods;
-  }
-  function getKeys(key) {
-    if (typeof key !== "string")
-      key = "";
-    key = key.replace(/\s/g, "");
-    var keys = key.split(",");
-    var index = keys.lastIndexOf("");
-    for (; index >= 0; ) {
-      keys[index - 1] += ",";
-      keys.splice(index, 1);
-      index = keys.lastIndexOf("");
-    }
-    return keys;
-  }
-  function compareArray(a1, a22) {
-    var arr1 = a1.length >= a22.length ? a1 : a22;
-    var arr2 = a1.length >= a22.length ? a22 : a1;
-    var isIndex = true;
-    for (var i3 = 0; i3 < arr1.length; i3++) {
-      if (arr2.indexOf(arr1[i3]) === -1)
-        isIndex = false;
-    }
-    return isIndex;
-  }
-  var _keyMap = {
-    backspace: 8,
-    "\u232B": 8,
-    tab: 9,
-    clear: 12,
-    enter: 13,
-    "\u21A9": 13,
-    return: 13,
-    esc: 27,
-    escape: 27,
-    space: 32,
-    left: 37,
-    up: 38,
-    right: 39,
-    down: 40,
-    del: 46,
-    delete: 46,
-    ins: 45,
-    insert: 45,
-    home: 36,
-    end: 35,
-    pageup: 33,
-    pagedown: 34,
-    capslock: 20,
-    num_0: 96,
-    num_1: 97,
-    num_2: 98,
-    num_3: 99,
-    num_4: 100,
-    num_5: 101,
-    num_6: 102,
-    num_7: 103,
-    num_8: 104,
-    num_9: 105,
-    num_multiply: 106,
-    num_add: 107,
-    num_enter: 108,
-    num_subtract: 109,
-    num_decimal: 110,
-    num_divide: 111,
-    "\u21EA": 20,
-    ",": 188,
-    ".": 190,
-    "/": 191,
-    "`": 192,
-    "-": isff ? 173 : 189,
-    "=": isff ? 61 : 187,
-    ";": isff ? 59 : 186,
-    "'": 222,
-    "[": 219,
-    "]": 221,
-    "\\": 220
-  };
-  var _modifier = {
-    // shiftKey
-    "\u21E7": 16,
-    shift: 16,
-    // altKey
-    "\u2325": 18,
-    alt: 18,
-    option: 18,
-    // ctrlKey
-    "\u2303": 17,
-    ctrl: 17,
-    control: 17,
-    // metaKey
-    "\u2318": 91,
-    cmd: 91,
-    command: 91
-  };
-  var modifierMap = {
-    16: "shiftKey",
-    18: "altKey",
-    17: "ctrlKey",
-    91: "metaKey",
-    shiftKey: 16,
-    ctrlKey: 17,
-    altKey: 18,
-    metaKey: 91
-  };
-  var _mods = {
-    16: false,
-    18: false,
-    17: false,
-    91: false
-  };
-  var _handlers = {};
-  for (k3 = 1; k3 < 20; k3++) {
-    _keyMap["f".concat(k3)] = 111 + k3;
-  }
-  var k3;
-  var _downKeys = [];
-  var winListendFocus = false;
-  var _scope = "all";
-  var elementHasBindEvent = [];
-  var code = function code2(x3) {
-    return _keyMap[x3.toLowerCase()] || _modifier[x3.toLowerCase()] || x3.toUpperCase().charCodeAt(0);
-  };
-  var getKey = function getKey2(x3) {
-    return Object.keys(_keyMap).find(function(k3) {
-      return _keyMap[k3] === x3;
-    });
-  };
-  var getModifier = function getModifier2(x3) {
-    return Object.keys(_modifier).find(function(k3) {
-      return _modifier[k3] === x3;
-    });
-  };
-  function setScope(scope) {
-    _scope = scope || "all";
-  }
-  function getScope() {
-    return _scope || "all";
-  }
-  function getPressedKeyCodes() {
-    return _downKeys.slice(0);
-  }
-  function getPressedKeyString() {
-    return _downKeys.map(function(c3) {
-      return getKey(c3) || getModifier(c3) || String.fromCharCode(c3);
-    });
-  }
-  function filter(event) {
-    var target = event.target || event.srcElement;
-    var tagName = target.tagName;
-    var flag = true;
-    if (target.isContentEditable || (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT") && !target.readOnly) {
-      flag = false;
-    }
-    return flag;
-  }
-  function isPressed(keyCode) {
-    if (typeof keyCode === "string") {
-      keyCode = code(keyCode);
-    }
-    return _downKeys.indexOf(keyCode) !== -1;
-  }
-  function deleteScope(scope, newScope) {
-    var handlers;
-    var i3;
-    if (!scope)
-      scope = getScope();
-    for (var key in _handlers) {
-      if (Object.prototype.hasOwnProperty.call(_handlers, key)) {
-        handlers = _handlers[key];
-        for (i3 = 0; i3 < handlers.length; ) {
-          if (handlers[i3].scope === scope)
-            handlers.splice(i3, 1);
-          else
-            i3++;
-        }
-      }
-    }
-    if (getScope() === scope)
-      setScope(newScope || "all");
-  }
-  function clearModifier(event) {
-    var key = event.keyCode || event.which || event.charCode;
-    var i3 = _downKeys.indexOf(key);
-    if (i3 >= 0) {
-      _downKeys.splice(i3, 1);
-    }
-    if (event.key && event.key.toLowerCase() === "meta") {
-      _downKeys.splice(0, _downKeys.length);
-    }
-    if (key === 93 || key === 224)
-      key = 91;
-    if (key in _mods) {
-      _mods[key] = false;
-      for (var k3 in _modifier) {
-        if (_modifier[k3] === key)
-          hotkeys[k3] = false;
-      }
-    }
-  }
-  function unbind(keysInfo) {
-    if (typeof keysInfo === "undefined") {
-      Object.keys(_handlers).forEach(function(key) {
-        return delete _handlers[key];
-      });
-    } else if (Array.isArray(keysInfo)) {
-      keysInfo.forEach(function(info) {
-        if (info.key)
-          eachUnbind(info);
-      });
-    } else if (typeof keysInfo === "object") {
-      if (keysInfo.key)
-        eachUnbind(keysInfo);
-    } else if (typeof keysInfo === "string") {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-      var scope = args[0], method = args[1];
-      if (typeof scope === "function") {
-        method = scope;
-        scope = "";
-      }
-      eachUnbind({
-        key: keysInfo,
-        scope,
-        method,
-        splitKey: "+"
-      });
-    }
-  }
-  var eachUnbind = function eachUnbind2(_ref) {
-    var key = _ref.key, scope = _ref.scope, method = _ref.method, _ref$splitKey = _ref.splitKey, splitKey = _ref$splitKey === void 0 ? "+" : _ref$splitKey;
-    var multipleKeys = getKeys(key);
-    multipleKeys.forEach(function(originKey) {
-      var unbindKeys = originKey.split(splitKey);
-      var len = unbindKeys.length;
-      var lastKey = unbindKeys[len - 1];
-      var keyCode = lastKey === "*" ? "*" : code(lastKey);
-      if (!_handlers[keyCode])
-        return;
-      if (!scope)
-        scope = getScope();
-      var mods = len > 1 ? getMods(_modifier, unbindKeys) : [];
-      _handlers[keyCode] = _handlers[keyCode].filter(function(record) {
-        var isMatchingMethod = method ? record.method === method : true;
-        return !(isMatchingMethod && record.scope === scope && compareArray(record.mods, mods));
-      });
-    });
-  };
-  function eventHandler(event, handler, scope, element) {
-    if (handler.element !== element) {
-      return;
-    }
-    var modifiersMatch;
-    if (handler.scope === scope || handler.scope === "all") {
-      modifiersMatch = handler.mods.length > 0;
-      for (var y3 in _mods) {
-        if (Object.prototype.hasOwnProperty.call(_mods, y3)) {
-          if (!_mods[y3] && handler.mods.indexOf(+y3) > -1 || _mods[y3] && handler.mods.indexOf(+y3) === -1) {
-            modifiersMatch = false;
-          }
-        }
-      }
-      if (handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91] || modifiersMatch || handler.shortcut === "*") {
-        if (handler.method(event, handler) === false) {
-          if (event.preventDefault)
-            event.preventDefault();
-          else
-            event.returnValue = false;
-          if (event.stopPropagation)
-            event.stopPropagation();
-          if (event.cancelBubble)
-            event.cancelBubble = true;
-        }
-      }
-    }
-  }
-  function dispatch(event, element) {
-    var asterisk = _handlers["*"];
-    var key = event.keyCode || event.which || event.charCode;
-    if (!hotkeys.filter.call(this, event))
-      return;
-    if (key === 93 || key === 224)
-      key = 91;
-    if (_downKeys.indexOf(key) === -1 && key !== 229)
-      _downKeys.push(key);
-    ["ctrlKey", "altKey", "shiftKey", "metaKey"].forEach(function(keyName) {
-      var keyNum = modifierMap[keyName];
-      if (event[keyName] && _downKeys.indexOf(keyNum) === -1) {
-        _downKeys.push(keyNum);
-      } else if (!event[keyName] && _downKeys.indexOf(keyNum) > -1) {
-        _downKeys.splice(_downKeys.indexOf(keyNum), 1);
-      } else if (keyName === "metaKey" && event[keyName] && _downKeys.length === 3) {
-        if (!(event.ctrlKey || event.shiftKey || event.altKey)) {
-          _downKeys = _downKeys.slice(_downKeys.indexOf(keyNum));
-        }
-      }
-    });
-    if (key in _mods) {
-      _mods[key] = true;
-      for (var k3 in _modifier) {
-        if (_modifier[k3] === key)
-          hotkeys[k3] = true;
-      }
-      if (!asterisk)
-        return;
-    }
-    for (var e in _mods) {
-      if (Object.prototype.hasOwnProperty.call(_mods, e)) {
-        _mods[e] = event[modifierMap[e]];
-      }
-    }
-    if (event.getModifierState && !(event.altKey && !event.ctrlKey) && event.getModifierState("AltGraph")) {
-      if (_downKeys.indexOf(17) === -1) {
-        _downKeys.push(17);
-      }
-      if (_downKeys.indexOf(18) === -1) {
-        _downKeys.push(18);
-      }
-      _mods[17] = true;
-      _mods[18] = true;
-    }
-    var scope = getScope();
-    if (asterisk) {
-      for (var i3 = 0; i3 < asterisk.length; i3++) {
-        if (asterisk[i3].scope === scope && (event.type === "keydown" && asterisk[i3].keydown || event.type === "keyup" && asterisk[i3].keyup)) {
-          eventHandler(event, asterisk[i3], scope, element);
-        }
-      }
-    }
-    if (!(key in _handlers))
-      return;
-    for (var _i = 0; _i < _handlers[key].length; _i++) {
-      if (event.type === "keydown" && _handlers[key][_i].keydown || event.type === "keyup" && _handlers[key][_i].keyup) {
-        if (_handlers[key][_i].key) {
-          var record = _handlers[key][_i];
-          var splitKey = record.splitKey;
-          var keyShortcut = record.key.split(splitKey);
-          var _downKeysCurrent = [];
-          for (var a3 = 0; a3 < keyShortcut.length; a3++) {
-            _downKeysCurrent.push(code(keyShortcut[a3]));
-          }
-          if (_downKeysCurrent.sort().join("") === _downKeys.sort().join("")) {
-            eventHandler(event, record, scope, element);
-          }
-        }
-      }
-    }
-  }
-  function isElementBind(element) {
-    return elementHasBindEvent.indexOf(element) > -1;
-  }
-  function hotkeys(key, option, method) {
-    _downKeys = [];
-    var keys = getKeys(key);
-    var mods = [];
-    var scope = "all";
-    var element = document;
-    var i3 = 0;
-    var keyup = false;
-    var keydown = true;
-    var splitKey = "+";
-    var capture = false;
-    if (method === void 0 && typeof option === "function") {
-      method = option;
-    }
-    if (Object.prototype.toString.call(option) === "[object Object]") {
-      if (option.scope)
-        scope = option.scope;
-      if (option.element)
-        element = option.element;
-      if (option.keyup)
-        keyup = option.keyup;
-      if (option.keydown !== void 0)
-        keydown = option.keydown;
-      if (option.capture !== void 0)
-        capture = option.capture;
-      if (typeof option.splitKey === "string")
-        splitKey = option.splitKey;
-    }
-    if (typeof option === "string")
-      scope = option;
-    for (; i3 < keys.length; i3++) {
-      key = keys[i3].split(splitKey);
-      mods = [];
-      if (key.length > 1)
-        mods = getMods(_modifier, key);
-      key = key[key.length - 1];
-      key = key === "*" ? "*" : code(key);
-      if (!(key in _handlers))
-        _handlers[key] = [];
-      _handlers[key].push({
-        keyup,
-        keydown,
-        scope,
-        mods,
-        shortcut: keys[i3],
-        method,
-        key: keys[i3],
-        splitKey,
-        element
-      });
-    }
-    if (typeof element !== "undefined" && !isElementBind(element) && window) {
-      elementHasBindEvent.push(element);
-      addEvent(element, "keydown", function(e) {
-        dispatch(e, element);
-      }, capture);
-      if (!winListendFocus) {
-        winListendFocus = true;
-        addEvent(window, "focus", function() {
-          _downKeys = [];
-        }, capture);
-      }
-      addEvent(element, "keyup", function(e) {
-        dispatch(e, element);
-        clearModifier(e);
-      }, capture);
-    }
-  }
-  function trigger(shortcut) {
-    var scope = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "all";
-    Object.keys(_handlers).forEach(function(key) {
-      var dataList = _handlers[key].filter(function(item) {
-        return item.scope === scope && item.shortcut === shortcut;
-      });
-      dataList.forEach(function(data) {
-        if (data && data.method) {
-          data.method();
-        }
-      });
-    });
-  }
-  var _api = {
-    getPressedKeyString,
-    setScope,
-    getScope,
-    deleteScope,
-    getPressedKeyCodes,
-    isPressed,
-    filter,
-    trigger,
-    unbind,
-    keyMap: _keyMap,
-    modifier: _modifier,
-    modifierMap
-  };
-  for (a3 in _api) {
-    if (Object.prototype.hasOwnProperty.call(_api, a3)) {
-      hotkeys[a3] = _api[a3];
-    }
-  }
-  var a3;
-  if (typeof window !== "undefined") {
-    _hotkeys = window.hotkeys;
-    hotkeys.noConflict = function(deep) {
-      if (deep && window.hotkeys === hotkeys) {
-        window.hotkeys = _hotkeys;
-      }
-      return hotkeys;
-    };
-    window.hotkeys = hotkeys;
-  }
-  var _hotkeys;
-
-  // ../../node_modules/stimulus-use/dist/index.js
-  var composeEventName = (name, controller, eventPrefix) => {
-    let composedName = name;
-    if (eventPrefix === true) {
-      composedName = `${controller.identifier}:${name}`;
-    } else if (typeof eventPrefix === "string") {
-      composedName = `${eventPrefix}:${name}`;
-    }
-    return composedName;
-  };
-  function __rest(s3, e) {
-    var t2 = {};
-    for (var p3 in s3)
-      if (Object.prototype.hasOwnProperty.call(s3, p3) && e.indexOf(p3) < 0)
-        t2[p3] = s3[p3];
-    if (s3 != null && typeof Object.getOwnPropertySymbols === "function")
-      for (var i3 = 0, p3 = Object.getOwnPropertySymbols(s3); i3 < p3.length; i3++) {
-        if (e.indexOf(p3[i3]) < 0 && Object.prototype.propertyIsEnumerable.call(s3, p3[i3]))
-          t2[p3[i3]] = s3[p3[i3]];
-      }
-    return t2;
-  }
-  var defaultOptions$5 = {
-    debug: false,
-    logger: console,
-    dispatchEvent: true,
-    eventPrefix: true
-  };
-  var StimulusUse = class {
-    constructor(controller, options = {}) {
-      var _a, _b, _c;
-      this.log = (functionName, args) => {
-        if (!this.debug)
-          return;
-        this.logger.groupCollapsed(`%c${this.controller.identifier} %c#${functionName}`, "color: #3B82F6", "color: unset");
-        this.logger.log(Object.assign({ controllerId: this.controllerId }, args));
-        this.logger.groupEnd();
-      };
-      this.warn = (message) => {
-        this.logger.warn(`%c${this.controller.identifier} %c${message}`, "color: #3B82F6; font-weight: bold", "color: unset");
-      };
-      this.dispatch = (eventName, details = {}) => {
-        if (this.dispatchEvent) {
-          const { event } = details, eventDetails = __rest(details, ["event"]);
-          const customEvent = this.extendedEvent(eventName, event || null, eventDetails);
-          this.targetElement.dispatchEvent(customEvent);
-          this.log("dispatchEvent", Object.assign({ eventName: customEvent.type }, eventDetails));
-        }
-      };
-      this.call = (methodName, args = {}) => {
-        const method = this.controller[methodName];
-        if (typeof method == "function") {
-          return method.call(this.controller, args);
-        }
-      };
-      this.extendedEvent = (name, event, detail) => {
-        const { bubbles, cancelable, composed } = event || { bubbles: true, cancelable: true, composed: true };
-        if (event) {
-          Object.assign(detail, { originalEvent: event });
-        }
-        const customEvent = new CustomEvent(this.composeEventName(name), {
-          bubbles,
-          cancelable,
-          composed,
-          detail
-        });
-        return customEvent;
-      };
-      this.composeEventName = (name) => {
-        let composedName = name;
-        if (this.eventPrefix === true) {
-          composedName = `${this.controller.identifier}:${name}`;
-        } else if (typeof this.eventPrefix === "string") {
-          composedName = `${this.eventPrefix}:${name}`;
-        }
-        return composedName;
-      };
-      this.debug = (_b = (_a = options === null || options === void 0 ? void 0 : options.debug) !== null && _a !== void 0 ? _a : controller.application.stimulusUseDebug) !== null && _b !== void 0 ? _b : defaultOptions$5.debug;
-      this.logger = (_c = options === null || options === void 0 ? void 0 : options.logger) !== null && _c !== void 0 ? _c : defaultOptions$5.logger;
-      this.controller = controller;
-      this.controllerId = controller.element.id || controller.element.dataset.id;
-      this.targetElement = (options === null || options === void 0 ? void 0 : options.element) || controller.element;
-      const { dispatchEvent, eventPrefix } = Object.assign({}, defaultOptions$5, options);
-      Object.assign(this, { dispatchEvent, eventPrefix });
-      this.controllerInitialize = controller.initialize.bind(controller);
-      this.controllerConnect = controller.connect.bind(controller);
-      this.controllerDisconnect = controller.disconnect.bind(controller);
-    }
-  };
-  var defaultOptions$4 = {
-    eventPrefix: true,
-    bubbles: true,
-    cancelable: true
-  };
-  var UseDispatch = class extends StimulusUse {
-    constructor(controller, options = {}) {
-      var _a, _b, _c, _d;
-      super(controller, options);
-      this.dispatch = (eventName, detail = {}) => {
-        const { controller: controller2, targetElement, eventPrefix, bubbles, cancelable, log, warn } = this;
-        Object.assign(detail, { controller: controller2 });
-        const eventNameWithPrefix = composeEventName(eventName, this.controller, eventPrefix);
-        const event = new CustomEvent(eventNameWithPrefix, {
-          detail,
-          bubbles,
-          cancelable
-        });
-        targetElement.dispatchEvent(event);
-        warn("`useDispatch()` is deprecated. Please use the built-in `this.dispatch()` function from Stimulus. You can find more information on how to upgrade at: https://stimulus-use.github.io/stimulus-use/#/use-dispatch");
-        log("dispatch", { eventName: eventNameWithPrefix, detail, bubbles, cancelable });
-        return event;
-      };
-      this.targetElement = (_a = options.element) !== null && _a !== void 0 ? _a : controller.element;
-      this.eventPrefix = (_b = options.eventPrefix) !== null && _b !== void 0 ? _b : defaultOptions$4.eventPrefix;
-      this.bubbles = (_c = options.bubbles) !== null && _c !== void 0 ? _c : defaultOptions$4.bubbles;
-      this.cancelable = (_d = options.cancelable) !== null && _d !== void 0 ? _d : defaultOptions$4.cancelable;
-      this.enhanceController();
-    }
-    enhanceController() {
-      Object.assign(this.controller, { dispatch: this.dispatch });
-    }
-  };
-  var useDispatch = (controller, options = {}) => {
-    return new UseDispatch(controller, options);
-  };
-  var defaultOptions$3 = {
-    overwriteDispatch: true
-  };
-  var useApplication = (controller, options = {}) => {
-    const { overwriteDispatch } = Object.assign({}, defaultOptions$3, options);
-    Object.defineProperty(controller, "isPreview", {
-      get() {
-        return document.documentElement.hasAttribute("data-turbolinks-preview") || document.documentElement.hasAttribute("data-turbo-preview");
-      }
-    });
-    Object.defineProperty(controller, "isConnected", {
-      get() {
-        return !!Array.from(this.context.module.connectedContexts).find((c3) => c3 === this.context);
-      }
-    });
-    Object.defineProperty(controller, "csrfToken", {
-      get() {
-        return this.metaValue("csrf-token");
-      }
-    });
-    if (overwriteDispatch) {
-      useDispatch(controller, options);
-    }
-    Object.assign(controller, {
-      metaValue(name) {
-        const element = document.head.querySelector(`meta[name="${name}"]`);
-        return element && element.getAttribute("content");
-      }
-    });
-  };
-  var DebounceController = class extends Controller {
-  };
-  DebounceController.debounces = [];
-  var defaultWait$1 = 200;
-  var debounce = (fn, wait = defaultWait$1) => {
-    let timeoutId = null;
-    return function() {
-      const args = Array.from(arguments);
-      const context = this;
-      const params = args.map((arg) => arg.params);
-      const callback = () => {
-        args.forEach((arg, index) => arg.params = params[index]);
-        return fn.apply(context, args);
-      };
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      timeoutId = setTimeout(callback, wait);
-    };
-  };
-  var useDebounce = (composableController, options) => {
-    const controller = composableController;
-    const constructor = controller.constructor;
-    constructor.debounces.forEach((func) => {
-      if (typeof func === "string") {
-        controller[func] = debounce(controller[func], options === null || options === void 0 ? void 0 : options.wait);
-      }
-      if (typeof func === "object") {
-        const { name, wait } = func;
-        if (!name)
-          return;
-        controller[name] = debounce(controller[name], wait || (options === null || options === void 0 ? void 0 : options.wait));
-      }
-    });
-  };
-  var ThrottleController = class extends Controller {
-  };
-  ThrottleController.throttles = [];
-  console.log(`Local Stimulus Use`);
-
   // controllers/application_controller.js
   var application_controller_default = class extends Controller {
     connect() {
       B.register(this);
-      useApplication(this);
     }
     /* Application-wide lifecycle methods
      *
@@ -4927,13 +4883,10 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   var create_todo_controller_default = class extends application_controller_default {
     add(e) {
       e.preventDefault();
-      useDebounce(this);
       Array.from(e.target.elements).forEach((e2) => e2.value = "");
       this.stimulate("CreateTodoComponent#add", e.target);
     }
   };
-  // static debounces = ['add'];
-  __publicField(create_todo_controller_default, "debounces", ["add"]);
 
   // controllers/head_line_controller.js
   var head_line_controller_exports = {};
@@ -4964,14 +4917,31 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     }
   };
 
+  // controllers/window-size_controller.js
+  var window_size_controller_exports = {};
+  __export(window_size_controller_exports, {
+    default: () => window_size_controller_default
+  });
+  var window_size_controller_default = class extends Controller {
+    connect() {
+      useWindowResize(this);
+    }
+    windowResize({ width, height }) {
+      this.widthTarget.textContent = width;
+      this.heightTarget.textContent = height;
+    }
+  };
+  __publicField(window_size_controller_default, "targets", ["width", "height"]);
+
   // rails:/Users/xiaobo/Desktop/stimulus_reflex_todos/app/javascript/controllers/**/*_controller.js
-  var modules = [{ name: "application", module: application_controller_exports, filename: "./application_controller.js" }, { name: "create-todo", module: create_todo_controller_exports, filename: "./create_todo_controller.js" }, { name: "head-line", module: head_line_controller_exports, filename: "./head_line_controller.js" }];
+  var modules = [{ name: "application", module: application_controller_exports, filename: "./application_controller.js" }, { name: "create-todo", module: create_todo_controller_exports, filename: "./create_todo_controller.js" }, { name: "head-line", module: head_line_controller_exports, filename: "./head_line_controller.js" }, { name: "window-size", module: window_size_controller_exports, filename: "./window-size_controller.js" }];
   var controller_default = modules;
 
   // controllers/index.js
   controller_default.forEach((controller) => {
     application.register(controller.name, controller.module.default);
   });
+  application.register("intersection", IntersectionController);
 
   // channels/consumer.js
   var consumer_default = createConsumer();
@@ -10408,6 +10378,544 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   B.debug = true;
   window.reflexes = B.reflexes;
   B.initialize(application, { controller: application_controller_default, isolate: true });
+
+  // ../../node_modules/intersection-observer/intersection-observer.js
+  (function() {
+    "use strict";
+    if (typeof window !== "object") {
+      return;
+    }
+    if ("IntersectionObserver" in window && "IntersectionObserverEntry" in window && "intersectionRatio" in window.IntersectionObserverEntry.prototype) {
+      if (!("isIntersecting" in window.IntersectionObserverEntry.prototype)) {
+        Object.defineProperty(
+          window.IntersectionObserverEntry.prototype,
+          "isIntersecting",
+          {
+            get: function() {
+              return this.intersectionRatio > 0;
+            }
+          }
+        );
+      }
+      return;
+    }
+    function getFrameElement(doc3) {
+      try {
+        return doc3.defaultView && doc3.defaultView.frameElement || null;
+      } catch (e) {
+        return null;
+      }
+    }
+    var document2 = function(startDoc) {
+      var doc3 = startDoc;
+      var frame = getFrameElement(doc3);
+      while (frame) {
+        doc3 = frame.ownerDocument;
+        frame = getFrameElement(doc3);
+      }
+      return doc3;
+    }(window.document);
+    var registry = [];
+    var crossOriginUpdater = null;
+    var crossOriginRect = null;
+    function IntersectionObserverEntry(entry) {
+      this.time = entry.time;
+      this.target = entry.target;
+      this.rootBounds = ensureDOMRect(entry.rootBounds);
+      this.boundingClientRect = ensureDOMRect(entry.boundingClientRect);
+      this.intersectionRect = ensureDOMRect(entry.intersectionRect || getEmptyRect());
+      this.isIntersecting = !!entry.intersectionRect;
+      var targetRect = this.boundingClientRect;
+      var targetArea = targetRect.width * targetRect.height;
+      var intersectionRect = this.intersectionRect;
+      var intersectionArea = intersectionRect.width * intersectionRect.height;
+      if (targetArea) {
+        this.intersectionRatio = Number((intersectionArea / targetArea).toFixed(4));
+      } else {
+        this.intersectionRatio = this.isIntersecting ? 1 : 0;
+      }
+    }
+    function IntersectionObserver2(callback, opt_options) {
+      var options = opt_options || {};
+      if (typeof callback != "function") {
+        throw new Error("callback must be a function");
+      }
+      if (options.root && options.root.nodeType != 1 && options.root.nodeType != 9) {
+        throw new Error("root must be a Document or Element");
+      }
+      this._checkForIntersections = throttle(
+        this._checkForIntersections.bind(this),
+        this.THROTTLE_TIMEOUT
+      );
+      this._callback = callback;
+      this._observationTargets = [];
+      this._queuedEntries = [];
+      this._rootMarginValues = this._parseRootMargin(options.rootMargin);
+      this.thresholds = this._initThresholds(options.threshold);
+      this.root = options.root || null;
+      this.rootMargin = this._rootMarginValues.map(function(margin) {
+        return margin.value + margin.unit;
+      }).join(" ");
+      this._monitoringDocuments = [];
+      this._monitoringUnsubscribes = [];
+    }
+    IntersectionObserver2.prototype.THROTTLE_TIMEOUT = 100;
+    IntersectionObserver2.prototype.POLL_INTERVAL = null;
+    IntersectionObserver2.prototype.USE_MUTATION_OBSERVER = true;
+    IntersectionObserver2._setupCrossOriginUpdater = function() {
+      if (!crossOriginUpdater) {
+        crossOriginUpdater = function(boundingClientRect, intersectionRect) {
+          if (!boundingClientRect || !intersectionRect) {
+            crossOriginRect = getEmptyRect();
+          } else {
+            crossOriginRect = convertFromParentRect(boundingClientRect, intersectionRect);
+          }
+          registry.forEach(function(observer) {
+            observer._checkForIntersections();
+          });
+        };
+      }
+      return crossOriginUpdater;
+    };
+    IntersectionObserver2._resetCrossOriginUpdater = function() {
+      crossOriginUpdater = null;
+      crossOriginRect = null;
+    };
+    IntersectionObserver2.prototype.observe = function(target) {
+      var isTargetAlreadyObserved = this._observationTargets.some(function(item) {
+        return item.element == target;
+      });
+      if (isTargetAlreadyObserved) {
+        return;
+      }
+      if (!(target && target.nodeType == 1)) {
+        throw new Error("target must be an Element");
+      }
+      this._registerInstance();
+      this._observationTargets.push({ element: target, entry: null });
+      this._monitorIntersections(target.ownerDocument);
+      this._checkForIntersections();
+    };
+    IntersectionObserver2.prototype.unobserve = function(target) {
+      this._observationTargets = this._observationTargets.filter(function(item) {
+        return item.element != target;
+      });
+      this._unmonitorIntersections(target.ownerDocument);
+      if (this._observationTargets.length == 0) {
+        this._unregisterInstance();
+      }
+    };
+    IntersectionObserver2.prototype.disconnect = function() {
+      this._observationTargets = [];
+      this._unmonitorAllIntersections();
+      this._unregisterInstance();
+    };
+    IntersectionObserver2.prototype.takeRecords = function() {
+      var records = this._queuedEntries.slice();
+      this._queuedEntries = [];
+      return records;
+    };
+    IntersectionObserver2.prototype._initThresholds = function(opt_threshold) {
+      var threshold = opt_threshold || [0];
+      if (!Array.isArray(threshold))
+        threshold = [threshold];
+      return threshold.sort().filter(function(t2, i3, a3) {
+        if (typeof t2 != "number" || isNaN(t2) || t2 < 0 || t2 > 1) {
+          throw new Error("threshold must be a number between 0 and 1 inclusively");
+        }
+        return t2 !== a3[i3 - 1];
+      });
+    };
+    IntersectionObserver2.prototype._parseRootMargin = function(opt_rootMargin) {
+      var marginString = opt_rootMargin || "0px";
+      var margins = marginString.split(/\s+/).map(function(margin) {
+        var parts = /^(-?\d*\.?\d+)(px|%)$/.exec(margin);
+        if (!parts) {
+          throw new Error("rootMargin must be specified in pixels or percent");
+        }
+        return { value: parseFloat(parts[1]), unit: parts[2] };
+      });
+      margins[1] = margins[1] || margins[0];
+      margins[2] = margins[2] || margins[0];
+      margins[3] = margins[3] || margins[1];
+      return margins;
+    };
+    IntersectionObserver2.prototype._monitorIntersections = function(doc3) {
+      var win = doc3.defaultView;
+      if (!win) {
+        return;
+      }
+      if (this._monitoringDocuments.indexOf(doc3) != -1) {
+        return;
+      }
+      var callback = this._checkForIntersections;
+      var monitoringInterval = null;
+      var domObserver = null;
+      if (this.POLL_INTERVAL) {
+        monitoringInterval = win.setInterval(callback, this.POLL_INTERVAL);
+      } else {
+        addEvent2(win, "resize", callback, true);
+        addEvent2(doc3, "scroll", callback, true);
+        if (this.USE_MUTATION_OBSERVER && "MutationObserver" in win) {
+          domObserver = new win.MutationObserver(callback);
+          domObserver.observe(doc3, {
+            attributes: true,
+            childList: true,
+            characterData: true,
+            subtree: true
+          });
+        }
+      }
+      this._monitoringDocuments.push(doc3);
+      this._monitoringUnsubscribes.push(function() {
+        var win2 = doc3.defaultView;
+        if (win2) {
+          if (monitoringInterval) {
+            win2.clearInterval(monitoringInterval);
+          }
+          removeEvent(win2, "resize", callback, true);
+        }
+        removeEvent(doc3, "scroll", callback, true);
+        if (domObserver) {
+          domObserver.disconnect();
+        }
+      });
+      var rootDoc = this.root && (this.root.ownerDocument || this.root) || document2;
+      if (doc3 != rootDoc) {
+        var frame = getFrameElement(doc3);
+        if (frame) {
+          this._monitorIntersections(frame.ownerDocument);
+        }
+      }
+    };
+    IntersectionObserver2.prototype._unmonitorIntersections = function(doc3) {
+      var index = this._monitoringDocuments.indexOf(doc3);
+      if (index == -1) {
+        return;
+      }
+      var rootDoc = this.root && (this.root.ownerDocument || this.root) || document2;
+      var hasDependentTargets = this._observationTargets.some(function(item) {
+        var itemDoc = item.element.ownerDocument;
+        if (itemDoc == doc3) {
+          return true;
+        }
+        while (itemDoc && itemDoc != rootDoc) {
+          var frame2 = getFrameElement(itemDoc);
+          itemDoc = frame2 && frame2.ownerDocument;
+          if (itemDoc == doc3) {
+            return true;
+          }
+        }
+        return false;
+      });
+      if (hasDependentTargets) {
+        return;
+      }
+      var unsubscribe = this._monitoringUnsubscribes[index];
+      this._monitoringDocuments.splice(index, 1);
+      this._monitoringUnsubscribes.splice(index, 1);
+      unsubscribe();
+      if (doc3 != rootDoc) {
+        var frame = getFrameElement(doc3);
+        if (frame) {
+          this._unmonitorIntersections(frame.ownerDocument);
+        }
+      }
+    };
+    IntersectionObserver2.prototype._unmonitorAllIntersections = function() {
+      var unsubscribes = this._monitoringUnsubscribes.slice(0);
+      this._monitoringDocuments.length = 0;
+      this._monitoringUnsubscribes.length = 0;
+      for (var i3 = 0; i3 < unsubscribes.length; i3++) {
+        unsubscribes[i3]();
+      }
+    };
+    IntersectionObserver2.prototype._checkForIntersections = function() {
+      if (!this.root && crossOriginUpdater && !crossOriginRect) {
+        return;
+      }
+      var rootIsInDom = this._rootIsInDom();
+      var rootRect = rootIsInDom ? this._getRootRect() : getEmptyRect();
+      this._observationTargets.forEach(function(item) {
+        var target = item.element;
+        var targetRect = getBoundingClientRect(target);
+        var rootContainsTarget = this._rootContainsTarget(target);
+        var oldEntry = item.entry;
+        var intersectionRect = rootIsInDom && rootContainsTarget && this._computeTargetAndRootIntersection(target, targetRect, rootRect);
+        var rootBounds = null;
+        if (!this._rootContainsTarget(target)) {
+          rootBounds = getEmptyRect();
+        } else if (!crossOriginUpdater || this.root) {
+          rootBounds = rootRect;
+        }
+        var newEntry = item.entry = new IntersectionObserverEntry({
+          time: now2(),
+          target,
+          boundingClientRect: targetRect,
+          rootBounds,
+          intersectionRect
+        });
+        if (!oldEntry) {
+          this._queuedEntries.push(newEntry);
+        } else if (rootIsInDom && rootContainsTarget) {
+          if (this._hasCrossedThreshold(oldEntry, newEntry)) {
+            this._queuedEntries.push(newEntry);
+          }
+        } else {
+          if (oldEntry && oldEntry.isIntersecting) {
+            this._queuedEntries.push(newEntry);
+          }
+        }
+      }, this);
+      if (this._queuedEntries.length) {
+        this._callback(this.takeRecords(), this);
+      }
+    };
+    IntersectionObserver2.prototype._computeTargetAndRootIntersection = function(target, targetRect, rootRect) {
+      if (window.getComputedStyle(target).display == "none")
+        return;
+      var intersectionRect = targetRect;
+      var parent = getParentNode(target);
+      var atRoot = false;
+      while (!atRoot && parent) {
+        var parentRect = null;
+        var parentComputedStyle = parent.nodeType == 1 ? window.getComputedStyle(parent) : {};
+        if (parentComputedStyle.display == "none")
+          return null;
+        if (parent == this.root || parent.nodeType == /* DOCUMENT */
+        9) {
+          atRoot = true;
+          if (parent == this.root || parent == document2) {
+            if (crossOriginUpdater && !this.root) {
+              if (!crossOriginRect || crossOriginRect.width == 0 && crossOriginRect.height == 0) {
+                parent = null;
+                parentRect = null;
+                intersectionRect = null;
+              } else {
+                parentRect = crossOriginRect;
+              }
+            } else {
+              parentRect = rootRect;
+            }
+          } else {
+            var frame = getParentNode(parent);
+            var frameRect = frame && getBoundingClientRect(frame);
+            var frameIntersect = frame && this._computeTargetAndRootIntersection(frame, frameRect, rootRect);
+            if (frameRect && frameIntersect) {
+              parent = frame;
+              parentRect = convertFromParentRect(frameRect, frameIntersect);
+            } else {
+              parent = null;
+              intersectionRect = null;
+            }
+          }
+        } else {
+          var doc3 = parent.ownerDocument;
+          if (parent != doc3.body && parent != doc3.documentElement && parentComputedStyle.overflow != "visible") {
+            parentRect = getBoundingClientRect(parent);
+          }
+        }
+        if (parentRect) {
+          intersectionRect = computeRectIntersection(parentRect, intersectionRect);
+        }
+        if (!intersectionRect)
+          break;
+        parent = parent && getParentNode(parent);
+      }
+      return intersectionRect;
+    };
+    IntersectionObserver2.prototype._getRootRect = function() {
+      var rootRect;
+      if (this.root && !isDoc(this.root)) {
+        rootRect = getBoundingClientRect(this.root);
+      } else {
+        var doc3 = isDoc(this.root) ? this.root : document2;
+        var html = doc3.documentElement;
+        var body = doc3.body;
+        rootRect = {
+          top: 0,
+          left: 0,
+          right: html.clientWidth || body.clientWidth,
+          width: html.clientWidth || body.clientWidth,
+          bottom: html.clientHeight || body.clientHeight,
+          height: html.clientHeight || body.clientHeight
+        };
+      }
+      return this._expandRectByRootMargin(rootRect);
+    };
+    IntersectionObserver2.prototype._expandRectByRootMargin = function(rect) {
+      var margins = this._rootMarginValues.map(function(margin, i3) {
+        return margin.unit == "px" ? margin.value : margin.value * (i3 % 2 ? rect.width : rect.height) / 100;
+      });
+      var newRect = {
+        top: rect.top - margins[0],
+        right: rect.right + margins[1],
+        bottom: rect.bottom + margins[2],
+        left: rect.left - margins[3]
+      };
+      newRect.width = newRect.right - newRect.left;
+      newRect.height = newRect.bottom - newRect.top;
+      return newRect;
+    };
+    IntersectionObserver2.prototype._hasCrossedThreshold = function(oldEntry, newEntry) {
+      var oldRatio = oldEntry && oldEntry.isIntersecting ? oldEntry.intersectionRatio || 0 : -1;
+      var newRatio = newEntry.isIntersecting ? newEntry.intersectionRatio || 0 : -1;
+      if (oldRatio === newRatio)
+        return;
+      for (var i3 = 0; i3 < this.thresholds.length; i3++) {
+        var threshold = this.thresholds[i3];
+        if (threshold == oldRatio || threshold == newRatio || threshold < oldRatio !== threshold < newRatio) {
+          return true;
+        }
+      }
+    };
+    IntersectionObserver2.prototype._rootIsInDom = function() {
+      return !this.root || containsDeep(document2, this.root);
+    };
+    IntersectionObserver2.prototype._rootContainsTarget = function(target) {
+      var rootDoc = this.root && (this.root.ownerDocument || this.root) || document2;
+      return containsDeep(rootDoc, target) && (!this.root || rootDoc == target.ownerDocument);
+    };
+    IntersectionObserver2.prototype._registerInstance = function() {
+      if (registry.indexOf(this) < 0) {
+        registry.push(this);
+      }
+    };
+    IntersectionObserver2.prototype._unregisterInstance = function() {
+      var index = registry.indexOf(this);
+      if (index != -1)
+        registry.splice(index, 1);
+    };
+    function now2() {
+      return window.performance && performance.now && performance.now();
+    }
+    function throttle(fn, timeout) {
+      var timer = null;
+      return function() {
+        if (!timer) {
+          timer = setTimeout(function() {
+            fn();
+            timer = null;
+          }, timeout);
+        }
+      };
+    }
+    function addEvent2(node, event, fn, opt_useCapture) {
+      if (typeof node.addEventListener == "function") {
+        node.addEventListener(event, fn, opt_useCapture || false);
+      } else if (typeof node.attachEvent == "function") {
+        node.attachEvent("on" + event, fn);
+      }
+    }
+    function removeEvent(node, event, fn, opt_useCapture) {
+      if (typeof node.removeEventListener == "function") {
+        node.removeEventListener(event, fn, opt_useCapture || false);
+      } else if (typeof node.detachEvent == "function") {
+        node.detachEvent("on" + event, fn);
+      }
+    }
+    function computeRectIntersection(rect1, rect2) {
+      var top = Math.max(rect1.top, rect2.top);
+      var bottom = Math.min(rect1.bottom, rect2.bottom);
+      var left = Math.max(rect1.left, rect2.left);
+      var right = Math.min(rect1.right, rect2.right);
+      var width = right - left;
+      var height = bottom - top;
+      return width >= 0 && height >= 0 && {
+        top,
+        bottom,
+        left,
+        right,
+        width,
+        height
+      } || null;
+    }
+    function getBoundingClientRect(el) {
+      var rect;
+      try {
+        rect = el.getBoundingClientRect();
+      } catch (err) {
+      }
+      if (!rect)
+        return getEmptyRect();
+      if (!(rect.width && rect.height)) {
+        rect = {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left,
+          width: rect.right - rect.left,
+          height: rect.bottom - rect.top
+        };
+      }
+      return rect;
+    }
+    function getEmptyRect() {
+      return {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: 0,
+        height: 0
+      };
+    }
+    function ensureDOMRect(rect) {
+      if (!rect || "x" in rect) {
+        return rect;
+      }
+      return {
+        top: rect.top,
+        y: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        x: rect.left,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height
+      };
+    }
+    function convertFromParentRect(parentBoundingRect, parentIntersectionRect) {
+      var top = parentIntersectionRect.top - parentBoundingRect.top;
+      var left = parentIntersectionRect.left - parentBoundingRect.left;
+      return {
+        top,
+        left,
+        height: parentIntersectionRect.height,
+        width: parentIntersectionRect.width,
+        bottom: top + parentIntersectionRect.height,
+        right: left + parentIntersectionRect.width
+      };
+    }
+    function containsDeep(parent, child) {
+      var node = child;
+      while (node) {
+        if (node == parent)
+          return true;
+        node = getParentNode(node);
+      }
+      return false;
+    }
+    function getParentNode(node) {
+      var parent = node.parentNode;
+      if (node.nodeType == /* DOCUMENT */
+      9 && node != document2) {
+        return getFrameElement(node);
+      }
+      if (parent && parent.assignedSlot) {
+        parent = parent.assignedSlot.parentNode;
+      }
+      if (parent && parent.nodeType == 11 && parent.host) {
+        return parent.host;
+      }
+      return parent;
+    }
+    function isDoc(node) {
+      return node && node.nodeType === 9;
+    }
+    window.IntersectionObserver = IntersectionObserver2;
+    window.IntersectionObserverEntry = IntersectionObserverEntry;
+  })();
 })();
 /*! Bundled license information:
 
