@@ -11,11 +11,12 @@
                 value: @todo.name
             ) %>
     </div>
-    <div class="form-control">
+    <div class="form-control"  data-controller="todo_item">
         <%= tag.button(
                 'Add',
                 type: "submit",
                 class: "btn btn-info",
+                dataAction: "todo_item#add",
                 disabled: @todo.name.empty?
             ) %>
     </div>
