@@ -11,8 +11,8 @@ const watchedDirectories = [
   './app/javascript/**/*.js',
   './app/views/**/*.html.erb',
   './app/views/**/*.rb',
-  './app/components/*.rb',
-  './app/components/*.html.erb',
+  './app/frontend/components/*.rb',
+  './app/frontend/components/*.html.erb',
   './app/assets/stylesheets/*.css',
 ];
 const bannerJs = watch

@@ -1,6 +1,6 @@
 <%= component_controller do %>
 
-<%= render(CreateTodoComponent.new) %>
+<%= component "create_todo" %>
 <div class="card w-96 bg-base-100 shadow-xl todo-list">
     <div class="card-body">
         <% if filter_todos.empty? %>
@@ -10,7 +10,7 @@
             </div>
         </div>
         <% end %>
-        <%= render(TodoComponent.with_collection(filter_todos)) %>
+        <%= render(Todo::ItemComponent.with_collection(filter_todos)) %>
         <div class="flex todo-info">
             <div class="flex-none w-14 h-14">
                 <p>

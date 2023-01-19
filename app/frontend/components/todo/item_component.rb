@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-class TodoComponent < ViewComponentReflex::Component
-  def initialize(todo:)
-    @todo = todo
+class Todo::ItemComponent < ApplicationViewComponent
+  def initialize(item:)
+    @todo = item
     @editing = false
   end
 

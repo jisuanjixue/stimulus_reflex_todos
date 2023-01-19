@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ThemeChangeComponent < ViewComponentReflex::Component
+class ThemeChange::Component < ApplicationViewComponent
   def initialize
     @theme_value = "light"
   end

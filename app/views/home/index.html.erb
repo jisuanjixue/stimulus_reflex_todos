@@ -1,11 +1,8 @@
-<%= render(ExpoPageComponent.new(
-    title: "Todo",
-    component: %w[todos todo create_todo]
-)) do |component| %>
+<%= component "expo_page", title: "Todo", component: %w[todos todo create_todo] do |component| %>
 <%= component.with :subtitle do %>
-this is a todo application
+    this is a todo application
 <% end %>
 <div class="">
-  <%= render(TodosComponent.new) %>
-</div>
+    <%= component "todos" %>
+  </div>
 <% end %>

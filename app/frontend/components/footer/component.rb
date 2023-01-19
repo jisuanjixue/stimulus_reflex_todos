@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AppFooterComponent < ViewComponentReflex::Component
+class Footer::Component < ApplicationViewComponent
   def initialize(class: nil)
     super
   end

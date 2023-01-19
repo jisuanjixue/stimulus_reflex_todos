@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-class CreateTodoComponent < ViewComponentReflex::Component
+class CreateTodo::Component < ApplicationViewComponent
   def initialize
     @todo = new_todo
   end
-
 
   def new_todo
     Todo.new(name: '', completed: false)

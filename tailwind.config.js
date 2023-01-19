@@ -1,11 +1,11 @@
 module.exports = {
   content: [
-    './app/views/**/*.{rb,erb,js}',
+    './app/views/**/*.html.erb',
     './app/helpers/**/*.rb',
     './app/assets/stylesheets/**/*.css',
     './app/javascript/**/*.js',
-    './app/components/**/*.rb',
-    './app/components/**/*.html.erb',
+    './app/frontend/components/**/*.rb',
+    './app/frontend/components/**/*.html.erb',
   ],
   variants: {
     extend: {

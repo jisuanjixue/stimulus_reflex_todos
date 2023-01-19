@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TodosComponent < ViewComponentReflex::Component
+class Todos::Component < ApplicationViewComponent
   def initialize
     @filter = "All"
   end

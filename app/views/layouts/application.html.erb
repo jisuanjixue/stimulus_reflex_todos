@@ -16,10 +16,9 @@
   <div
     class="flex flex-col min-h-screen bg-gradient-to-br from-primary to-secondary lg:bg-tertiary lg:from-inherit lg:to-inherit">
     <div class="mockup-window bg-base-300">
-      <%= render(AppBackgroundComponent.new) %>
-      <%= render(HeadLineComponent.new) %>
+      <%= component "head_line" %>
       <%= yield %>
-      <%= render(AppFooterComponent.new) %>
+      <%= component "footer" %>
     </div>
   </div>
 </body>
