@@ -36,6 +36,8 @@ module StimulusReflexTodo
 
     # Don't generate system test files.
     config.generators.system_tests = nil
-    config.view_component.instrumentation_enabled = true
+    config.view_component.instrumentation_enabled = false
+    config.lookbook_enabled = ENV["LOOKBOOK_ENABLED"] == true || Rails.env.development? 
+    require "lookbook" if config.lookbook_enabled
   end
 end

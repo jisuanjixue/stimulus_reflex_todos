@@ -43,7 +43,10 @@ gem "cssbundling-rails"
 
 # Use Redis adapter to run Action Cable in production
 gem "redis", ">= 4.0", :require => ["redis", "redis/connection/hiredis"]
+# for redis
 gem 'hiredis'
+#Looking for Lookbook to view_component
+gem "lookbook", require: false
 
 # Redis session
 gem "redis-session-store", "~> 0.11.3"
