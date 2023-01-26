@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 class Todos::Component < ApplicationViewComponent
-  def initialize
-    @filter = "All"
-  end
+  option :filter, default: proc { "All" }
 
   def filter_todos
     case @filter
