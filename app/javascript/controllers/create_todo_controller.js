@@ -8,6 +8,6 @@ export default class extends ApplicationController {
     );
     e.preventDefault();
     Array.from(e.target.elements).forEach((e) => (e.value = ''));
-    this.stimulate('CreateTodo::Component#add', e.target);
+    this.stimulate('CreateTodoComponent#add', e.target);
   }
 }

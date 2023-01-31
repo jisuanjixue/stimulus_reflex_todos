@@ -4920,7 +4920,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       );
       e.preventDefault();
       Array.from(e.target.elements).forEach((e2) => e2.value = "");
-      this.stimulate("CreateTodo::Component#add", e.target);
+      this.stimulate("CreateTodoComponent#add", e.target);
     }
   };
 

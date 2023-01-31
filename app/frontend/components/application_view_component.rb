@@ -4,7 +4,7 @@ class ApplicationViewComponent < ViewComponentReflex::Component
 
     class << self
      # To allow DB queries, put this in the class definition:
-        self.allow_db_queries = true
+    # self.allow_db_queries = true
         attr_accessor :allow_db_queries
         alias_method :allow_db_queries?, :allow_db_queries
         def component_name
