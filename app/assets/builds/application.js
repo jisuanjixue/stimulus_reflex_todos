@@ -2972,7 +2972,7 @@
   ThrottleController.throttles = [];
   console.log(`Local Stimulus Use`);
 
-  // stimulus_ns:/Users/wangxiaobo/Desktop/stimulus_reflex_todo/app/javascript/controllers/controllers
+  // stimulus_ns:/Users/xiaobo/Desktop/未命名文件夹 3/stimulus_reflex_todos/app/javascript/controllers/controllers
   var definitions = [];
 
   // controllers/application.js
@@ -4914,9 +4914,13 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   });
   var create_todo_controller_default = class extends application_controller_default {
     add(e) {
+      console.log(
+        "\u{1F680} ~ file: create_todo_controller.js:8 ~ extends ~ add ~ e.target",
+        e.target
+      );
       e.preventDefault();
       Array.from(e.target.elements).forEach((e2) => e2.value = "");
-      this.stimulate("CreateTodoComponent#add", e.target);
+      this.stimulate("CreateTodo::Component#add", e.target);
     }
   };
 
@@ -4963,7 +4967,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   };
   __publicField(window_size_controller_default, "targets", ["width", "height"]);
 
-  // rails:/Users/wangxiaobo/Desktop/stimulus_reflex_todo/app/javascript/controllers/**/*_controller.js
+  // rails:/Users/xiaobo/Desktop/未命名文件夹 3/stimulus_reflex_todos/app/javascript/controllers/**/*_controller.js
   var modules = [{ name: "application", module: application_controller_exports, filename: "./application_controller.js" }, { name: "create-todo", module: create_todo_controller_exports, filename: "./create_todo_controller.js" }, { name: "theme-change", module: theme_change_controller_exports, filename: "./theme_change_controller.js" }, { name: "todo-item", module: todo_item_controller_exports, filename: "./todo_item_controller.js" }, { name: "window-size", module: window_size_controller_exports, filename: "./window-size_controller.js" }];
   var controller_default = modules;
 
