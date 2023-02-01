@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-class CreateTodoComponent < ViewComponentReflex::Component
-  def initialize
-    @todo = new_todo
-  end
+class CreateTodoComponent < ApplicationViewComponent
+  option :todo, default: proc { new_todo }
 
   def new_todo
     Todo.new(name: '', completed: false)
