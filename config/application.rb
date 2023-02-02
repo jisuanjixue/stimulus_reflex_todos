@@ -15,7 +15,6 @@ require "action_view/railtie"
 # require "rails/test_unit/railtie"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
-require "view_component/engine"
 
 Bundler.require(*Rails.groups)
 

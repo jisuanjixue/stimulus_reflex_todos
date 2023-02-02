@@ -1,6 +1,6 @@
 class ApplicationViewComponent < ViewComponentReflex::Component
-  class ApplicationReflex < ViewComponentReflex::Reflex
-  end
+    class ApplicationReflex < ViewComponentReflex::Reflex
+    end
     ApplicationViewComponent.reflex_base_class = ApplicationReflex
     extend Dry::Initializer
     include ApplicationHelper
