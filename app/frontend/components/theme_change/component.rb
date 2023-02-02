@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 class ThemeChange::Component < ApplicationViewComponent
-  def initialize
-    @theme_value = "light"
-  end
+  option :theme_value, default: "light"
 
   def set_theme
     @theme_value = element.dataset[:value]

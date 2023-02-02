@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Todo::ItemComponent < ApplicationViewComponent
+  option :editing, default: false
+
   def initialize(item:)
     @todo = item
-    @editing = false
   end
 
   def collection_key

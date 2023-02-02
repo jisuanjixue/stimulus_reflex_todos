@@ -1,10 +1,14 @@
 class ApplicationViewComponent < ViewComponentReflex::Component
-    class ApplicationReflex < ViewComponentReflex::Reflex
-    end
-    ApplicationViewComponent.reflex_base_class = ApplicationReflex
+    include Dry::Effects.Reader(:current_user, default: nil)
     extend Dry::Initializer
     include ApplicationHelper
 
+    class ApplicationReflex < ViewComponentReflex::Reflex
+      delegate :current_user, to: :connection
+    end
+
+    ApplicationViewComponent.reflex_base_class = ApplicationReflex
+  
     class << self
      # To allow DB queries, put this in the class definition:
     # self.allow_db_queries = true

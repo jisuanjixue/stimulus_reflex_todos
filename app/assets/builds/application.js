@@ -259,16 +259,16 @@
       return this.keyMappings[standardFilter].toLowerCase() !== event.key.toLowerCase();
     }
     get params() {
-      const params = {};
+      const params2 = {};
       const pattern = new RegExp(`^data-${this.identifier}-(.+)-param$`, "i");
       for (const { name, value } of Array.from(this.element.attributes)) {
         const match = name.match(pattern);
         const key = match && match[1];
         if (key) {
-          params[camelize(key)] = typecast(value);
+          params2[camelize(key)] = typecast(value);
         }
       }
-      return params;
+      return params2;
     }
     get eventTargetName() {
       return stringifyEventTarget(this.eventTarget);
@@ -351,8 +351,8 @@
     invokeWithEvent(event) {
       const { target, currentTarget } = event;
       try {
-        const { params } = this.action;
-        const actionEvent = Object.assign(event, { params });
+        const { params: params2 } = this.action;
+        const actionEvent = Object.assign(event, { params: params2 });
         this.method.call(this.controller, actionEvent);
         this.context.logDebugActivity(this.methodName, { event, target, currentTarget, action: this.methodName });
       } catch (error2) {
@@ -2941,9 +2941,9 @@
     return function() {
       const args = Array.from(arguments);
       const context = this;
-      const params = args.map((arg) => arg.params);
+      const params2 = args.map((arg) => arg.params);
       const callback = () => {
-        args.forEach((arg, index) => arg.params = params[index]);
+        args.forEach((arg, index) => arg.params = params2[index]);
         return fn.apply(context, args);
       };
       if (timeoutId) {
@@ -4264,9 +4264,9 @@
     return object;
   };
   var Subscription = class {
-    constructor(consumer, params = {}, mixin) {
+    constructor(consumer, params2 = {}, mixin) {
       this.consumer = consumer;
-      this.identifier = JSON.stringify(params);
+      this.identifier = JSON.stringify(params2);
       extend2(this, mixin);
     }
     perform(action, data = {}) {
@@ -4328,10 +4328,10 @@
     }
     create(channelName, mixin) {
       const channel = channelName;
-      const params = typeof channel === "object" ? channel : {
+      const params2 = typeof channel === "object" ? channel : {
         channel
       };
-      const subscription = new Subscription(this.consumer, params, mixin);
+      const subscription = new Subscription(this.consumer, params2, mixin);
       return this.add(subscription);
     }
     add(subscription) {
@@ -7055,9 +7055,9 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     }
     return position == null ? clippedDuration : +position;
   };
-  var _createTweenType = function _createTweenType2(type, params, timeline2) {
-    var isLegacy = _isNumber(params[1]), varsIndex = (isLegacy ? 2 : 1) + (type < 2 ? 0 : 1), vars = params[varsIndex], irVars, parent;
-    isLegacy && (vars.duration = params[1]);
+  var _createTweenType = function _createTweenType2(type, params2, timeline2) {
+    var isLegacy = _isNumber(params2[1]), varsIndex = (isLegacy ? 2 : 1) + (type < 2 ? 0 : 1), vars = params2[varsIndex], irVars, parent;
+    isLegacy && (vars.duration = params2[1]);
     vars.parent = timeline2;
     if (type) {
       irVars = vars;
@@ -7067,9 +7067,9 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
         parent = _isNotFalse(parent.vars.inherit) && parent.parent;
       }
       vars.immediateRender = _isNotFalse(irVars.immediateRender);
-      type < 2 ? vars.runBackwards = 1 : vars.startAt = params[varsIndex - 1];
+      type < 2 ? vars.runBackwards = 1 : vars.startAt = params2[varsIndex - 1];
     }
-    return new Tween(params[0], vars, params[varsIndex + 1]);
+    return new Tween(params2[0], vars, params2[varsIndex + 1]);
   };
   var _conditionalReturn = function _conditionalReturn2(value, func) {
     return value || value === 0 ? func(value) : func;
@@ -7322,14 +7322,14 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     return label;
   };
   var _callback = function _callback2(animation, type, executeLazyFirst) {
-    var v3 = animation.vars, callback = v3[type], params, scope;
+    var v3 = animation.vars, callback = v3[type], params2, scope;
     if (!callback) {
       return;
     }
-    params = v3[type + "Params"];
+    params2 = v3[type + "Params"];
     scope = v3.callbackScope || animation;
     executeLazyFirst && _lazyTweens.length && _lazyRender();
-    return params ? callback.apply(scope, params) : callback.call(scope);
+    return params2 ? callback.apply(scope, params2) : callback.call(scope);
   };
   var _interrupt = function _interrupt2(animation) {
     _removeFromParent(animation);
@@ -7941,14 +7941,14 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       var parent = this.parent || this._dp, start = this._start, rawTime;
       return !!(!parent || this._ts && this._initted && parent.isActive() && (rawTime = parent.rawTime(true)) >= start && rawTime < this.endTime(true) - _tinyNum);
     };
-    _proto.eventCallback = function eventCallback(type, callback, params) {
+    _proto.eventCallback = function eventCallback(type, callback, params2) {
       var vars = this.vars;
       if (arguments.length > 1) {
         if (!callback) {
           delete vars[type];
         } else {
           vars[type] = callback;
-          params && (vars[type + "Params"] = params);
+          params2 && (vars[type + "Params"] = params2);
           type === "onUpdate" && (this._onUpdate = callback);
         }
         return this;
@@ -8036,8 +8036,8 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       new Tween(targets, vars, _parsePosition(this, position), 1);
       return this;
     };
-    _proto2.call = function call(callback, params, position) {
-      return _addToTimeline(this, Tween.delayedCall(0, callback, params), position);
+    _proto2.call = function call(callback, params2, position) {
+      return _addToTimeline(this, Tween.delayedCall(0, callback, params2), position);
     };
     _proto2.staggerTo = function staggerTo(targets, duration, vars, stagger, position, onCompleteAll, onCompleteAllParams) {
       vars.duration = duration;
@@ -8295,8 +8295,8 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
       delete this.labels[label];
       return this;
     };
-    _proto2.addPause = function addPause(position, callback, params) {
-      var t2 = Tween.delayedCall(0, callback || _emptyFunc, params);
+    _proto2.addPause = function addPause(position, callback, params2) {
+      var t2 = Tween.delayedCall(0, callback || _emptyFunc, params2);
       t2.data = "isPause";
       this._hasPause = 1;
       return _addToTimeline(this, t2, _parsePosition(this, position));
@@ -8954,7 +8954,7 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
     Tween2.from = function from(targets, vars) {
       return _createTweenType(1, arguments);
     };
-    Tween2.delayedCall = function delayedCall(delay, callback, params, scope) {
+    Tween2.delayedCall = function delayedCall(delay, callback, params2, scope) {
       return new Tween2(callback, 0, {
         immediateRender: false,
         lazy: false,
@@ -8962,8 +8962,8 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
         delay,
         onComplete: callback,
         onReverseComplete: callback,
-        onCompleteParams: params,
-        onReverseCompleteParams: params,
+        onCompleteParams: params2,
+        onReverseCompleteParams: params2,
         callbackScope: scope
       });
     };
@@ -8989,9 +8989,9 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
   });
   _forEachName("staggerTo,staggerFrom,staggerFromTo", function(name) {
     Tween[name] = function() {
-      var tl = new Timeline(), params = _slice.call(arguments, 0);
-      params.splice(name === "staggerFromTo" ? 5 : 4, 0, 0);
-      return tl[name].apply(tl, params);
+      var tl = new Timeline(), params2 = _slice.call(arguments, 0);
+      params2.splice(name === "staggerFromTo" ? 5 : 4, 0, 0);
+      return tl[name].apply(tl, params2);
     };
   });
   var _setterPlain = function _setterPlain2(target, property, value) {
@@ -10408,10 +10408,13 @@ Please set ${o2.reflexSerializeForm}="true" on your Reflex Controller Element or
 
   // config/stimulus_reflex.js
   application.consumer = consumer_default;
+  var params = {
+    token: document.querySelector("meta[name=action-cable-auth-token]").content
+  };
   application.register("radiolabel", index_m_default);
   B.debug = true;
   window.reflexes = B.reflexes;
-  B.initialize(application, { controller: application_controller_default, isolate: true });
+  B.initialize(application, { controller: application_controller_default, params, isolate: true });
 
   // ../../node_modules/intersection-observer/intersection-observer.js
   (function() {

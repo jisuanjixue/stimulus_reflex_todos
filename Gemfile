@@ -30,7 +30,9 @@ gem "view_component-contrib"
 #DSL for declaring params and options of the initializer
 gem 'dry-initializer', '~> 3.1', '>= 3.1.1'
 #Algebraic effects
-# gem 'dry-effects', '~> 0.1.5'
+gem 'dry-effects', '~> 0.1.5'
+# devise
+gem 'devise'
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 # gem "turbo-rails"
@@ -101,3 +103,5 @@ end
 gem "cable_ready", "~> 5.0.pre9"
 
 # gem "activerecord-session_store", "~> 2.0"
+
+gem "devise-jwt", "~> 0.10.0"
