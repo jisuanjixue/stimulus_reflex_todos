@@ -37,4 +37,20 @@ ActiveSupport.on_load(:view_component) do
       end
     end
   end
+
+  if Rails.application.config.lookbook_enabled
+    Rails.application.config.to_prepare do
+      Lookbook::PreviewsController.class_eval do
+        include Dry::Effects::Handler.State(:current_user)
+
+        around_action :nullify_current_user
+
+        private
+
+        def nullify_current_user
+          with_current_user(nil) { yield }
+        end
+      end
+    end
+  end
 end
