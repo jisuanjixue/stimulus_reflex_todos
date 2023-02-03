@@ -1,6 +1,7 @@
 class ApplicationViewComponent < ViewComponentReflex::Component
     include Dry::Effects.Reader(:current_user, default: nil)
     extend Dry::Initializer
+    include Dry.Types()
     include ApplicationHelper
 
     class ApplicationReflex < ViewComponentReflex::Reflex

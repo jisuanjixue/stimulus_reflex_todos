@@ -25,9 +25,6 @@ module StimulusReflexTodo
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
-    config.lookbook_enabled = ENV["LOOKBOOK_ENABLED"] == "true" || Rails.env.development?
-    require "lookbook" if config.lookbook_enabled
-
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

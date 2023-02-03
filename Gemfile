@@ -30,7 +30,9 @@ gem "view_component-contrib"
 #DSL for declaring params and options of the initializer
 gem 'dry-initializer', '~> 3.1', '>= 3.1.1'
 #Algebraic effects
-gem 'dry-effects', '~> 0.1.5'
+gem 'dry-effects', '~> 0.4.0'
+#class attrublies data type
+gem 'dry-types', '~> 1.7.0'
 # devise
 gem 'devise'
 
