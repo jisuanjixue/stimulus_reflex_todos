@@ -12,9 +12,10 @@ class ExpoPage::Component < ApplicationViewComponent
     end
     @selected_component = @components.first
   end
+  
 
   def component_class(component)
-     if component == @selected_component
+     if component ==  @selected_component
       'tab tab-active'
      else
       'tab'

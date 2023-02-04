@@ -2,7 +2,7 @@
 
 class Todos::Component < ApplicationViewComponent
 
-  option :filter, default: proc { "All" },  Types::String
+  option :filter, type: Dry::Types['strict.string'], default: proc { "All" }
 
   def filter_todos
     case @filter

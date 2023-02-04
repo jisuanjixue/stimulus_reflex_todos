@@ -1,6 +1,6 @@
 module ApplicationCable
   class Channel < ActionCable::Channel::Base
-    include CableReady::Broadcaster
+    # include CableReady::Broadcaster
     attr_accessor :current_user
 
     def subscribed

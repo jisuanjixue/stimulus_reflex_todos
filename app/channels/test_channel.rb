@@ -1,9 +1,10 @@
 class TestChannel < ApplicationCable::Channel
-
-    # this exists to demonstrate how other, non-SR channels can get in on the authentication action
-  
-    def subscribed
-      super
-      stream_from "test"
-    end
+  def subscribed
+    stream_from "test"
   end
+
+  def unsubscribed
+    puts data["message"]
+    ActionCable.server.broadcast("test", "ActionCable is connected")
+  end
+end

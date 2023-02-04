@@ -11,7 +11,7 @@ const params = {
 };
 
 application.register('radiolabel', Radiolabel);
-StimulusReflex.debug = process.env.NODE_ENV === 'development';
+StimulusReflex.debug = false;
 
 window.reflexes = StimulusReflex.reflexes;
 

@@ -1,18 +1,15 @@
 import consumer from './consumer';
 
-// this exists to demonstrate how other, non-SR channels can get in on the authentication action
+consumer.subscriptions.create('TestChannel', {
+  connected() {
+    this.send({ message: 'Client is live' })
+  },
 
-consumer.subscriptions.create(
-  {
-    channel: 'TestChannel',
-    token: document.querySelector('meta[name=action-cable-auth-token]').content,
+  disconnected() {
+    // Called when the subscription has been terminated by the server
   },
-  {
-    connected() {
-      console.log('Token accepted');
-    },
-    rejected() {
-      console.log('Token rejected');
-    },
+
+  received(data) {
+    console.log(data)
   },
-);
+});
