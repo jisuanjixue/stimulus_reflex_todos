@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    action_policy (0.6.4)
+      ruby-next-core (>= 0.14.0)
     actioncable (7.0.4)
       actionpack (= 7.0.4)
       activesupport (= 7.0.4)
@@ -330,6 +332,7 @@ PLATFORMS
   x86_64-darwin-19
 
 DEPENDENCIES
+  action_policy (~> 0.6.4)
   bootsnap
   cable_ready (~> 5.0.pre9)
   cssbundling-rails

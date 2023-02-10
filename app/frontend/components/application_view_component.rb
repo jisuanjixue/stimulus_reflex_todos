@@ -1,13 +1,13 @@
 class ApplicationViewComponent < ViewComponentReflex::Component
     include ViewComponentContrib::WrappedHelper
+    include ActionPolicy::Behaviour
     include Dry::Effects.Reader(:current_user, default: nil)
     include ApplicationHelper
     extend Dry::Initializer
     extend Dry.Types()
 
     class ApplicationReflex < ViewComponentReflex::Reflex
-      delegate :current_user, to: :connection
-      delegate :helpers, to: :ApplicationController      
+      delegate :current_user, to: :connection     
     end
 
     ApplicationViewComponent.reflex_base_class = ApplicationReflex
