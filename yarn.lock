@@ -1310,7 +1310,7 @@ stimulus@>=2.0.0:
 
 stimulus_reflex@^3.5.0-pre9:
   version "3.5.0-pre9"
-  resolved "https://registry.yarnpkg.com/stimulus_reflex/-/stimulus_reflex-3.5.0-pre9.tgz#e99eaf11e9e7476df10cd8f5c557d368f54446b3"
+  resolved "https://registry.npmmirror.com/stimulus_reflex/-/stimulus_reflex-3.5.0-pre9.tgz#e99eaf11e9e7476df10cd8f5c557d368f54446b3"
   integrity sha512-ZhGUuJaKaWhHU5eGnZQ3pgnv0/pJ4dtNABDtMZRAHNm3ngsHY5dpR/H801a1ozD6J5rpadONvhhBcPjPY/x6NQ==
   dependencies:
     "@hotwired/stimulus" ">= 3.0"

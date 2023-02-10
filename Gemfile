@@ -106,4 +106,4 @@ gem "cable_ready", "~> 5.0.pre9"
 
 # gem "activerecord-session_store", "~> 2.0"
 
-gem "devise-jwt", "~> 0.10.0"
+# gem "devise-jwt", "~> 0.10.0"
