@@ -11,7 +11,7 @@ class CreateTodoComponent < ApplicationViewComponent
   end
 
   def add
-    authorize! @todo, to: :save?
+    # authorize! @todo, to: :save?
     @todo.session_id = request.session.id.to_s
     @todo.save
     @todo = new_todo

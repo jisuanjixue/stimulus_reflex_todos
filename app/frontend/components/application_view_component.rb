@@ -1,6 +1,6 @@
 class ApplicationViewComponent < ViewComponentReflex::Component
     include ViewComponentContrib::WrappedHelper
-    include ActionPolicy::Behaviour
+    # include ActionPolicy::Behaviour
     include Dry::Effects.Reader(:current_user, default: nil)
     include ApplicationHelper
     extend Dry::Initializer
