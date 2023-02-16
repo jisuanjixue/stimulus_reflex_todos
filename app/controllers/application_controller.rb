@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  layout -> { @stimulus_reflex ? false : "application" }
+  # layout -> { @stimulus_reflex ? false : "application" }
   authorize :user, through: :current_user
   before_action :authenticate_user!
   

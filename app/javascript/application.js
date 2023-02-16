@@ -2,3 +2,5 @@
 import './controllers';
 import './config';
 import 'intersection-observer';
+import 'flowbite';
+import 'flowbite-datepicker';

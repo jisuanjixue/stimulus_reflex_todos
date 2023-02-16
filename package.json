@@ -8,9 +8,10 @@
     "@tailwindcss/typography": "^0.5.4",
     "autoprefixer": "^10.4.13",
     "cable_ready": "^5.0.0-pre9",
-    "daisyui": "^2.42.0",
     "esbuild": "^0.16.15",
     "esbuild-plugin-stimulus": "^0.1.5",
+    "flowbite": "^1.6.3",
+    "flowbite-datepicker": "^1.2.2",
     "postcss": "^8.4.21",
     "radiolabel": "^1.1.1",
     "stimulus-use": "^0.51.2",
@@ -18,7 +19,6 @@
     "tailwindcss": "^3.2.4"
   },
   "devDependencies": {
-    "intersection-observer": "^0.12.2",
     "@prettier/plugin-ruby": "^3.2.2",
     "chokidar": "^3.5.3",
     "esbuild-rails": "^1.0.3",
@@ -27,6 +27,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-tailwindcss": "^3.6.2",
+    "intersection-observer": "^0.12.2",
     "prettier": "^2.7.1"
   },
   "scripts": {

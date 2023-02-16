@@ -1,0 +1,3 @@
+class AppLayoutComponent < ApplicationViewComponent
+    
+end
