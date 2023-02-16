@@ -4,14 +4,14 @@ class CreateTodoComponent < ApplicationViewComponent
   option :todo, default: proc { new_todo }
 
     # provide authorization subject (performer)
-  authorize :current_user
+  # authorize :current_user
 
   def new_todo
     Todo.new(name: '', completed: false)
   end
 
   def add
-    # authorize! @todo, to: :save?
+    authorize! @todo, to: :create?
     @todo.session_id = request.session.id.to_s
     @todo.save
     @todo = new_todo

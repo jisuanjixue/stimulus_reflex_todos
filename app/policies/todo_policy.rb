@@ -23,6 +23,6 @@ class TodoPolicy < ApplicationPolicy
   end
 
   def create?
-    user.id == record.user_id
+    false
   end
 end
