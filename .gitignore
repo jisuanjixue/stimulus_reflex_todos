@@ -30,6 +30,7 @@
 
 public/assets
 /node_modules
+/app/assets/builds
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
