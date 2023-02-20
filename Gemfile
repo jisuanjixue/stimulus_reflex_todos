@@ -102,7 +102,7 @@ group :development do
 end
 
 
-gem "cable_ready", "~> 5.0.pre9"
+gem "cable_ready", "~> 5.0.pre10"
 
 # gem "activerecord-session_store", "~> 2.0"
 
