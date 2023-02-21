@@ -34,6 +34,9 @@ module StimulusReflexTodo
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Don't generate system test files.
+    config.x.git.commit_version =
+    ENV.fetch('COMMIT_VERSION') { `git describe --always`.chomp }
+
     config.generators.system_tests = nil
     config.view_component.instrumentation_enabled = false
     config.lookbook_enabled = ENV["LOOKBOOK_ENABLED"] == true || Rails.env.development? 
