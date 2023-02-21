@@ -1,7 +1,7 @@
 <%= component_controller do %>
 <%= render(CreateTodoComponent.new) %>
 <div
-    class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 todo-list">
+    class=" p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 todo-list">
     <% if filter_todos.empty? %>
     <div class="flex flex-row">
         <div class="basis-1/2">
@@ -10,7 +10,7 @@
     </div>
     <% end %>
     <%= render(Todo::ItemComponent.with_collection(filter_todos)) %>
-    <div class="flex todo-info">
+    <div class="flex">
         <div class="flex-none w-14 h-14">
             <p>
                 <%= pluralize(active_todos.count, 'item') %> left
@@ -24,7 +24,7 @@
                     :clear,
                     :button,
                     'Clear completed',
-                    class: "btn btn-square",
+                    class: "focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900",
                     type: "button",
                     disabled: completed_todos.empty?
                 )
