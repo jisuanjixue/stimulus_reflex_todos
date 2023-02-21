@@ -1,43 +1,40 @@
 <%= component_controller(class: "flex") do %>
 <div class="flex flex-nowrap">
-    <div class="flex justify-start">
-        <div class="grow">
-            <label class="checkbox">
-                <%= reflex_tag :toggle_completed, :input, nil, type: "checkbox", checked: @todo.completed %>
-            </label>
-        </div>
-        <div class="grow">
-            <% if @editing %>
-            <div class="mb-0">
-                <div class="form-control">
-                    <%= reflex_tag "input->handle_name_change", :input, nil, value: @todo.name, class: "input input-bordered" %>
-                </div>
-                <div class="form-control">
-                    <%= reflex_tag :commit_edit, :button, type: "button", class: "btn btn-info btn-wide" do %>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    <% end %>
-                </div>
-                <div class="form-control">
-                    <%= reflex_tag :end_edit, :button, class: "btn", type: "button" do %>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    <% end %>
-                </div>
+    <div class="flex items-center">
+        <%= reflex_tag :toggle_completed, :input, nil, value: "", id: "link-checkbox", type: "checkbox", class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600",checked: @todo.completed %>
+        <label for="link-checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"></label>
+    </div>
+    <div class="flex-grow">
+        <% if @editing %>
+        <div class="mb-0">
+            <div class="">
+                <%= reflex_tag "input->handle_name_change", :input, nil, value: @todo.name, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
             </div>
-            <% else %>
-            <%= todo_name(@todo) %>
-            <% end %>
+            <div class="">
+                <%= reflex_tag :commit_edit, :button, type: "button", class: "py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <% end %>
+            </div>
+            <div class="">
+                <%= reflex_tag :end_edit, :button, class: "btn", type: "button" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <% end %>
+            </div>
         </div>
+        <% else %>
+        <%= todo_name(@todo) %>
+        <% end %>
     </div>
     <div class="flex justify-end">
-        <div class="grow">
+        <div class="flex-grow">
             <div class="btn-group">
                 <%= reflex_tag :begin_edit, :button, class: "btn btn-info" do %>
                 <% end %>

@@ -1,26 +1,26 @@
 <%= component_controller do %>
 <%= render(CreateTodoComponent.new) %>
-<div class="card w-96 bg-base-100 shadow-xl todo-list">
-    <div class="card-body">
-        <% if filter_todos.empty? %>
-        <div class="flex flex-row">
-            <div class="basis-1/2">
-                <%= no_todos_text %>
-            </div>
+<div
+    class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 todo-list">
+    <% if filter_todos.empty? %>
+    <div class="flex flex-row">
+        <div class="basis-1/2">
+            <%= no_todos_text %>
         </div>
-        <% end %>
-        <%= render(Todo::ItemComponent.with_collection(filter_todos)) %>
-        <div class="flex todo-info">
-            <div class="flex-none w-14 h-14">
-                <p>
-                    <%= pluralize(active_todos.count, 'item') %> left
-                </p>
-            </div>
-            <div class="grow h-14">
-                <%= tags %>
-            </div>
-            <div class="flex-none w-14 h-14">
-                <%= reflex_tag(
+    </div>
+    <% end %>
+    <%= render(Todo::ItemComponent.with_collection(filter_todos)) %>
+    <div class="flex todo-info">
+        <div class="flex-none w-14 h-14">
+            <p>
+                <%= pluralize(active_todos.count, 'item') %> left
+            </p>
+        </div>
+        <div class="flex-grow h-14">
+            <%= tags %>
+        </div>
+        <div class="flex-none w-14 h-14">
+            <%= reflex_tag(
                     :clear,
                     :button,
                     'Clear completed',
@@ -29,7 +29,6 @@
                     disabled: completed_todos.empty?
                 )
                 %>
-            </div>
         </div>
     </div>
 </div>

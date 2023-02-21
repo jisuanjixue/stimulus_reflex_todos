@@ -24,7 +24,7 @@ gem 'view_component', '~> 2.82'
 # ViewComponentReflex allows you to write reflexes right in your view component code.
 gem "view_component_reflex", "3.3.0"
 # A new way to craft modern, reactive web interfaces with Ruby on Rails.
-gem "stimulus_reflex", "~> 3.5.pre9"
+gem "stimulus_reflex", "~> 3.5.pre10"
 # A collection of extension and developer tools for ViewComponent
 gem "view_component-contrib"
 #DSL for declaring params and options of the initializer

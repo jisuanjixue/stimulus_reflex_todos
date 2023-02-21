@@ -23,6 +23,6 @@ class TodoPolicy < ApplicationPolicy
   end
 
   def create?
-    false
+    true
   end
 end
