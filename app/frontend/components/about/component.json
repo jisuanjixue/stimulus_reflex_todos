@@ -43,10 +43,10 @@
       "slogan": "Client side",
       "items": [
         {
-          "name": "Hotwire",
-          "gem": "turbo-rails",
-          "href": "https://hotwired.dev/",
-          "description": "Hotwire is an alternative approach to building modern web applications without using much JavaScript by sending HTML instead of JSON over the wire"
+          "name": "stimulus_reflex",
+          "gem": "stimulus_reflex",
+          "href": "https://stimulusreflex.com/",
+          "description": "Build reactive applications with the Rails tooling you already know and love"
         },
         {
           "name": "ViewComponent",
@@ -55,10 +55,15 @@
           "description": "A framework for creating reusable, testable & encapsulated view components, built to integrate seamlessly with Ruby on Rails."
         },
         {
-          "name": "Slim",
-          "gem": "slim",
-          "href": "https://github.com/slim-template/slim",
-          "description": "Slim is a template language whose goal is to reduce the syntax to the essential parts without becoming cryptic."
+          "name": "view_component_reflex",
+          "gem": "view_component_reflex",
+          "href": "https://github.com/joshleblanc/view_component_reflex",
+          "description": "Call component methods right from your markup."
+        },
+        {
+          "name": "flowbite",
+          "href": "https://flowbite.com/",
+          "description": "Build websites even faster with components on top of Tailwind CSS."
         },
         {
           "name": "TypeScript",
@@ -71,14 +76,14 @@
           "description": "A utility-first CSS framework packed with classes that can be composed to build any design, directly in your markup."
         },
         {
-          "name": "Heroicons",
-          "href": "https://heroicons.com/",
-          "description": "Beautiful hand-crafted SVG icons, by the makers of Tailwind CSS."
+          "name": "stimulus-use",
+          "href": "https://github.com/stimulus-use/stimulus-use",
+          "description": "A collection of composable behaviors for your Stimulus Controllers."
         },
         {
-          "name": "Vite",
-          "href": "https://vitejs.dev/",
-          "description": "Next generation frontend tooling. It's fast!"
+          "name": "esbuild",
+          "href": "https://esbuild.github.io/",
+          "description": "An extremely fast bundler for the web"
         }
       ]
     },

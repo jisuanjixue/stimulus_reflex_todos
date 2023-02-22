@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'loaders/index'
   devise_for :users
   root 'home#index'
   get 'todos/index'
