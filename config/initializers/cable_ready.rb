@@ -11,7 +11,6 @@ CableReady.configure do |config|
 
   # config.on_new_version_available = :ignore
   config.on_failed_sanity_checks = :warn
-  config.on_new_version_available = :warn
 
   # Define your own custom operations
   # https://cableready.stimulusreflex.com/customization#custom-operations
