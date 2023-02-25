@@ -1,7 +1,6 @@
 <%= component_controller do %>
 <%= render(CreateTodoComponent.new) %>
-<div
-    class=" p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 todo-list">
+<div class=" p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 todo-list">
     <% if filter_todos.empty? %>
     <div class="flex flex-row">
         <div class="basis-1/2">

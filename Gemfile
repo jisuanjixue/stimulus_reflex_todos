@@ -109,3 +109,5 @@ gem "cable_ready", "~> 5.0.pre10"
 # gem "devise-jwt", "~> 0.10.0"
 
 gem "action_policy", "~> 0.6.4"
+
+gem "futurism", "~> 1.1"

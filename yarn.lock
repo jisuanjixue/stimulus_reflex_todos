@@ -199,6 +199,13 @@
   resolved "https://registry.npmmirror.com/@rails/actioncable/-/actioncable-7.0.4.tgz#70a3ca56809f7aaabb80af2f9c01ae51e1a8ed41"
   integrity sha512-tz4oM+Zn9CYsvtyicsa/AwzKZKL+ITHWkhiu7x+xF77clh2b4Rm+s6xnOgY/sGDWoFWZmtKsE95hxBPkgQQNnQ==
 
+"@stimulus_reflex/futurism@^1.2.0-pre11":
+  version "1.2.0-pre11"
+  resolved "https://registry.npmmirror.com/@stimulus_reflex/futurism/-/futurism-1.2.0-pre11.tgz#7f4915fca10c1f2a8c05ab8f91b6597a9d6874f3"
+  integrity sha512-ejp+nOcly+RNYnSm164c5ETKeiBMyJUvgxyuIFa8zv+f/MF3qabI5Lnq9Ahy+x5fS6Rvk/rGyxkVcFcsaqjl0g==
+  dependencies:
+    cable_ready "^5.0.0-pre9"
+
 "@tailwindcss/forms@^0.5.3":
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/@tailwindcss/forms/-/forms-0.5.3.tgz#e4d7989686cbcaf416c53f1523df5225332a86e7"
@@ -343,6 +350,13 @@ cable_ready@>=4.5.0:
   version "4.5.0"
   resolved "https://registry.npmmirror.com/cable_ready/-/cable_ready-4.5.0.tgz#1207218dd16934d12addfbd34c26ead853570672"
   integrity sha512-9bom1DuYe1teBdRckgKWjg+rWRLWrkOvkhzlXkhb33X+Pfu/QK9e4vGk6hGK9PVKVr0SYZC41dByFGknW4spLg==
+  dependencies:
+    morphdom "^2.6.1"
+
+cable_ready@^5.0.0-pre9:
+  version "5.0.0-pre9"
+  resolved "https://registry.npmmirror.com/cable_ready/-/cable_ready-5.0.0-pre9.tgz#9c082b796f7b7add7965ce637a8d8717726be5ab"
+  integrity sha512-m7XggG+LRPFLsbH78G603F3AAYpkv+VfGCouN6RrP20Mgz9H0+xr7v2DN2F1CeJBBAliYPKcAt/48uTGjSrBaA==
   dependencies:
     morphdom "^2.6.1"
 
