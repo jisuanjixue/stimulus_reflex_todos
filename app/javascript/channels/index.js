@@ -4,3 +4,4 @@ import consumer from '../channels/consumer';
 // import './test_channel';
 Futurism.initializeElements();
 Futurism.createSubscription(consumer);
+import './notification_channel';

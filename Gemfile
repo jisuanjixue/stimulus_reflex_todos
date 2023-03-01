@@ -111,3 +111,5 @@ gem "cable_ready", "~> 5.0.pre10"
 gem "action_policy", "~> 0.6.4"
 
 gem "futurism", "~> 1.1"
+
+gem "noticed", "~> 1.6"
