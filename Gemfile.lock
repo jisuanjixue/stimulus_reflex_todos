@@ -70,6 +70,9 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    annotate (3.2.0)
+      activerecord (>= 3.2, < 8.0)
+      rake (>= 10.4, < 14.0)
     ast (2.4.2)
     bcrypt (3.1.18)
     better_html (2.0.1)
@@ -290,6 +293,9 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.24.1)
       parser (>= 3.1.1.0)
+    rubocop-cable_ready (0.2.0)
+      rubocop (~> 1.0)
+      rubocop-ast (>= 1.1.0)
     rubocop-performance (1.15.2)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
@@ -299,6 +305,10 @@ GEM
       rubocop (>= 1.33.0, < 2.0)
     rubocop-rspec (2.16.0)
       rubocop (~> 1.33)
+    rubocop-stimulus_reflex (0.1.0)
+      rubocop (~> 1.0)
+      rubocop-ast (>= 1.1.0)
+      rubocop-cable_ready (~> 0.1)
     ruby-next (0.15.3)
       ruby-next-core (= 0.15.3)
       ruby-next-parser (>= 3.1.1.0)
@@ -362,6 +372,7 @@ PLATFORMS
 
 DEPENDENCIES
   action_policy (~> 0.6.4)
+  annotate (~> 3.2.0)
   bootsnap
   cable_ready (~> 5.0.pre10)
   cssbundling-rails
@@ -383,9 +394,11 @@ DEPENDENCIES
   redis (>= 4.0)
   redis-session-store (~> 0.11.3)
   rubocop
+  rubocop-cable_ready
   rubocop-performance
   rubocop-rails
   rubocop-rspec
+  rubocop-stimulus_reflex
   stimulus_reflex (~> 3.5.pre10)
   tzinfo-data
   view_component (~> 2.82)
@@ -397,4 +410,4 @@ RUBY VERSION
    ruby 3.2.0p0
 
 BUNDLED WITH
-   2.4.3
+   2.4.7

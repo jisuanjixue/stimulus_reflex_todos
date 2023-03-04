@@ -8,6 +8,8 @@ require:
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-stimulus_reflex
+  - rubocop-cable_ready 
 
 AllCops:
   TargetRubyVersion: 3.2.0

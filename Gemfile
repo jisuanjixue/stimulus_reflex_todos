@@ -74,7 +74,8 @@ group :development, :test do
 
   # Automatic Ruby code style checking tool. (https://github.com/rubocop/rubocop)
   gem 'rubocop', require: false
-
+  gem 'rubocop-stimulus_reflex'
+  gem 'rubocop-cable_ready'
     # Automatic performance checking tool for Ruby code. (https://github.com/rubocop/rubocop-performance)
   gem 'rubocop-performance', require: false
 
@@ -91,6 +92,8 @@ group :development, :test do
 end
 
 group :development do
+  gem "annotate", "~> 3.2.0"
+
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
