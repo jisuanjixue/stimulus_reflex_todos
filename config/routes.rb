@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'books/index'
   get 'notifications/index'
   get 'loaders/index'
   devise_for :users

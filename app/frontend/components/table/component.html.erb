@@ -1,0 +1,31 @@
+<%= component_controller do %>
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
+            <tr>
+                <% @columns.each do |column| %>
+                <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                    <%= column[:header] %>
+                </th>
+                <% end %>
+            </tr>
+            <!-- <tr>
+                <% @columns.each do |column| %>
+
+                <% end %>
+            </tr> -->
+        </thead>
+        <tbody>
+            <% page_rows.each do |model| %>
+            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                <% @columns.each do |column| %>
+                    <td class="px-6 py-4"><%= cell(model, column) %></td>
+                <% end %>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
+
+<% end %>
