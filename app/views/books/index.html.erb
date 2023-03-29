@@ -1,9 +1,6 @@
-<%= component "expo_page", title: "Book" %>
+<%= component "expo_page", title: "Book", component: %w[books book create_book] do |item| %>
 <%= item.with :subtitle do %>
 this is a book table
 <% end %>
-<div class="">
-  <%= component "books" %>
-</div>
 <% end %>
 
