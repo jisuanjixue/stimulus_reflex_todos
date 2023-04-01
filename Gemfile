@@ -24,7 +24,7 @@ gem 'view_component', '~> 2.82'
 # ViewComponentReflex allows you to write reflexes right in your view component code.
 gem "view_component_reflex", "3.3.0"
 # A new way to craft modern, reactive web interfaces with Ruby on Rails.
-gem "stimulus_reflex", "~> 3.5.pre10"
+gem "stimulus_reflex", "~> 3.5.0.rc2"
 # A collection of extension and developer tools for ViewComponent
 gem "view_component-contrib"
 #DSL for declaring params and options of the initializer
@@ -35,6 +35,9 @@ gem 'dry-effects', '~> 0.4.0'
 gem 'dry-types', '~> 1.7.0'
 # devise
 gem 'devise'
+# Semantic Logger is a feature rich logging framework, and replacement for existing Ruby & Rails loggers.
+gem "amazing_print"
+gem "rails_semantic_logger"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 # gem "turbo-rails"
@@ -93,7 +96,8 @@ end
 
 group :development do
   gem "annotate", "~> 3.2.0"
-
+   gem "better_errors"
+  gem "binding_of_caller"
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
