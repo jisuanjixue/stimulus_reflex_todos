@@ -828,11 +828,6 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hotkeys-js@>=3:
-  version "3.10.1"
-  resolved "https://registry.npmmirror.com/hotkeys-js/-/hotkeys-js-3.10.1.tgz#0c67e72298f235c9200e421ab112d156dc81356a"
-  integrity sha512-mshqjgTqx8ee0qryHvRgZaZDxTwxam/2yTQmQlqAWS3+twnq1jsY9Yng9zB7lWq6WRrjTbTOc7knNwccXQiAjQ==
-
 ignore@^5.2.0:
   version "5.2.4"
   resolved "https://registry.npmmirror.com/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
@@ -1283,12 +1278,10 @@ source-map-js@^1.0.2:
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
   integrity sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==
 
-stimulus-use@^0.51.2:
-  version "0.51.2"
-  resolved "https://registry.npmmirror.com/stimulus-use/-/stimulus-use-0.51.2.tgz#06d993854abb219399657b6e30c64554b2f4c05b"
-  integrity sha512-EY+f5X5gmWBmwxyRqAWOzk/JAsp4fawC8LW8jzgq2fUxZQMYlErMvKdo5aeTej18ZY6cWE4aKOdeoHlC7TZ41w==
-  dependencies:
-    hotkeys-js ">=3"
+stimulus-use@^0.52.0:
+  version "0.52.0"
+  resolved "https://registry.npmmirror.com/stimulus-use/-/stimulus-use-0.52.0.tgz#a52df4e2b59f3273fc6941f98fa173f0892d4e9d"
+  integrity sha512-b2Z2krSSIqKvG9ncrjMlxbX3SYg9mgL0g/1Zc25jTZjTr0//wgg7szUi9G67amBs/yLqO12GAEnudybZgYNnjA==
 
 stimulus@>=2.0.0:
   version "3.2.1"

@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   validates :email, uniqueness: true
   validates :name, presence: true, uniqueness: { case_sensitive: false }
-  validates_format_of :name, with: /^[a-zA-Z0-9_\.]*$/, multiline: true
+  validates :name, format: { with: /^[a-zA-Z0-9_.]*$/, multiline: true }
   validates :password, presence: true, on: :create
   
   devise :database_authenticatable, :registerable,

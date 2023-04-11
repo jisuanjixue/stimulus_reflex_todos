@@ -34,17 +34,15 @@ class TableComponent < ApplicationViewComponent
       @page = 0
     end
   
-    def count
-      filtered_rows.count
-    end
+    delegate :count, to: :filtered_rows
   
     def handle_page_size_change
-      @page_size = element.value.to_i
+      @page_size = Integer(element.value, 10)
       @page = 0
     end
   
     def pages
-      (filtered_rows.count / @page_size.to_f).ceil
+      (filtered_rows.count / Float(@page_size)).ceil
     end
   
     def page_sizes
@@ -52,7 +50,7 @@ class TableComponent < ApplicationViewComponent
     end
   
     def page_options
-      pages.times.map do |num|
+      Array.new(pages) do |num|
         [num.next, num]
       end
     end
@@ -62,7 +60,7 @@ class TableComponent < ApplicationViewComponent
     end
   
     def set_page
-      value = element.value.to_i
+      value = Integer(element.value, 10)
       @page = value - 1 unless value < 1 || value > pages
     end
   
